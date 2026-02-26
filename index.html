@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WealthPulse — Personal Finance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --surface2: #f8fafc;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #e0f2fe;
+  --green: #10b981;
+  --green-light: #d1fae5;
+  --red: #ef4444;
+  --red-light: #fee2e2;
+  --amber: #f59e0b;
+  --amber-light: #fef3c7;
+  --purple: #8b5cf6;
+  --purple-light: #ede9fe;
+  --pink: #ec4899;
+  --pink-light: #fce7f3;
+  --teal: #14b8a6;
+  --teal-light: #ccfbf1;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.1), 0 8px 32px rgba(0,0,0,0.06);
+  --nav-height: 68px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: 0.2s ease;
+}
+[data-theme="dark"] {
+  --bg: #0a0f1e; --surface: #131929; --surface2: #1a2236; --border: #1e2d45;
+  --text: #f1f5f9; --text-muted: #94a3b8; --text-light: #64748b;
+  --primary-light: #0c2d4a; --green-light: #052e1a; --red-light: #2a0a0a;
+  --amber-light: #2a1a00; --purple-light: #1a0f33; --pink-light: #2a0f1e;
+  --teal-light: #042e2a;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; padding-bottom: var(--nav-height);
+  transition: background 0.3s, color 0.3s;
+}
+h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; }
+
+/* ===== LAYOUT ===== */
+.page { display: none; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.container { max-width: 900px; margin: 0 auto; padding: 0 16px 24px; }
+
+/* ===== TOP HEADER ===== */
+.top-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+  backdrop-filter: blur(10px);
+}
+.top-header h2 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+.header-actions { display: flex; gap: 8px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--card-shadow); border: 1px solid var(--border);
+  padding: 20px; transition: box-shadow var(--transition);
+}
+.card:hover { box-shadow: var(--card-shadow-hover); }
+
+/* ===== NET WORTH HERO ===== */
+.net-worth-card {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 40%, #1d4ed8 100%);
+  border-radius: var(--radius); padding: 28px 24px; color: white;
+  position: relative; overflow: hidden; margin-bottom: 16px;
+}
+.net-worth-card::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,0.07);
+}
+.net-worth-card::after {
+  content: ''; position: absolute; bottom: -60px; right: 40px;
+  width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.05);
+}
+.net-worth-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; margin-bottom: 6px; }
+.net-worth-amount { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.net-worth-subtitle { font-size: 0.82rem; opacity: 0.75; }
+
+/* ===== SUMMARY GRID ===== */
+.summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+@media (min-width: 640px) { .summary-grid { grid-template-columns: repeat(4, 1fr); } }
+.stat-card { background: var(--surface); border-radius: var(--radius-sm); padding: 16px; box-shadow: var(--card-shadow); border: 1px solid var(--border); }
+.stat-card .stat-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 10px; }
+.stat-card .stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.stat-card .stat-value { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; }
+
+/* ===== SECTION HEADERS ===== */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 12px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: 9px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+  border: none; cursor: pointer; transition: all var(--transition);
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-sm { padding: 6px 12px; font-size: 0.78rem; border-radius: 7px; }
+.btn-xs { padding: 4px 10px; font-size: 0.72rem; border-radius: 6px; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.btn-pink { background: var(--pink); color: white; }
+.btn-pink:hover { opacity: 0.85; }
+.btn-icon {
+  width: 34px; height: 34px; border-radius: 8px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface2); border: 1px solid var(--border);
+  cursor: pointer; font-size: 1rem; transition: all var(--transition); color: var(--text);
+}
+.btn-icon:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+.btn-icon-sm { width: 28px; height: 28px; font-size: 0.82rem; border-radius: 6px; }
+
+/* ===== ITEM CARDS ===== */
+.item-list { display: flex; flex-direction: column; gap: 10px; }
+.item-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--card-shadow); transition: all var(--transition);
+}
+.item-card:hover { box-shadow: var(--card-shadow-hover); border-color: var(--primary); }
+.item-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+.item-body { flex: 1; min-width: 0; }
+.item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item-meta { font-size: 0.75rem; color: var(--text-muted); }
+.item-amount { text-align: right; flex-shrink: 0; }
+.item-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; }
+.item-sub { font-size: 0.72rem; color: var(--text-muted); }
+.item-actions { display: flex; gap: 6px; }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+.progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* ===== GOAL CARDS (non-kids) ===== */
+.goal-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--card-shadow); }
+.goal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.goal-icon { font-size: 1.6rem; margin-bottom: 6px; }
+.goal-name { font-weight: 700; font-size: 0.95rem; }
+.goal-status { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-on-track { background: var(--green-light); color: var(--green); }
+.status-behind { background: var(--red-light); color: var(--red); }
+.status-no-target { background: var(--amber-light); color: var(--amber); }
+.goal-amounts { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.goal-amount-label { font-size: 0.72rem; color: var(--text-muted); }
+.goal-amount-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; }
+.goal-pct { font-size: 0.78rem; color: var(--text-muted); text-align: right; margin-top: 4px; }
+.goals-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 540px) { .goals-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 768px) { .goals-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ===== ★ KIDS MODULE STYLES ===== */
+.kids-section { margin-bottom: 24px; }
+.kids-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; padding: 0 2px;
+}
+.kids-section-title {
+  font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 800;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* Child card — the outer wrapper */
+.child-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  margin-bottom: 16px;
+  transition: box-shadow var(--transition);
+}
+.child-card:hover { box-shadow: var(--card-shadow-hover); }
+
+/* Child header bar */
+.child-header {
+  padding: 18px 20px 14px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  user-select: none;
+}
+.child-avatar {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; flex-shrink: 0;
+}
+.child-avatar.boy { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+.child-avatar.girl { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+.child-info { flex: 1; }
+.child-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.05rem; }
+.child-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.child-summary { text-align: right; }
+.child-total { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+.child-total.boy-color { color: #3b82f6; }
+.child-total.girl-color { color: var(--pink); }
+.child-saved-label { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+.child-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* Overall progress inside child header */
+.child-progress-row { padding: 0 20px 14px; }
+.child-progress-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 5px; }
+.child-overall-bar { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.child-overall-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+
+/* Phases table */
+.child-phases { border-top: 1px solid var(--border); }
+.phase-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.phase-row:last-child { border-bottom: none; }
+.phase-row:hover { background: var(--surface2); }
+
+.phase-info { min-width: 0; }
+.phase-name { font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+.phase-age { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+.phase-progress-mini { margin-top: 5px; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; width: 80px; }
+.phase-progress-mini-fill { height: 100%; border-radius: 99px; }
+
+.phase-stat { text-align: right; }
+.phase-stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.phase-stat-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; margin-top: 1px; }
+.phase-stat-value.highlight { color: var(--primary); }
+.phase-stat-value.sip-needed { color: var(--amber); }
+.phase-stat-value.done { color: var(--green); }
+
+.phase-edit-btn { flex-shrink: 0; }
+
+/* Phase status dot */
+.phase-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.phase-dot.complete { background: var(--green); }
+.phase-dot.on-track { background: var(--primary); }
+.phase-dot.behind { background: var(--amber); }
+.phase-dot.empty { background: var(--border); }
+
+/* Collapsed phases — show toggler */
+.child-phases.collapsed { display: none; }
+.child-toggle-btn {
+  padding: 10px 20px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 0.78rem; color: var(--text-muted); cursor: pointer;
+  border-top: 1px solid var(--border); background: var(--surface2);
+  transition: background var(--transition);
+}
+.child-toggle-btn:hover { background: var(--primary-light); color: var(--primary); }
+.toggle-arrow { transition: transform 0.25s ease; }
+.toggle-arrow.open { transform: rotate(180deg); }
+
+/* Add phase button inside card */
+.phase-add-row {
+  padding: 10px 20px; display: flex; align-items: center; gap: 8px;
+  border-top: 1px dashed var(--border); cursor: pointer;
+  color: var(--text-muted); font-size: 0.78rem;
+  transition: background var(--transition);
+}
+.phase-add-row:hover { background: var(--surface2); color: var(--primary); }
+
+/* Empty kids */
+.kids-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+.kids-empty .kids-empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.kids-empty p { font-size: 0.9rem; max-width: 260px; margin: 0 auto 16px; line-height: 1.6; }
+
+/* Phase legend on mobile */
+.phase-legend {
+  display: none;
+}
+@media (max-width: 540px) {
+  .phase-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  .phase-info { grid-column: 1; }
+  .phase-edit-btn { grid-column: 2; grid-row: 1; }
+  .phase-stats-group {
+    grid-column: 1 / -1;
+    display: flex; gap: 16px; margin-top: 6px;
+  }
+  .phase-stat { text-align: left; }
+}
+
+/* ===== CHECKLIST ===== */
+.checklist-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: all var(--transition); box-shadow: var(--card-shadow);
+}
+.checklist-item.checked { border-color: var(--green); background: var(--green-light); }
+.checklist-item:hover { transform: translateX(3px); }
+.check-circle {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 0.9rem; transition: all var(--transition);
+}
+.checklist-item.checked .check-circle { background: var(--green); border-color: var(--green); color: white; }
+.check-label { flex: 1; font-weight: 500; font-size: 0.9rem; }
+.check-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.checklist-item.checked .check-label { color: #047857; }
+
+/* ===== BADGES ===== */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 99px; font-size: 0.7rem; font-weight: 600; }
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-red { background: var(--red-light); color: var(--red); }
+.badge-blue { background: var(--primary-light); color: var(--primary); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+.badge-purple { background: var(--purple-light); color: var(--purple); }
+.badge-pink { background: var(--pink-light); color: var(--pink); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; justify-content: center;
+  backdrop-filter: blur(4px); padding: 0;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+@media (min-width: 640px) { .modal-overlay { align-items: center; } }
+.modal {
+  background: var(--surface); border-radius: 24px 24px 0 0;
+  width: 100%; max-width: 520px; padding: 24px;
+  max-height: 92vh; overflow-y: auto;
+  transform: translateY(30px); transition: transform 0.25s ease;
+}
+@media (min-width: 640px) { .modal { border-radius: 20px; max-height: 85vh; } }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+.modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; color: var(--text); }
+
+/* Phase modal — investment selector */
+.inv-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 9px;
+  cursor: pointer; margin-bottom: 8px; transition: all var(--transition);
+  font-size: 0.85rem;
+}
+.inv-option.selected { border-color: var(--primary); background: var(--primary-light); }
+.inv-option input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ===== FORM ELEMENTS ===== */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; display: block; }
+.form-control {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  background: var(--surface2); color: var(--text);
+  transition: border-color var(--transition), box-shadow var(--transition); outline: none;
+}
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14,165,233,0.12); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.form-hint { font-size: 0.73rem; color: var(--text-muted); margin-top: 4px; }
+.form-section-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-muted); margin: 16px 0 10px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+
+/* Gender toggle */
+.gender-toggle { display: flex; gap: 10px; }
+.gender-btn {
+  flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 10px;
+  cursor: pointer; text-align: center; font-size: 0.88rem; font-weight: 500;
+  background: var(--surface2); color: var(--text-muted); transition: all var(--transition);
+}
+.gender-btn.selected.boy { border-color: #3b82f6; background: #dbeafe; color: #1d4ed8; }
+.gender-btn.selected.girl { border-color: var(--pink); background: var(--pink-light); color: var(--pink); }
+
+/* Phase checkbox toggle */
+.phase-toggle-list { display: flex; flex-direction: column; gap: 8px; }
+.phase-toggle-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px;
+  cursor: pointer; transition: all var(--transition); background: var(--surface2);
+}
+.phase-toggle-item.active { border-color: var(--primary); background: var(--primary-light); }
+.phase-toggle-item input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; }
+.phase-toggle-label { font-size: 0.88rem; font-weight: 500; }
+.phase-toggle-sub { font-size: 0.72rem; color: var(--text-muted); }
+
+/* Computed SIP callout */
+.sip-callout {
+  background: var(--amber-light); border: 1px solid var(--amber);
+  border-radius: 10px; padding: 12px 14px; margin-top: 12px;
+  font-size: 0.82rem; color: var(--text);
+}
+.sip-callout strong { color: var(--amber); font-family: 'Syne', sans-serif; }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; align-items: center; height: var(--nav-height); padding: 0 8px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px 4px; border-radius: 12px; cursor: pointer;
+  transition: all var(--transition); position: relative;
+  border: none; background: transparent; color: var(--text-light);
+}
+.nav-item.active { color: var(--primary); }
+.nav-item.active::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 24px; height: 3px; border-radius: 0 0 3px 3px; background: var(--primary);
+}
+.nav-icon { font-size: 1.25rem; line-height: 1; }
+.nav-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ===== MINI GOALS DASHBOARD ===== */
+.mini-goal { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.mini-goal:last-child { border-bottom: none; }
+.mini-goal-info { flex: 1; }
+.mini-goal-name { font-size: 0.85rem; font-weight: 500; }
+.mini-goal-pct { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--primary); }
+
+/* ===== TOOLS ===== */
+.tools-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 540px) { .tools-grid { grid-template-columns: repeat(3, 1fr); } }
+.tool-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 16px; text-align: center; cursor: pointer;
+  box-shadow: var(--card-shadow); transition: all var(--transition);
+}
+.tool-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
+.tool-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.tool-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+
+/* ===== EMPTY STATE ===== */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+.empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+.empty-state p { font-size: 0.88rem; }
+
+/* ===== INVESTMENT P&L ===== */
+.pnl-positive { color: var(--green); }
+.pnl-negative { color: var(--red); }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--text); color: var(--surface); padding: 10px 20px; border-radius: 10px;
+  font-size: 0.85rem; opacity: 0; transition: all 0.3s ease; z-index: 9999; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<!-- =================== PAGES =================== -->
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="top-header">
+    <h2>💰 WealthPulse</h2>
+    <div class="header-actions">
+      <button class="btn-icon" onclick="toggleDark()" title="Toggle Dark Mode">🌙</button>
+    </div>
+  </div>
+  <div class="container" style="padding-top:16px">
+    <div class="net-worth-card">
+      <div class="net-worth-label">Total Net Worth</div>
+      <div class="net-worth-amount" id="dash-networth">₹0</div>
+      <div class="net-worth-subtitle">Assets − Liabilities</div>
+    </div>
+    <div class="summary-grid">
+      <div class="stat-card"><div class="stat-icon" style="background:var(--green-light)">📈</div><div class="stat-label">Total Assets</div><div class="stat-value" id="dash-assets">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--red-light)">📉</div><div class="stat-label">Liabilities</div><div class="stat-value" id="dash-liab">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--primary-light)">💼</div><div class="stat-label">Investments</div><div class="stat-value" id="dash-invest">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--purple-light)">📅</div><div class="stat-label">Monthly SIP</div><div class="stat-value" id="dash-sip">₹0</div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span class="section-title">Financial Health</span>
+        <span class="badge badge-green" id="dash-checklist-pct">0% Done</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="dash-checklist-bar" style="background:var(--green);width:0%"></div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="section-title" style="margin-bottom:12px">🎯 Goal Progress</div>
+      <div id="dash-goals-mini"></div>
+    </div>
+    <!-- Kids summary on dashboard -->
+    <div class="card" style="margin-bottom:16px" id="dash-kids-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <span class="section-title">👨‍👩‍👧‍👦 Kids Education Fund</span>
+        <span class="badge badge-pink" id="dash-kids-total">₹0</span>
+      </div>
+      <div id="dash-kids-mini"></div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">🏦 Asset Breakdown</div>
+      <div id="dash-asset-breakdown"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSETS + LIABILITIES -->
+<div id="page-assets" class="page">
+  <div class="top-header">
+    <h2>🏦 Assets</h2>
+    <button class="btn btn-primary btn-sm" onclick="openModal('asset')">+ Add Asset</button>
+  </div>
+  <div class="container" style="padding-top:16px">
+    <div class="card" style="margin-bottom:16px;display:flex;gap:20px;align-items:center">
+      <div style="flex:1"><div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">TOTAL ASSETS</div><div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--green)" id="assets-total">₹0</div></div>
+      <div style="flex:1"><div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px">TOTAL INVESTED</div><div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800" id="assets-invested">₹0</div></div>
+    </div>
+    <div id="assets-list" class="item-list"></div>
+    <div id="liab-section-in-assets"></div>
+  </div>
+</div>
+
+<!-- GOALS -->
+<div id="page-goals" class="page">
+  <div class="top-header">
+    <h2>🎯 Goals</h2>
+    <button class="btn btn-primary btn-sm" onclick="openModal('goal')">+ Add / Edit</button>
+  </div>
+  <div class="container" style="padding-top:16px">
+    <!-- ★ KIDS SECTION ★ -->
+    <div class="kids-section">
+      <div class="kids-section-header">
+        <div class="kids-section-title">
+          <span>👨‍👩‍👧‍👦 Children</span>
+          <span class="badge badge-pink" id="kids-count-badge" style="font-size:0.68rem"></span>
+        </div>
+        <button class="btn btn-pink btn-sm" onclick="openModal('addChild')">+ Add Child</button>
+      </div>
+      <div id="kids-list"></div>
+    </div>
+
+    <!-- Divider -->
+    <div style="display:flex;align-items:center;gap:12px;margin:4px 0 20px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <span style="font-size:0.72rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:1px">Other Goals</span>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+
+    <div id="goals-grid" class="goals-grid"></div>
+  </div>
+</div>
+
+<!-- INVESTMENTS -->
+<div id="page-investments" class="page">
+  <div class="top-header">
+    <h2>📈 Investments</h2>
+    <button class="btn btn-primary btn-sm" onclick="openModal('investment')">+ Add</button>
+  </div>
+  <div class="container" style="padding-top:16px">
+    <div class="card" style="margin-bottom:16px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+      <div><div style="font-size:0.72rem;color:var(--text-muted)">INVESTED</div><div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800" id="inv-invested">₹0</div></div>
+      <div><div style="font-size:0.72rem;color:var(--text-muted)">CURRENT VALUE</div><div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--green)" id="inv-current">₹0</div></div>
+      <div><div style="font-size:0.72rem;color:var(--text-muted)">PROFIT/LOSS</div><div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800" id="inv-pnl">₹0</div></div>
+      <div><div style="font-size:0.72rem;color:var(--text-muted)">MONTHLY SIP</div><div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--purple)" id="inv-sip">₹0</div></div>
+    </div>
+    <div id="investments-list" class="item-list"></div>
+  </div>
+</div>
+
+<!-- CHECKLIST + MORE -->
+<div id="page-checklist" class="page">
+  <div class="top-header">
+    <h2>✅ Checklist</h2>
+    <span class="badge badge-green" id="checklist-pct-badge">0% Done</span>
+  </div>
+  <div class="container" style="padding-top:16px">
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px">Financial Foundations Progress</div>
+      <div class="progress-bar" style="height:10px"><div class="progress-fill" id="checklist-bar" style="background:linear-gradient(90deg,var(--primary),var(--green));width:0%"></div></div>
+      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:6px" id="checklist-sub">0 of 6 completed</div>
+    </div>
+    <div id="checklist-items" class="item-list" style="gap:8px"></div>
+    <div style="margin-top:28px">
+      <div class="section-title" style="margin-bottom:12px">⚙️ Tools & Data</div>
+      <div class="tools-grid">
+        <div class="tool-card" onclick="exportData()"><div class="tool-icon">📤</div><div class="tool-label">Export JSON</div></div>
+        <div class="tool-card" onclick="document.getElementById('import-file').click()"><div class="tool-icon">📥</div><div class="tool-label">Import JSON</div></div>
+        <div class="tool-card" onclick="resetData()" style="border-color:var(--red-light)"><div class="tool-icon">🗑️</div><div class="tool-label" style="color:var(--red)">Reset Data</div></div>
+        <div class="tool-card" onclick="loadSampleData()"><div class="tool-icon">📊</div><div class="tool-label">Sample Data</div></div>
+        <div class="tool-card" onclick="toggleDark()"><div class="tool-icon">🌙</div><div class="tool-label">Dark Mode</div></div>
+      </div>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBg(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="navigate('dashboard',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+  <button class="nav-item" onclick="navigate('assets',this)"><span class="nav-icon">🏦</span><span class="nav-label">Assets</span></button>
+  <button class="nav-item" onclick="navigate('goals',this)"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></button>
+  <button class="nav-item" onclick="navigate('investments',this)"><span class="nav-icon">📈</span><span class="nav-label">Invest</span></button>
+  <button class="nav-item" onclick="navigate('checklist',this)"><span class="nav-icon">✅</span><span class="nav-label">More</span></button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================
+   CONSTANTS & CONFIG
+===================================================== */
+const STORAGE_KEY = 'wealthpulse_v2';
+
+const ASSET_CATEGORIES = [
+  { value: 'EPF', label: '🏛️ EPF', color: '#0ea5e9' },
+  { value: 'PPF', label: '💰 PPF', color: '#8b5cf6' },
+  { value: 'MutualFunds', label: '📊 Mutual Funds', color: '#10b981' },
+  { value: 'Stocks', label: '📈 Stocks', color: '#f59e0b' },
+  { value: 'RealEstate', label: '🏠 Real Estate', color: '#ef4444' },
+  { value: 'Gold', label: '🥇 Gold', color: '#d97706' },
+  { value: 'FD', label: '🏦 Fixed Deposit', color: '#6366f1' },
+  { value: 'Other', label: '💼 Other', color: '#64748b' }
+];
+
+const LIABILITY_CATEGORIES = [
+  { value: 'HomeLoan', label: '🏠 Home Loan', color: '#ef4444' },
+  { value: 'PersonalLoan', label: '👤 Personal Loan', color: '#f59e0b' },
+  { value: 'CarLoan', label: '🚗 Car Loan', color: '#8b5cf6' },
+  { value: 'CreditCard', label: '💳 Credit Card', color: '#0ea5e9' },
+  { value: 'Other', label: '📋 Other', color: '#64748b' }
+];
+
+const GOAL_PRESETS = [
+  { id: 'emergency', icon: '🛡️', name: 'Emergency Fund', color: '#ef4444' },
+  { id: 'insurance', icon: '🏥', name: 'Insurance', color: '#0ea5e9' },
+  { id: 'house', icon: '🏠', name: 'House Purchase', color: '#10b981' },
+  { id: 'vacation', icon: '✈️', name: 'Vacation', color: '#f59e0b' },
+  { id: 'retirement', icon: '🌴', name: 'Retirement', color: '#6366f1' }
+];
+
+// Kids life phases definition
+const KID_PHASES = [
+  { id: 'primary',      icon: '📚', label: 'Primary School',          ageStart: 5,  ageEnd: 10, color: '#10b981' },
+  { id: 'intermediate', icon: '📖', label: 'Intermediate / High School', ageStart: 11, ageEnd: 17, color: '#0ea5e9' },
+  { id: 'graduation',   icon: '🎓', label: 'Graduation (UG)',          ageStart: 18, ageEnd: 22, color: '#8b5cf6' },
+  { id: 'higher',       icon: '🏛️', label: 'Higher Education (PG/MBA)', ageStart: 22, ageEnd: 25, color: '#f59e0b' },
+  { id: 'marriage',     icon: '💍', label: 'Marriage',                 ageStart: 25, ageEnd: 30, color: '#ec4899' },
+];
+
+const CHECKLIST_ITEMS = [
+  { label: 'Emergency Fund Ready', desc: '3–6 months of expenses saved' },
+  { label: 'Term Insurance Taken', desc: 'Life cover for your family\'s security' },
+  { label: 'Health Insurance Taken', desc: 'Medical cover for you & family' },
+  { label: 'Investments Started', desc: 'Begin your wealth-building journey' },
+  { label: 'Will / Nomination Updated', desc: 'Legal documents in order' },
+  { label: 'Debt Under Control', desc: 'EMIs < 40% of monthly income' }
+];
+
+/* =====================================================
+   DATA MODEL
+===================================================== */
+let data = {
+  assets: [],
+  liabilities: [],
+  goals: [],         // non-kids goals
+  kids: [],          /* [{
+    id, name, gender ('boy'|'girl'), birthYear,
+    phases: [{
+      phaseId, enabled, target, current, linkedInvestmentIds:[],
+      notes
+    }]
+  }] */
+  investments: [],
+  checklist: [false, false, false, false, false, false]
+};
+
+/* =====================================================
+   STORAGE
+===================================================== */
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function load() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) { try { data = { ...data, ...JSON.parse(raw) }; } catch(e) {} }
+}
+
+/* =====================================================
+   UTILITIES
+===================================================== */
+function fmt(n) {
+  if (!n && n !== 0) return '₹0';
+  const abs = Math.abs(Number(n));
+  let r;
+  if (abs >= 1e7) r = '₹' + (abs/1e7).toFixed(2) + ' Cr';
+  else if (abs >= 1e5) r = '₹' + (abs/1e5).toFixed(2) + ' L';
+  else r = '₹' + Math.round(abs).toLocaleString('en-IN');
+  return n < 0 ? '-'+r : r;
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function pct(cur, tar) { if (!tar || tar <= 0) return 0; return Math.min(100, Math.round((cur/tar)*100)); }
+function getAssetInfo(c) { return ASSET_CATEGORIES.find(a=>a.value===c)||ASSET_CATEGORIES[7]; }
+function getLiabInfo(c) { return LIABILITY_CATEGORIES.find(a=>a.value===c)||LIABILITY_CATEGORIES[4]; }
+function currentYear() { return new Date().getFullYear(); }
+function childAge(birthYear) { return currentYear() - Number(birthYear); }
+
+// Monthly SIP needed = (target - current) / monthsRemaining
+function sipNeeded(target, current, yearsRemaining) {
+  const gap = Math.max(0, Number(target||0) - Number(current||0));
+  const months = Math.max(1, Math.round(Number(yearsRemaining||0) * 12));
+  return Math.ceil(gap / months);
+}
+
+function yearsUntilPhase(birthYear, phaseAgeStart) {
+  const age = childAge(birthYear);
+  return Math.max(0, phaseAgeStart - age);
+}
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+function navigate(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (btn) btn.classList.add('active');
+  renderPage(page);
+}
+
+function renderPage(page) {
+  switch(page) {
+    case 'dashboard':    renderDashboard(); break;
+    case 'assets':       renderAssets(); renderLiabilities(); break;
+    case 'goals':        renderKids(); renderGoals(); break;
+    case 'investments':  renderInvestments(); break;
+    case 'checklist':    renderChecklist(); break;
+  }
+}
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+function renderDashboard() {
+  const totalAssets = data.assets.reduce((s,a) => s + Number(a.currentValue||0), 0);
+  const totalLiab   = data.liabilities.reduce((s,l) => s + Number(l.outstanding||0), 0);
+  const totalInvest = data.investments.reduce((s,i) => s + Number(i.currentValue||0), 0);
+  const monthlySIP  = data.investments.reduce((s,i) => s + Number(i.sip||0), 0);
+  const netWorth    = totalAssets - totalLiab;
+
+  document.getElementById('dash-networth').textContent = fmt(netWorth);
+  document.getElementById('dash-assets').textContent   = fmt(totalAssets);
+  document.getElementById('dash-liab').textContent     = fmt(totalLiab);
+  document.getElementById('dash-invest').textContent   = fmt(totalInvest);
+  document.getElementById('dash-sip').textContent      = fmt(monthlySIP);
+
+  // Checklist
+  const done = data.checklist.filter(Boolean).length;
+  const cp   = Math.round((done / CHECKLIST_ITEMS.length) * 100);
+  document.getElementById('dash-checklist-pct').textContent = cp + '% Done';
+  document.getElementById('dash-checklist-bar').style.width = cp + '%';
+
+  // Goals mini
+  const allGoals = [
+    ...GOAL_PRESETS.map(p => {
+      const g = data.goals.find(x => x.type === p.id) || {};
+      return { name: p.name, icon: p.icon, color: p.color, p: pct(g.current||0, g.target||0) };
+    }),
+    ...data.kids.map(k => {
+      const totalKidTarget  = k.phases.filter(p=>p.enabled).reduce((s,p)=>s+Number(p.target||0),0);
+      const totalKidCurrent = k.phases.filter(p=>p.enabled).reduce((s,p)=>s+Number(p.current||0),0);
+      return { name: k.name + ' (Education)', icon: k.gender==='girl'?'👧':'👦', color: k.gender==='girl'?'#ec4899':'#3b82f6', p: pct(totalKidCurrent, totalKidTarget) };
+    })
+  ];
+  const goalsEl = document.getElementById('dash-goals-mini');
+  if (!allGoals.length) {
+    goalsEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🎯</div><p>No goals yet</p></div>';
+  } else {
+    goalsEl.innerHTML = allGoals.map(g => `
+      <div class="mini-goal">
+        <span style="font-size:1.4rem">${g.icon}</span>
+        <div class="mini-goal-info">
+          <div class="mini-goal-name">${g.name}</div>
+          <div class="progress-bar" style="margin-top:4px;height:4px"><div class="progress-fill" style="background:${g.color};width:${g.p}%"></div></div>
+        </div>
+        <span class="mini-goal-pct">${g.p}%</span>
+      </div>`).join('');
+  }
+
+  // Kids summary on dashboard
+  const totalKidsSaved  = data.kids.reduce((s,k) => s + k.phases.filter(p=>p.enabled).reduce((ss,p)=>ss+Number(p.current||0),0), 0);
+  const totalKidsTarget = data.kids.reduce((s,k) => s + k.phases.filter(p=>p.enabled).reduce((ss,p)=>ss+Number(p.target||0),0), 0);
+  document.getElementById('dash-kids-total').textContent = fmt(totalKidsSaved) + ' / ' + fmt(totalKidsTarget);
+  const kidsEl = document.getElementById('dash-kids-mini');
+  if (!data.kids.length) {
+    kidsEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:0.85rem">No children added yet — go to Goals to add</div>';
+  } else {
+    kidsEl.innerHTML = data.kids.map(k => {
+      const kSaved  = k.phases.filter(p=>p.enabled).reduce((s,p)=>s+Number(p.current||0),0);
+      const kTarget = k.phases.filter(p=>p.enabled).reduce((s,p)=>s+Number(p.target||0),0);
+      const kp      = pct(kSaved, kTarget);
+      const color   = k.gender==='girl' ? '#ec4899' : '#3b82f6';
+      return `<div class="mini-goal">
+        <span style="font-size:1.5rem">${k.gender==='girl'?'👧':'👦'}</span>
+        <div class="mini-goal-info">
+          <div class="mini-goal-name">${k.name} · Age ${childAge(k.birthYear)}</div>
+          <div class="progress-bar" style="margin-top:5px;height:5px"><div class="progress-fill" style="background:${color};width:${kp}%"></div></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;color:${color}">${kp}%</div>
+          <div style="font-size:0.68rem;color:var(--text-muted)">${fmt(kSaved)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Asset breakdown
+  const breakdown = document.getElementById('dash-asset-breakdown');
+  const grouped = {};
+  data.assets.forEach(a => { grouped[a.category] = (grouped[a.category]||0) + Number(a.currentValue||0); });
+  const entries = Object.entries(grouped).sort((a,b)=>b[1]-a[1]);
+  if (!entries.length) {
+    breakdown.innerHTML = '<div class="empty-state"><div class="empty-icon">🏦</div><p>No assets added yet</p></div>';
+  } else {
+    breakdown.innerHTML = entries.map(([cat,val]) => {
+      const info = getAssetInfo(cat);
+      const p = totalAssets > 0 ? ((val/totalAssets)*100).toFixed(1) : 0;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:1.2rem">${info.label.split(' ')[0]}</span>
+        <div style="flex:1">
+          <div style="font-size:0.82rem;font-weight:500">${info.label.slice(info.label.indexOf(' ')+1)}</div>
+          <div class="progress-bar" style="margin-top:4px;height:4px"><div class="progress-fill" style="background:${info.color};width:${p}%"></div></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:0.82rem;font-weight:700">${fmt(val)}</div>
+          <div style="font-size:0.7rem;color:var(--text-muted)">${p}%</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* =====================================================
+   ASSETS
+===================================================== */
+function renderAssets() {
+  const total    = data.assets.reduce((s,a) => s+Number(a.currentValue||0), 0);
+  const invested = data.assets.reduce((s,a) => s+Number(a.invested||0), 0);
+  document.getElementById('assets-total').textContent    = fmt(total);
+  document.getElementById('assets-invested').textContent = fmt(invested);
+  const el = document.getElementById('assets-list');
+  if (!data.assets.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🏦</div><p>No assets yet. Tap "+ Add Asset" to get started.</p></div>`;
+    return;
+  }
+  el.innerHTML = data.assets.map(a => {
+    const info = getAssetInfo(a.category);
+    const gain = Number(a.currentValue||0) - Number(a.invested||0);
+    const gPct = a.invested > 0 ? ((gain/a.invested)*100).toFixed(1) : 0;
+    return `<div class="item-card">
+      <div class="item-icon" style="background:${info.color}22">${info.label.split(' ')[0]}</div>
+      <div class="item-body">
+        <div class="item-name">${a.name}</div>
+        <div class="item-meta">${info.label.slice(info.label.indexOf(' ')+1)} · Invested: ${fmt(a.invested)}</div>
+        <div style="font-size:0.72rem;margin-top:2px;${gain>=0?'color:var(--green)':'color:var(--red)'}">
+          ${gain>=0?'▲':'▼'} ${fmt(Math.abs(gain))} (${gPct}%)
+        </div>
+      </div>
+      <div class="item-amount">
+        <div class="item-value">${fmt(a.currentValue)}</div>
+        <div class="item-actions" style="margin-top:6px">
+          <button class="btn-icon" onclick="editAsset('${a.id}')">✏️</button>
+          <button class="btn-icon" onclick="deleteAsset('${a.id}')" style="color:var(--red)">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function deleteAsset(id) {
+  if (!confirm('Delete this asset?')) return;
+  data.assets = data.assets.filter(a=>a.id!==id);
+  save(); renderAssets(); renderDashboard(); showToast('Asset deleted');
+}
+function editAsset(id) { openModal('asset', data.assets.find(x=>x.id===id)); }
+
+/* =====================================================
+   LIABILITIES
+===================================================== */
+function renderLiabilities() {
+  const total    = data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
+  const totalEMI = data.liabilities.reduce((s,l)=>s+Number(l.emi||0),0);
+  let el = document.getElementById('liab-section-in-assets');
+  el.innerHTML = `
+    <div class="section-header">
+      <span class="section-title">💳 Liabilities</span>
+      <button class="btn btn-primary btn-sm" onclick="openModal('liability')">+ Add</button>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:0.72rem;color:var(--text-muted)">TOTAL OUTSTANDING</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--red)">${fmt(total)}</div>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">Monthly EMI: ${fmt(totalEMI)}</div>
+    </div>
+    <div class="item-list">${data.liabilities.length ? data.liabilities.map(l => {
+      const info = getLiabInfo(l.category);
+      return `<div class="item-card">
+        <div class="item-icon" style="background:${info.color}22">${info.label.split(' ')[0]}</div>
+        <div class="item-body">
+          <div class="item-name">${l.name}</div>
+          <div class="item-meta">${info.label.slice(info.label.indexOf(' ')+1)} · ${l.interestRate}% p.a.</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px">EMI: ${fmt(l.emi)}/mo</div>
+        </div>
+        <div class="item-amount">
+          <div class="item-value" style="color:var(--red)">${fmt(l.outstanding)}</div>
+          <div class="item-actions" style="margin-top:6px">
+            <button class="btn-icon" onclick="editLiability('${l.id}')">✏️</button>
+            <button class="btn-icon" onclick="deleteLiability('${l.id}')" style="color:var(--red)">🗑️</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('') : '<div class="empty-state"><div class="empty-icon">💳</div><p>No liabilities. Great!</p></div>'}</div>`;
+}
+function deleteLiability(id) {
+  if (!confirm('Delete?')) return;
+  data.liabilities = data.liabilities.filter(l=>l.id!==id);
+  save(); renderLiabilities(); renderDashboard(); showToast('Deleted');
+}
+function editLiability(id) { openModal('liability', data.liabilities.find(x=>x.id===id)); }
+
+/* =====================================================
+   GOALS (non-kids)
+===================================================== */
+function renderGoals() {
+  const el = document.getElementById('goals-grid');
+  el.innerHTML = GOAL_PRESETS.map(preset => {
+    const saved = data.goals.find(g=>g.type===preset.id) || {};
+    const target  = Number(saved.target||0);
+    const current = Number(saved.current||0);
+    const p = pct(current, target);
+    let sc = 'status-no-target', st = 'No Target';
+    if (target > 0) { sc = p >= 80 ? 'status-on-track' : 'status-behind'; st = p >= 80 ? 'On Track' : 'Behind'; }
+    return `<div class="goal-card">
+      <div class="goal-header">
+        <div><div class="goal-icon">${preset.icon}</div><div class="goal-name">${preset.name}</div></div>
+        <div>
+          <span class="goal-status ${sc}">${st}</span>
+          <div style="margin-top:8px;display:flex;justify-content:flex-end">
+            <button class="btn-icon" onclick="openModal('goal','${preset.id}')">✏️</button>
+          </div>
+        </div>
+      </div>
+      <div class="goal-amounts">
+        <div><div class="goal-amount-label">Current</div><div class="goal-amount-value">${fmt(current)}</div></div>
+        <div style="text-align:right"><div class="goal-amount-label">Target</div><div class="goal-amount-value">${target>0?fmt(target):'—'}</div></div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="background:${preset.color};width:${p}%"></div></div>
+      <div class="goal-pct">${p}% complete${saved.timePeriod?' · '+saved.timePeriod+' yrs':''}</div>
+    </div>`;
+  }).join('');
+}
+
+/* =====================================================
+   ★ KIDS MODULE — RENDER
+===================================================== */
+function renderKids() {
+  const badge = document.getElementById('kids-count-badge');
+  badge.textContent = data.kids.length > 0 ? data.kids.length + ' child' + (data.kids.length>1?'ren':'') : '';
+
+  const el = document.getElementById('kids-list');
+  if (!data.kids.length) {
+    el.innerHTML = `<div class="kids-empty">
+      <div class="kids-empty-icon">👨‍👩‍👧‍👦</div>
+      <p>Add each child to plan their education milestones and track savings phase by phase.</p>
+      <button class="btn btn-pink" onclick="openModal('addChild')">+ Add First Child</button>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = data.kids.map(kid => renderKidCard(kid)).join('');
+}
+
+function renderKidCard(kid) {
+  const age         = childAge(kid.birthYear);
+  const color       = kid.gender === 'girl' ? '#ec4899' : '#3b82f6';
+  const colorLight  = kid.gender === 'girl' ? 'var(--pink-light)' : '#dbeafe';
+  const genderClass = kid.gender === 'girl' ? 'girl' : 'boy';
+  const genderColor = kid.gender === 'girl' ? 'girl-color' : 'boy-color';
+  const avatar      = kid.gender === 'girl' ? '👧' : '👦';
+
+  const enabledPhases = kid.phases.filter(p => p.enabled);
+  const totalTarget   = enabledPhases.reduce((s,p)=>s+Number(p.target||0),0);
+  const totalSaved    = enabledPhases.reduce((s,p)=>s+Number(p.current||0),0);
+  const overallPct    = pct(totalSaved, totalTarget);
+
+  const phasesHTML = enabledPhases.map(ph => {
+    const phaseDef  = KID_PHASES.find(kp => kp.id === ph.phaseId);
+    if (!phaseDef) return '';
+    const target    = Number(ph.target||0);
+    const current   = Number(ph.current||0);
+    const p         = pct(current, target);
+    const yearsLeft = yearsUntilPhase(kid.birthYear, phaseDef.ageStart);
+    const sip       = target > 0 ? sipNeeded(target, current, yearsLeft) : 0;
+    const gap       = Math.max(0, target - current);
+
+    // Linked investments
+    const linkedNames = (ph.linkedInvestmentIds||[])
+      .map(id => data.investments.find(i=>i.id===id))
+      .filter(Boolean).map(i=>i.name).join(', ');
+
+    // Phase status
+    let dotClass = 'empty';
+    if (target > 0) {
+      if (p >= 100) dotClass = 'complete';
+      else if (yearsLeft <= 0) dotClass = 'behind';
+      else if (p >= (currentYear() - kid.birthYear) / phaseDef.ageStart * 100 * 0.8) dotClass = 'on-track';
+      else dotClass = 'behind';
+    }
+
+    return `
+      <div class="phase-row">
+        <div class="phase-info">
+          <div class="phase-name">
+            <span class="phase-dot ${dotClass}"></span>
+            <span>${phaseDef.icon}</span>
+            <span>${phaseDef.label}</span>
+          </div>
+          <div class="phase-age">Age ${phaseDef.ageStart}–${phaseDef.ageEnd}${yearsLeft > 0 ? ' · ' + yearsLeft + ' yrs away' : yearsLeft === 0 ? ' · <b style="color:var(--amber)">Now!</b>' : ' · Passed'}</div>
+          ${p > 0 ? `<div class="phase-progress-mini" style="margin-top:5px"><div class="phase-progress-mini-fill" style="background:${phaseDef.color};width:${p}%"></div></div>` : ''}
+          ${linkedNames ? `<div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px">🔗 ${linkedNames}</div>` : ''}
+        </div>
+
+        <!-- Stats group -->
+        <div class="phase-stats-group" style="display:contents">
+          <div class="phase-stat">
+            <div class="phase-stat-label">Saved</div>
+            <div class="phase-stat-value ${p>=100?'done':''}">${target>0?fmt(current):'—'}</div>
+          </div>
+          <div class="phase-stat">
+            <div class="phase-stat-label">Target</div>
+            <div class="phase-stat-value highlight">${target>0?fmt(target):'Set target'}</div>
+          </div>
+          <div class="phase-stat">
+            <div class="phase-stat-label">SIP Needed</div>
+            <div class="phase-stat-value sip-needed">${sip>0?fmt(sip)+'/mo':target>0?'✓ Done':'—'}</div>
+          </div>
+        </div>
+
+        <div class="phase-edit-btn">
+          <button class="btn-icon btn-icon-sm" onclick="openModal('editPhase','${kid.id}','${ph.phaseId}')" title="Edit phase">✏️</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="child-card" id="child-card-${kid.id}">
+      <!-- Header -->
+      <div class="child-header" onclick="toggleChildPhases('${kid.id}')">
+        <div class="child-avatar ${genderClass}">${avatar}</div>
+        <div class="child-info">
+          <div class="child-name">${kid.name}</div>
+          <div class="child-meta">${kid.gender==='boy'?'Boy':'Girl'} · Born ${kid.birthYear} · Age ${age} · ${enabledPhases.length} phase${enabledPhases.length!==1?'s':''}</div>
+        </div>
+        <div class="child-summary">
+          <div class="child-total ${genderColor}">${totalTarget>0?fmt(totalSaved):'Set targets'}</div>
+          <div class="child-saved-label">${totalTarget>0?'of '+fmt(totalTarget):''}</div>
+        </div>
+        <div class="child-actions" onclick="event.stopPropagation()">
+          <button class="btn-icon btn-icon-sm" onclick="openModal('editChild','${kid.id}')" title="Edit child">✏️</button>
+          <button class="btn-icon btn-icon-sm" onclick="deleteKid('${kid.id}')" title="Delete child" style="color:var(--red)">🗑️</button>
+        </div>
+      </div>
+
+      <!-- Overall progress bar -->
+      ${totalTarget > 0 ? `
+      <div class="child-progress-row">
+        <div class="child-progress-labels">
+          <span>Overall Progress · ${overallPct}%</span>
+          <span>${fmt(totalSaved)} of ${fmt(totalTarget)}</span>
+        </div>
+        <div class="child-overall-bar">
+          <div class="child-overall-fill" style="background:linear-gradient(90deg,${color},${color}cc);width:${overallPct}%"></div>
+        </div>
+      </div>` : ''}
+
+      <!-- Phase rows -->
+      <div class="child-phases" id="child-phases-${kid.id}">
+        ${enabledPhases.length ? phasesHTML : `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.85rem">No phases enabled yet</div>`}
+        <!-- Add phase row -->
+        <div class="phase-add-row" onclick="openModal('managePhases','${kid.id}')">
+          <span>⚙️</span> <span>Manage phases &amp; milestones</span>
+        </div>
+      </div>
+
+      <!-- Toggle btn -->
+      <div class="child-toggle-btn" onclick="toggleChildPhases('${kid.id}')">
+        <span id="toggle-label-${kid.id}">Hide phases</span>
+        <span class="toggle-arrow open" id="toggle-arrow-${kid.id}">▲</span>
+      </div>
+    </div>`;
+}
+
+function toggleChildPhases(kidId) {
+  const phasesEl = document.getElementById('child-phases-' + kidId);
+  const arrow    = document.getElementById('toggle-arrow-' + kidId);
+  const label    = document.getElementById('toggle-label-' + kidId);
+  const hidden   = phasesEl.classList.toggle('collapsed');
+  arrow.classList.toggle('open', !hidden);
+  label.textContent = hidden ? 'Show phases' : 'Hide phases';
+}
+
+function deleteKid(id) {
+  if (!confirm('Remove this child and all their phase data?')) return;
+  data.kids = data.kids.filter(k=>k.id!==id);
+  save(); renderKids(); renderDashboard(); showToast('Child removed');
+}
+
+/* =====================================================
+   INVESTMENTS
+===================================================== */
+function renderInvestments() {
+  const invested = data.investments.reduce((s,i)=>s+Number(i.invested||0),0);
+  const current  = data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
+  const sip      = data.investments.reduce((s,i)=>s+Number(i.sip||0),0);
+  const pnl      = current - invested;
+  document.getElementById('inv-invested').textContent = fmt(invested);
+  document.getElementById('inv-current').textContent  = fmt(current);
+  document.getElementById('inv-sip').textContent      = fmt(sip);
+  const pnlEl = document.getElementById('inv-pnl');
+  pnlEl.textContent  = (pnl>=0?'+':'')+fmt(pnl);
+  pnlEl.style.color  = pnl>=0?'var(--green)':'var(--red)';
+
+  const el = document.getElementById('investments-list');
+  if (!data.investments.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📈</div><p>No investments yet.</p></div>`;
+    return;
+  }
+  el.innerHTML = data.investments.map(inv => {
+    const pnl  = Number(inv.currentValue||0) - Number(inv.invested||0);
+    const pPct = inv.invested>0?((pnl/inv.invested)*100).toFixed(1):0;
+    const icon = inv.type==='MutualFund'?'📊':inv.type==='Stock'?'📈':'💰';
+    // Find linked kids phases
+    const kidLinks = data.kids.flatMap(k =>
+      k.phases.filter(p=>p.enabled&&(p.linkedInvestmentIds||[]).includes(inv.id))
+        .map(p=>{ const pd=KID_PHASES.find(kp=>kp.id===p.phaseId); return pd?k.name+' '+pd.label:''; })
+    ).filter(Boolean);
+    return `<div class="item-card">
+      <div class="item-icon" style="background:var(--primary-light);font-size:1.4rem">${icon}</div>
+      <div class="item-body">
+        <div class="item-name">${inv.name}</div>
+        <div class="item-meta">${inv.type||'Investment'}${inv.sip>0?' · SIP: '+fmt(inv.sip)+'/mo':''}${kidLinks.length?' · 🧒 '+kidLinks.join(', '):''}</div>
+        <div style="font-size:0.72rem;font-weight:600;margin-top:3px;${pnl>=0?'color:var(--green)':'color:var(--red)'}">${pnl>=0?'▲':'▼'} ${fmt(Math.abs(pnl))} (${pPct}%)</div>
+      </div>
+      <div class="item-amount">
+        <div class="item-value" style="color:var(--green)">${fmt(inv.currentValue)}</div>
+        <div class="item-sub">Invested: ${fmt(inv.invested)}</div>
+        <div class="item-actions" style="margin-top:6px">
+          <button class="btn-icon" onclick="editInvestment('${inv.id}')">✏️</button>
+          <button class="btn-icon" onclick="deleteInvestment('${inv.id}')" style="color:var(--red)">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function deleteInvestment(id) {
+  if (!confirm('Delete?')) return;
+  // Remove from any kid phase links
+  data.kids.forEach(k => k.phases.forEach(p => {
+    p.linkedInvestmentIds = (p.linkedInvestmentIds||[]).filter(x=>x!==id);
+  }));
+  data.investments = data.investments.filter(i=>i.id!==id);
+  save(); renderInvestments(); renderDashboard(); showToast('Deleted');
+}
+function editInvestment(id) { openModal('investment', data.investments.find(x=>x.id===id)); }
+
+/* =====================================================
+   CHECKLIST
+===================================================== */
+function renderChecklist() {
+  const done  = data.checklist.filter(Boolean).length;
+  const total = CHECKLIST_ITEMS.length;
+  const p     = Math.round((done/total)*100);
+  document.getElementById('checklist-pct-badge').textContent = p + '% Done';
+  document.getElementById('checklist-bar').style.width       = p + '%';
+  document.getElementById('checklist-sub').textContent       = `${done} of ${total} completed`;
+  document.getElementById('checklist-items').innerHTML = CHECKLIST_ITEMS.map((item,i) => `
+    <div class="checklist-item ${data.checklist[i]?'checked':''}" onclick="toggleCheck(${i})">
+      <div class="check-circle">${data.checklist[i]?'✓':''}</div>
+      <div><div class="check-label">${item.label}</div><div class="check-desc">${item.desc}</div></div>
+    </div>`).join('');
+}
+function toggleCheck(i) {
+  data.checklist[i] = !data.checklist[i];
+  save(); renderChecklist(); renderDashboard();
+}
+
+/* =====================================================
+   MODALS — DISPATCHER
+===================================================== */
+function openModal(type, a, b) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = buildModal(type, a, b);
+  overlay.classList.add('open');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOnBg(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+/* Build modal HTML by type */
+function buildModal(type, a, b) {
+  if (type === 'asset') return modalAsset(a||{});
+  if (type === 'liability') return modalLiability(a||{});
+  if (type === 'goal') return modalGoal(typeof a==='string'?a:'emergency');
+  if (type === 'investment') return modalInvestment(a||{});
+  if (type === 'addChild') return modalAddChild();
+  if (type === 'editChild') return modalAddChild(data.kids.find(k=>k.id===a));
+  if (type === 'managePhases') return modalManagePhases(a);
+  if (type === 'editPhase') return modalEditPhase(a, b); // kidId, phaseId
+  return '<p>Unknown modal</p>';
+}
+
+/* ===== MODAL: ASSET ===== */
+function modalAsset(a) {
+  return `<div class="modal-header"><span class="modal-title">${a.id?'Edit':'Add'} Asset</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Category</label>
+      <select class="form-control" id="f-cat">${ASSET_CATEGORIES.map(c=>`<option value="${c.value}" ${a.category===c.value?'selected':''}>${c.label}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Name / Label</label><input class="form-control" id="f-name" placeholder="e.g. HDFC Top 100 Fund" value="${a.name||''}"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Current Value (₹)</label><input class="form-control" id="f-cur" type="number" placeholder="0" value="${a.currentValue||''}"/></div>
+      <div class="form-group"><label class="form-label">Invested Amount (₹)</label><input class="form-control" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">Save Asset</button>
+    </div>`;
+}
+
+/* ===== MODAL: LIABILITY ===== */
+function modalLiability(l) {
+  return `<div class="modal-header"><span class="modal-title">${l.id?'Edit':'Add'} Liability</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Category</label>
+      <select class="form-control" id="f-lcat">${LIABILITY_CATEGORIES.map(c=>`<option value="${c.value}" ${l.category===c.value?'selected':''}>${c.label}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Name / Label</label><input class="form-control" id="f-lname" placeholder="e.g. SBI Home Loan" value="${l.name||''}"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Outstanding (₹)</label><input class="form-control" id="f-outstanding" type="number" value="${l.outstanding||''}"/></div>
+      <div class="form-group"><label class="form-label">Interest Rate (%)</label><input class="form-control" id="f-rate" type="number" step="0.1" value="${l.interestRate||''}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Monthly EMI (₹)</label><input class="form-control" id="f-emi" type="number" value="${l.emi||''}"/></div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveLiability('${l.id||''}')">Save</button>
+    </div>`;
+}
+
+/* ===== MODAL: GOAL ===== */
+function modalGoal(presetId) {
+  const preset = GOAL_PRESETS.find(p=>p.id===presetId)||GOAL_PRESETS[0];
+  const saved  = data.goals.find(g=>g.type===preset.id)||{};
+  return `<div class="modal-header"><span class="modal-title">${preset.icon} ${preset.name}</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Goal</label>
+      <select class="form-control" id="f-gtype">${GOAL_PRESETS.map(p=>`<option value="${p.id}" ${p.id===preset.id?'selected':''}>${p.icon} ${p.name}</option>`).join('')}</select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Target Amount (₹)</label><input class="form-control" id="f-gtarget" type="number" value="${saved.target||''}"/></div>
+      <div class="form-group"><label class="form-label">Current Amount (₹)</label><input class="form-control" id="f-gcurrent" type="number" value="${saved.current||''}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Time Period (years)</label><input class="form-control" id="f-gtime" type="number" value="${saved.timePeriod||''}"/></div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGoal()">Save Goal</button>
+    </div>`;
+}
+
+/* ===== MODAL: INVESTMENT ===== */
+function modalInvestment(inv) {
+  return `<div class="modal-header"><span class="modal-title">${inv.id?'Edit':'Add'} Investment</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="form-group"><label class="form-label">Type</label>
+      <select class="form-control" id="f-itype">
+        <option value="MutualFund" ${inv.type==='MutualFund'?'selected':''}>📊 Mutual Fund</option>
+        <option value="Stock" ${inv.type==='Stock'?'selected':''}>📈 Stock</option>
+        <option value="ETF" ${inv.type==='ETF'?'selected':''}>💹 ETF</option>
+        <option value="Other" ${inv.type==='Other'?'selected':''}>💰 Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Name</label><input class="form-control" id="f-iname" placeholder="e.g. Nifty 50 Index Fund" value="${inv.name||''}"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Invested (₹)</label><input class="form-control" id="f-iinvested" type="number" value="${inv.invested||''}"/></div>
+      <div class="form-group"><label class="form-label">Current Value (₹)</label><input class="form-control" id="f-icurrent" type="number" value="${inv.currentValue||''}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Monthly SIP (₹)</label><input class="form-control" id="f-isip" type="number" value="${inv.sip||''}"/></div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveInvestment('${inv.id||''}')">Save</button>
+    </div>`;
+}
+
+/* ===== MODAL: ADD / EDIT CHILD ===== */
+function modalAddChild(kid) {
+  const isEdit = !!kid;
+  const gender  = kid ? kid.gender : 'boy';
+  const phaseChecks = KID_PHASES.map(ph => {
+    const existing = kid ? kid.phases.find(p=>p.phaseId===ph.id) : null;
+    const enabled  = existing ? existing.enabled : true;
+    return `<div class="phase-toggle-item ${enabled?'active':''}" onclick="togglePhaseCheck(this)">
+      <input type="checkbox" id="ph-${ph.id}" ${enabled?'checked':''} onchange="this.closest('.phase-toggle-item').classList.toggle('active',this.checked)"/>
+      <div><div class="phase-toggle-label">${ph.icon} ${ph.label}</div><div class="phase-toggle-sub">Age ${ph.ageStart}–${ph.ageEnd}</div></div>
+    </div>`;
+  }).join('');
+  return `<div class="modal-header">
+    <span class="modal-title">${isEdit?'Edit':'Add'} Child</span>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Child's Name</label>
+    <input class="form-control" id="f-kname" placeholder="e.g. Arjun" value="${kid?kid.name:''}"/>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Birth Year</label>
+      <input class="form-control" id="f-kbirth" type="number" placeholder="${currentYear()-5}" min="1990" max="${currentYear()}" value="${kid?kid.birthYear:''}"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Gender</label>
+      <div class="gender-toggle">
+        <div class="gender-btn ${gender==='boy'?'selected boy':''}" id="gbtn-boy" onclick="selectGender('boy')">👦 Boy</div>
+        <div class="gender-btn ${gender==='girl'?'selected girl':''}" id="gbtn-girl" onclick="selectGender('girl')">👧 Girl</div>
+      </div>
+    </div>
+  </div>
+  <div class="form-section-label">Life Phases to Track</div>
+  <div class="phase-toggle-list">${phaseChecks}</div>
+  <div class="form-actions">
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-pink" onclick="saveChild('${kid?kid.id:''}')">${isEdit?'Update':'Add Child'}</button>
+  </div>`;
+}
+
+function togglePhaseCheck(el) {
+  const cb = el.querySelector('input[type="checkbox"]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('active', cb.checked);
+}
+function selectGender(g) {
+  document.getElementById('gbtn-boy').className  = 'gender-btn' + (g==='boy'?' selected boy':'');
+  document.getElementById('gbtn-girl').className = 'gender-btn' + (g==='girl'?' selected girl':'');
+}
+
+/* ===== MODAL: MANAGE PHASES (toggle on/off) ===== */
+function modalManagePhases(kidId) {
+  const kid = data.kids.find(k=>k.id===kidId);
+  if (!kid) return '';
+  const phaseChecks = KID_PHASES.map(ph => {
+    const existing = kid.phases.find(p=>p.phaseId===ph.id);
+    const enabled  = existing ? existing.enabled : false;
+    return `<div class="phase-toggle-item ${enabled?'active':''}" onclick="togglePhaseCheck(this)">
+      <input type="checkbox" id="mph-${ph.id}" ${enabled?'checked':''}
+        onchange="this.closest('.phase-toggle-item').classList.toggle('active',this.checked)"/>
+      <div><div class="phase-toggle-label">${ph.icon} ${ph.label}</div><div class="phase-toggle-sub">Age ${ph.ageStart}–${ph.ageEnd}</div></div>
+    </div>`;
+  }).join('');
+  return `<div class="modal-header">
+    <span class="modal-title">⚙️ ${kid.name}'s Phases</span>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px">Select which life milestones to track for ${kid.name}.</p>
+  <div class="phase-toggle-list">${phaseChecks}</div>
+  <div class="form-actions">
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveManagePhases('${kidId}')">Save Phases</button>
+  </div>`;
+}
+
+/* ===== MODAL: EDIT PHASE (target, current, SIP, linked investment) ===== */
+function modalEditPhase(kidId, phaseId) {
+  const kid      = data.kids.find(k=>k.id===kidId);
+  if (!kid) return '';
+  const phaseDef = KID_PHASES.find(p=>p.id===phaseId);
+  const ph       = kid.phases.find(p=>p.phaseId===phaseId) || { target:0, current:0, linkedInvestmentIds:[] };
+  const age      = childAge(kid.birthYear);
+  const yearsLeft= yearsUntilPhase(kid.birthYear, phaseDef.ageStart);
+  const linked   = ph.linkedInvestmentIds || [];
+
+  // Compute suggested SIP live on load
+  const suggestedSIP = ph.target > 0 && yearsLeft > 0
+    ? fmt(sipNeeded(ph.target, ph.current, yearsLeft))
+    : '—';
+
+  const invOptions = data.investments.map(inv => `
+    <div class="inv-option ${linked.includes(inv.id)?'selected':''}" onclick="toggleInvLink(this,'${inv.id}')">
+      <input type="checkbox" ${linked.includes(inv.id)?'checked':''} onclick="event.stopPropagation()"/>
+      <span>${inv.type==='MutualFund'?'📊':inv.type==='Stock'?'📈':'💰'} ${inv.name}</span>
+      <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted)">SIP: ${fmt(inv.sip)}/mo</span>
+    </div>`).join('');
+
+  return `<div class="modal-header">
+    <span class="modal-title">${phaseDef.icon} ${phaseDef.label}</span>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:14px">
+    ${kid.name} (${kid.gender==='boy'?'👦':'👧'}) · ${kid.name} will be ${phaseDef.ageStart} in <b>${yearsLeft}</b> year${yearsLeft!==1?'s':''}
+  </p>
+  <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Target Amount (₹)</label>
+      <input class="form-control" id="f-ph-target" type="number" placeholder="e.g. 1500000" value="${ph.target||''}" oninput="updateSIPPreview('${kidId}','${phaseId}')"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Current Savings (₹)</label>
+      <input class="form-control" id="f-ph-current" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPPreview('${kidId}','${phaseId}')"/>
+    </div>
+  </div>
+
+  <div id="sip-preview-box" class="sip-callout" style="${ph.target>0&&yearsLeft>0?'':'display:none'}">
+    💡 Monthly SIP needed: <strong id="sip-preview-val">${suggestedSIP}</strong>
+    <span style="display:block;font-size:0.75rem;color:var(--text-muted);margin-top:3px">
+      Based on ${yearsLeft} year${yearsLeft!==1?'s':''} remaining, assuming 0% growth on savings
+    </span>
+  </div>
+
+  <div class="form-group" style="margin-top:14px">
+    <label class="form-label">Notes (optional)</label>
+    <input class="form-control" id="f-ph-notes" placeholder="e.g. IIT target, abroad study plan..." value="${ph.notes||''}"/>
+  </div>
+
+  ${data.investments.length ? `
+  <div class="form-section-label">🔗 Link Investments to this Phase</div>
+  <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:10px">Tag which investments are earmarked for this goal</p>
+  <div id="inv-link-list">${invOptions}</div>` : `
+  <div style="padding:12px;background:var(--surface2);border-radius:9px;font-size:0.8rem;color:var(--text-muted);margin-top:10px">
+    💡 Add investments first (Invest tab) to link them here
+  </div>`}
+
+  <div class="form-actions">
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Save Phase</button>
+  </div>`;
+}
+
+function updateSIPPreview(kidId, phaseId) {
+  const kid      = data.kids.find(k=>k.id===kidId);
+  const phaseDef = KID_PHASES.find(p=>p.id===phaseId);
+  if (!kid||!phaseDef) return;
+  const target   = Number(document.getElementById('f-ph-target').value||0);
+  const current  = Number(document.getElementById('f-ph-current').value||0);
+  const yearsLeft= yearsUntilPhase(kid.birthYear, phaseDef.ageStart);
+  const box      = document.getElementById('sip-preview-box');
+  const val      = document.getElementById('sip-preview-val');
+  if (!box||!val) return;
+  if (target > 0 && yearsLeft > 0) {
+    box.style.display = '';
+    val.textContent   = fmt(sipNeeded(target, current, yearsLeft));
+  } else { box.style.display = 'none'; }
+}
+
+function toggleInvLink(el, invId) {
+  const cb = el.querySelector('input[type="checkbox"]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('selected', cb.checked);
+}
+
+/* =====================================================
+   SAVE FUNCTIONS
+===================================================== */
+function saveAsset(editId) {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('Please enter a name'); return; }
+  const obj = { category: document.getElementById('f-cat').value, name, currentValue: Number(document.getElementById('f-cur').value), invested: Number(document.getElementById('f-inv').value) };
+  if (editId) { Object.assign(data.assets.find(x=>x.id===editId)||{}, obj); }
+  else { data.assets.push({ id: uid(), ...obj }); }
+  save(); closeModal(); renderAssets(); renderLiabilities(); renderDashboard(); showToast('Asset saved ✓');
+}
+
+function saveLiability(editId) {
+  const name = document.getElementById('f-lname').value.trim();
+  if (!name) { showToast('Please enter a name'); return; }
+  const obj = { category: document.getElementById('f-lcat').value, name, outstanding: Number(document.getElementById('f-outstanding').value), interestRate: Number(document.getElementById('f-rate').value), emi: Number(document.getElementById('f-emi').value) };
+  if (editId) { Object.assign(data.liabilities.find(x=>x.id===editId)||{}, obj); }
+  else { data.liabilities.push({ id: uid(), ...obj }); }
+  save(); closeModal(); renderLiabilities(); renderDashboard(); showToast('Saved ✓');
+}
+
+function saveGoal() {
+  const type   = document.getElementById('f-gtype').value;
+  const preset = GOAL_PRESETS.find(p=>p.id===type);
+  const obj    = { type, name: preset.name, target: Number(document.getElementById('f-gtarget').value), current: Number(document.getElementById('f-gcurrent').value), timePeriod: document.getElementById('f-gtime').value };
+  const existing = data.goals.find(g=>g.type===type);
+  if (existing) { Object.assign(existing, obj); } else { data.goals.push({ id: uid(), ...obj }); }
+  save(); closeModal(); renderGoals(); renderDashboard(); showToast('Goal saved ✓');
+}
+
+function saveInvestment(editId) {
+  const name = document.getElementById('f-iname').value.trim();
+  if (!name) { showToast('Please enter a name'); return; }
+  const obj  = { type: document.getElementById('f-itype').value, name, invested: Number(document.getElementById('f-iinvested').value), currentValue: Number(document.getElementById('f-icurrent').value), sip: Number(document.getElementById('f-isip').value) };
+  if (editId) { Object.assign(data.investments.find(x=>x.id===editId)||{}, obj); }
+  else { data.investments.push({ id: uid(), ...obj }); }
+  save(); closeModal(); renderInvestments(); renderDashboard(); showToast('Saved ✓');
+}
+
+/* Save new/edited child */
+function saveChild(editId) {
+  const name      = document.getElementById('f-kname').value.trim();
+  const birthYear = Number(document.getElementById('f-kbirth').value);
+  const genderBtn = document.querySelector('.gender-btn.selected');
+  const gender    = genderBtn ? (genderBtn.id === 'gbtn-girl' ? 'girl' : 'boy') : 'boy';
+  if (!name) { showToast('Enter child\'s name'); return; }
+  if (!birthYear || birthYear < 1990 || birthYear > currentYear()) { showToast('Enter a valid birth year'); return; }
+
+  // Collect enabled phases
+  const enabledPhaseIds = KID_PHASES.filter(ph => {
+    const cb = document.getElementById('ph-' + ph.id);
+    return cb && cb.checked;
+  }).map(ph => ph.id);
+
+  if (editId) {
+    const kid = data.kids.find(k=>k.id===editId);
+    if (!kid) return;
+    kid.name      = name;
+    kid.birthYear = birthYear;
+    kid.gender    = gender;
+    // Update enabled flags, preserve existing data
+    KID_PHASES.forEach(ph => {
+      let existing = kid.phases.find(p=>p.phaseId===ph.id);
+      if (!existing) { existing = { phaseId: ph.id, enabled: false, target: 0, current: 0, linkedInvestmentIds: [], notes: '' }; kid.phases.push(existing); }
+      existing.enabled = enabledPhaseIds.includes(ph.id);
+    });
+  } else {
+    const phases = KID_PHASES.map(ph => ({ phaseId: ph.id, enabled: enabledPhaseIds.includes(ph.id), target: 0, current: 0, linkedInvestmentIds: [], notes: '' }));
+    data.kids.push({ id: uid(), name, gender, birthYear, phases });
+  }
+  save(); closeModal(); renderKids(); renderDashboard(); showToast(editId ? 'Child updated ✓' : 'Child added ✓');
+}
+
+/* Save managed phases (toggle which phases are enabled) */
+function saveManagePhases(kidId) {
+  const kid = data.kids.find(k=>k.id===kidId);
+  if (!kid) return;
+  KID_PHASES.forEach(ph => {
+    const cb = document.getElementById('mph-' + ph.id);
+    let existing = kid.phases.find(p=>p.phaseId===ph.id);
+    if (!existing) { existing = { phaseId: ph.id, enabled: false, target: 0, current: 0, linkedInvestmentIds: [], notes: '' }; kid.phases.push(existing); }
+    existing.enabled = cb ? cb.checked : false;
+  });
+  save(); closeModal(); renderKids(); showToast('Phases updated ✓');
+}
+
+/* Save a single phase's financial data */
+function savePhase(kidId, phaseId) {
+  const kid = data.kids.find(k=>k.id===kidId);
+  if (!kid) return;
+  let ph = kid.phases.find(p=>p.phaseId===phaseId);
+  if (!ph) { ph = { phaseId, enabled: true, target: 0, current: 0, linkedInvestmentIds: [], notes: '' }; kid.phases.push(ph); }
+  ph.target  = Number(document.getElementById('f-ph-target').value||0);
+  ph.current = Number(document.getElementById('f-ph-current').value||0);
+  ph.notes   = document.getElementById('f-ph-notes').value.trim();
+  // Collect linked investments
+  const checked = Array.from(document.querySelectorAll('#inv-link-list .inv-option input:checked'));
+  ph.linkedInvestmentIds = checked.map(cb => {
+    const opt = cb.closest('.inv-option');
+    const onclick = opt.getAttribute('onclick');
+    const match   = onclick && onclick.match(/'([^']+)'\)$/);
+    return match ? match[1] : null;
+  }).filter(Boolean);
+  save(); closeModal(); renderKids(); renderDashboard(); showToast('Phase saved ✓');
+}
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+function toggleDark() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('wp_theme', isDark ? 'light' : 'dark');
+}
+
+/* =====================================================
+   EXPORT / IMPORT / RESET
+===================================================== */
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'wealthpulse-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('Data exported ✓');
+}
+function importData(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try { data = { ...data, ...JSON.parse(ev.target.result) }; save(); renderDashboard(); renderKids(); showToast('Imported ✓'); }
+    catch(e) { showToast('Invalid JSON'); }
+  };
+  reader.readAsText(file); e.target.value = '';
+}
+function resetData() {
+  if (!confirm('Reset all data? Cannot be undone.')) return;
+  data = { assets: [], liabilities: [], goals: [], kids: [], investments: [], checklist: [false,false,false,false,false,false] };
+  save(); renderDashboard(); showToast('Data reset');
+}
+
+/* =====================================================
+   SAMPLE DATA
+===================================================== */
+function loadSampleData() {
+  if (!confirm('Load sample data? This will overwrite current data.')) return;
+  const now = currentYear();
+  data.assets = [
+    { id: uid(), category: 'EPF',         name: 'Employee PF',           currentValue: 850000,  invested: 700000 },
+    { id: uid(), category: 'PPF',         name: 'PPF Account',           currentValue: 420000,  invested: 380000 },
+    { id: uid(), category: 'MutualFunds', name: 'Parag Parikh Flexi Cap', currentValue: 650000, invested: 480000 },
+    { id: uid(), category: 'MutualFunds', name: 'Nifty 50 Index Fund',   currentValue: 320000,  invested: 240000 },
+    { id: uid(), category: 'Stocks',      name: 'Equity Portfolio',       currentValue: 280000, invested: 200000 },
+    { id: uid(), category: 'Gold',        name: 'SGB & Physical Gold',    currentValue: 180000, invested: 150000 },
+    { id: uid(), category: 'FD',          name: 'SBI Fixed Deposit',      currentValue: 200000, invested: 200000 },
+    { id: uid(), category: 'RealEstate',  name: 'Home (Market Value)',    currentValue: 8500000,invested: 6500000 }
+  ];
+  data.liabilities = [
+    { id: uid(), category: 'HomeLoan',   name: 'SBI Home Loan',   outstanding: 3200000, interestRate: 8.5, emi: 28500 },
+    { id: uid(), category: 'CreditCard', name: 'HDFC Credit Card', outstanding: 45000,  interestRate: 36,  emi: 45000 }
+  ];
+  data.goals = [
+    { id: uid(), type: 'emergency',  name: 'Emergency Fund', target: 300000,   current: 180000, timePeriod: '1' },
+    { id: uid(), type: 'retirement', name: 'Retirement',     target: 30000000, current: 1470000,timePeriod: '25' },
+    { id: uid(), type: 'vacation',   name: 'Vacation',       target: 200000,   current: 85000,  timePeriod: '2' },
+    { id: uid(), type: 'insurance',  name: 'Insurance',      target: 100000,   current: 100000, timePeriod: '1' }
+  ];
+  const inv1 = uid(), inv2 = uid(), inv3 = uid(), inv4 = uid(), inv5 = uid();
+  data.investments = [
+    { id: inv1, type: 'MutualFund', name: 'Parag Parikh Flexi Cap',  invested: 480000, currentValue: 650000, sip: 10000 },
+    { id: inv2, type: 'MutualFund', name: 'Nifty 50 Index Fund',     invested: 240000, currentValue: 320000, sip: 5000  },
+    { id: inv3, type: 'MutualFund', name: 'Mirae Asset Emerging',    invested: 120000, currentValue: 165000, sip: 3000  },
+    { id: inv4, type: 'Stock',      name: 'Direct Equity Portfolio', invested: 200000, currentValue: 280000, sip: 0     },
+    { id: inv5, type: 'ETF',        name: 'Gold ETF',                invested: 80000,  currentValue: 95000,  sip: 2000  }
+  ];
+
+  // ★ Sample kids with full phase data
+  const kid1Id = uid();
+  const kid2Id = uid();
+  data.kids = [
+    {
+      id: kid1Id, name: 'Arjun', gender: 'boy', birthYear: now - 7,
+      phases: [
+        { phaseId: 'primary',      enabled: true,  target: 300000,  current: 80000,  linkedInvestmentIds: [inv3], notes: 'Local school fees + books' },
+        { phaseId: 'intermediate', enabled: true,  target: 500000,  current: 20000,  linkedInvestmentIds: [inv3], notes: '' },
+        { phaseId: 'graduation',   enabled: true,  target: 1500000, current: 50000,  linkedInvestmentIds: [inv2], notes: 'Targeting NIT / IIT' },
+        { phaseId: 'higher',       enabled: true,  target: 3000000, current: 10000,  linkedInvestmentIds: [inv1], notes: 'MBA / MS abroad' },
+        { phaseId: 'marriage',     enabled: true,  target: 2000000, current: 0,      linkedInvestmentIds: [],     notes: '' }
+      ]
+    },
+    {
+      id: kid2Id, name: 'Priya', gender: 'girl', birthYear: now - 4,
+      phases: [
+        { phaseId: 'primary',      enabled: true,  target: 350000,  current: 20000,  linkedInvestmentIds: [inv3], notes: '' },
+        { phaseId: 'intermediate', enabled: true,  target: 600000,  current: 5000,   linkedInvestmentIds: [],     notes: '' },
+        { phaseId: 'graduation',   enabled: true,  target: 2000000, current: 0,      linkedInvestmentIds: [inv2], notes: '' },
+        { phaseId: 'higher',       enabled: false, target: 0,       current: 0,      linkedInvestmentIds: [],     notes: '' },
+        { phaseId: 'marriage',     enabled: true,  target: 3000000, current: 0,      linkedInvestmentIds: [inv1], notes: '' }
+      ]
+    }
+  ];
+  data.checklist = [true, true, true, true, false, false];
+  save(); renderDashboard(); renderKids(); renderGoals();
+  showToast('Sample data loaded ✓');
+}
+
+/* =====================================================
+   TOAST
+===================================================== */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* =====================================================
+   INIT
+===================================================== */
+function init() {
+  load();
+  const theme = localStorage.getItem('wp_theme');
+  if (theme) document.documentElement.setAttribute('data-theme', theme);
+  if (!localStorage.getItem(STORAGE_KEY)) {
+    // First time — skip confirm on sample data
+    data.assets = []; data.liabilities = []; data.goals = []; data.kids = []; data.investments = []; data.checklist = [false,false,false,false,false,false];
+    // Auto-load sample silently
+    const _confirm = window.confirm;
+    window.confirm = () => true;
+    loadSampleData();
+    window.confirm = _confirm;
+  } else {
+    renderDashboard();
+  }
+}
+init();
+</script>
+</body>
+</html>
