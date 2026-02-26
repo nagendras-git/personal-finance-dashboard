@@ -39,7 +39,7 @@
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-2xl:26px;
   --spring: cubic-bezier(0.34,1.56,0.64,1);
   --ease:   cubic-bezier(0.16,1,0.3,1);
-  --nav-h:  64px;
+  --nav-h:  60px;
   --safe-b: env(safe-area-inset-bottom,0px);
   --num:    'Space Grotesk',sans-serif;
 }
@@ -61,11 +61,11 @@
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{height:100%}
+html{height:100%;overflow-x:hidden}
 body{
   font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;
   background:var(--bg); color:var(--text1);
-  min-height:100vh;
+  min-height:100vh;max-width:100vw;
   padding-bottom:calc(var(--nav-h) + var(--safe-b) + 8px);
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
@@ -73,21 +73,21 @@ body{
 }
 ::-webkit-scrollbar{width:0;height:0}
 
-.page{display:none}
+.page{display:none;max-width:100%;overflow-x:hidden}
 .page.active{display:block;animation:pageIn 0.34s var(--ease) both}
 @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.container{max-width:600px;margin:0 auto;padding:10px 14px 24px}
+.container{width:100%;max-width:540px;margin:0 auto;padding:8px 12px 20px;overflow-x:hidden}
 
 /* ── HEADER ── */
 .top-header{
-  position:sticky;top:0;z-index:80;
+  position:sticky;top:0;z-index:80;width:100%;max-width:100%;
   background:rgba(242,242,247,0.88);
   backdrop-filter:saturate(160%) blur(18px);
   -webkit-backdrop-filter:saturate(160%) blur(18px);
   border-bottom:0.5px solid var(--border);
-  padding:11px 16px;
+  padding:9px 14px;
   display:flex;align-items:center;justify-content:space-between;
-  min-height:50px;
+  min-height:46px;overflow:hidden;
 }
 [data-theme="dark"] .top-header{background:rgba(0,0,0,0.88)}
 .header-greeting{font-size:0.64rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.9px}
@@ -118,7 +118,7 @@ body{
   margin-bottom:10px;overflow:hidden;
 }
 .hero-card-top{
-  padding:18px 18px 14px 20px;
+  padding:14px 16px 12px 18px;
   border-bottom:0.5px solid var(--border);
   position:relative;
 }
@@ -127,7 +127,7 @@ body{
   background:linear-gradient(180deg,var(--green) 0%,var(--teal) 100%);
 }
 .hero-label{font-size:0.63rem;font-weight:600;text-transform:uppercase;letter-spacing:1.4px;color:var(--text3);margin-bottom:5px}
-.hero-amount{font-family:var(--num);font-size:2.4rem;font-weight:700;line-height:1;margin-bottom:3px;letter-spacing:-1.5px;color:var(--text1)}
+.hero-amount{font-family:var(--num);font-size:2rem;font-weight:700;line-height:1;margin-bottom:3px;letter-spacing:-1px;color:var(--text1)}
 .hero-sub{font-size:0.68rem;color:var(--text3);font-weight:500}
 .hero-pills{display:grid;grid-template-columns:repeat(3,1fr)}
 .hero-pill{
@@ -139,23 +139,24 @@ body{
 .hero-pill-value{font-family:var(--num);font-size:0.88rem;font-weight:700;color:var(--text1)}
 
 /* ── STAT TILES ── */
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
-@media(min-width:460px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-bottom:10px;background:var(--surface);border-radius:var(--r-lg);border:0.5px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden}
 .stat-tile{
-  background:var(--surface);border-radius:var(--r-lg);
-  padding:12px;box-shadow:var(--shadow-sm);border:0.5px solid var(--border);
+  background:transparent;border-radius:0;
+  padding:10px 8px 10px 10px;box-shadow:none;
+  border-right:0.5px solid var(--border);min-width:0;overflow:hidden;
 }
-.stat-tile-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;margin-bottom:7px}
-.stat-tile-label{font-size:0.6rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:2px}
-.stat-tile-value{font-family:var(--num);font-size:1rem;font-weight:700;color:var(--text1);letter-spacing:-0.4px}
+.stat-tile:last-child{border-right:none}
+.stat-tile-icon{font-size:1rem;margin-bottom:5px;line-height:1}
+.stat-tile-label{font-size:0.56rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-tile-value{font-family:var(--num);font-size:0.88rem;font-weight:700;color:var(--text1);letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ── SECTION HEADER (collapsible) ── */
 .sec-hdr{
   display:flex;align-items:center;justify-content:space-between;
-  padding:11px 14px;border-radius:var(--r-lg);
+  padding:10px 13px;border-radius:var(--r-lg);
   background:var(--surface);border:0.5px solid var(--border);
   box-shadow:var(--shadow-sm);
-  cursor:pointer;user-select:none;margin:12px 0 0;
+  cursor:pointer;user-select:none;margin:8px 0 0;
   transition:background 150ms;
 }
 .sec-hdr:active{background:var(--surface2)}
@@ -173,11 +174,11 @@ body{
 .card{
   background:var(--surface);border-radius:var(--r-xl);
   border:0.5px solid var(--border);box-shadow:var(--shadow-md);
-  overflow:hidden;margin-bottom:10px;
+  overflow:hidden;margin-bottom:8px;
 }
-.card-hdr{padding:13px 15px 9px;display:flex;align-items:center;justify-content:space-between}
+.card-hdr{padding:11px 14px 7px;display:flex;align-items:center;justify-content:space-between}
 .card-title{font-size:0.85rem;font-weight:700;color:var(--text1)}
-.card-body{padding:0 15px 13px}
+.card-body{padding:0 13px 11px}
 
 /* ── ROW ITEMS ── */
 .row-list{display:flex;flex-direction:column}
@@ -247,7 +248,7 @@ body{
   backdrop-filter:saturate(200%) blur(22px);
   -webkit-backdrop-filter:saturate(200%) blur(22px);
   border-top:0.5px solid var(--border);
-  height:calc(var(--nav-h) + var(--safe-b));
+  height:calc(var(--nav-h) + var(--safe-b));max-width:100%;
   padding-bottom:var(--safe-b);
   display:flex;align-items:flex-start;justify-content:space-around;
   padding-top:7px;
@@ -272,15 +273,17 @@ body{
   max-width:600px;margin:0 auto;
   background:var(--surface);border-radius:var(--r-2xl) var(--r-2xl) 0 0;
   max-height:92vh;overflow-y:auto;overscroll-behavior:contain;
-  transform:translateY(100%);transition:transform 0.36s var(--ease);
+  transform:translateY(110%);transition:transform 0.36s var(--ease);
   padding-bottom:calc(20px + var(--safe-b));
+  visibility:hidden;
 }
-.sheet.open{transform:translateY(0)}
+.sheet.open{transform:translateY(0);visibility:visible}
 @media(min-width:600px){
   .sheet{border-radius:var(--r-2xl);bottom:50%;left:50%;right:auto;transform:translate(-50%,50%) scale(0.95);width:100%;max-height:86vh}
   .sheet.open{transform:translate(-50%,50%) scale(1)}
 }
-.sheet-drag{width:32px;height:4px;background:var(--border-strong);border-radius:99px;margin:9px auto 3px}
+.sheet-drag{width:32px;height:4px;background:var(--border-strong);border-radius:99px;margin:9px auto 3px;opacity:0;transition:opacity 0.2s}
+.sheet.open .sheet-drag{opacity:1}
 .sheet-hdr{padding:13px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border)}
 .sheet-title{font-size:0.92rem;font-weight:700;letter-spacing:-0.2px}
 .sheet-close{width:25px;height:25px;border-radius:50%;background:var(--surface2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--text2)}
@@ -331,8 +334,8 @@ body{
 
 /* ── GOAL ROW (stacked list — replaces grid) ── */
 .goal-row{
-  display:flex;align-items:center;gap:12px;
-  padding:13px 14px;cursor:pointer;position:relative;
+  display:flex;align-items:center;gap:10px;
+  padding:11px 13px;cursor:pointer;position:relative;
   transition:background 150ms;
 }
 .goal-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:54px;right:14px;height:0.5px;background:var(--border)}
@@ -400,7 +403,7 @@ body{
 .kids-empty-sub{font-size:0.78rem;color:var(--text2);margin-bottom:16px;line-height:1.6}
 
 /* ── MINI GOAL (dashboard) ── */
-.mini-goal{display:flex;align-items:center;gap:9px;padding:8px 0;position:relative}
+.mini-goal{display:flex;align-items:center;gap:8px;padding:7px 0;position:relative}
 .mini-goal:not(:last-child)::after{content:'';position:absolute;bottom:0;left:0;right:0;height:0.5px;background:var(--border)}
 .mini-goal-body{flex:1;min-width:0}
 .mini-goal-name{font-size:0.78rem;font-weight:600}
@@ -506,10 +509,10 @@ body{
 
     <!-- STAT TILES -->
     <div class="stats-grid">
-      <div class="stat-tile"><div class="stat-tile-icon" style="background:var(--green-light)">📈</div><div class="stat-tile-label">Assets</div><div class="stat-tile-value" id="dash-stat-assets">₹0</div></div>
-      <div class="stat-tile"><div class="stat-tile-icon" style="background:var(--red-light)">💸</div><div class="stat-tile-label">Liabilities</div><div class="stat-tile-value" id="dash-stat-liab">₹0</div></div>
-      <div class="stat-tile"><div class="stat-tile-icon" style="background:var(--amber-light)">🎯</div><div class="stat-tile-label">Goals</div><div class="stat-tile-value" id="dash-stat-goals">0%</div></div>
-      <div class="stat-tile"><div class="stat-tile-icon" style="background:var(--teal-light)">✅</div><div class="stat-tile-label">Health</div><div class="stat-tile-value" id="dash-stat-health">0%</div></div>
+      <div class="stat-tile"><div class="stat-tile-icon">📈</div><div class="stat-tile-label">Assets</div><div class="stat-tile-value" id="dash-stat-assets">₹0</div></div>
+      <div class="stat-tile"><div class="stat-tile-icon">💸</div><div class="stat-tile-label">Liabilities</div><div class="stat-tile-value" id="dash-stat-liab">₹0</div></div>
+      <div class="stat-tile"><div class="stat-tile-icon">🎯</div><div class="stat-tile-label">Goals</div><div class="stat-tile-value" id="dash-stat-goals">0%</div></div>
+      <div class="stat-tile"><div class="stat-tile-icon">✅</div><div class="stat-tile-label">Health</div><div class="stat-tile-value" id="dash-stat-health">0%</div></div>
     </div>
 
     <div class="card">
