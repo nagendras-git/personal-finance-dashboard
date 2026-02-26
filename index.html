@@ -5,20 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Personal Finance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
-/* ── Coin-inspired design tokens ── */
+/* ── Warm Finance – Renuka-inspired design tokens ── */
 :root {
-  --bg:       #f5f5f5;
-  --surface:  #ffffff;
-  --surface2: #f9f9f9;
-  --border:   #e8e8e8;
-  --border2:  #f0f0f0;
-  --scrim:    rgba(0,0,0,0.45);
+  --bg:       #F5EFE6;
+  --surface:  #FAF8F3;
+  --surface2: #EDE5D7;
+  --border:   #E5D8C8;
+  --border2:  #EDE5D7;
+  --scrim:    rgba(59,32,16,0.5);
 
-  --text1: #111111;
-  --text2: #666666;
-  --text3: #aaaaaa;
+  --text1: #3B2010;
+  --text2: #7A5C3E;
+  --text3: #A8886A;
+
+  --brown:       #6B4423;
+  --brown-light: #EDE5D7;
+  --brown-card:  #FAF8F3;
 
   --green:  #38a169; --green-bg: #f0fff4; --green-light:rgba(56,161,105,0.12);
   --red:    #e53e3e; --red-bg:   #fff5f5; --red-light:rgba(229,62,62,0.1);
@@ -26,34 +30,36 @@
   --purple: #6b46c1; --purple-light:rgba(107,70,193,0.12);
   --teal:   #2c7a7b; --teal-light:rgba(44,122,123,0.12);
   --amber:  #b7791f; --amber-light:rgba(183,121,31,0.12);
-  --coin-green: #387ed1; /* Zerodha's signature blue-green for accent */
 
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
-  --shadow-md: 0 2px 12px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --shadow-xs: 0 1px 2px rgba(107,68,35,0.04);
+  --shadow-sm: 0 2px 6px rgba(107,68,35,0.08);
+  --shadow-md: 0 4px 16px rgba(107,68,35,0.10);
+  --shadow-lg: 0 8px 32px rgba(107,68,35,0.14);
 
-  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:18px; --r-2xl:22px;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-2xl:24px;
   --spring: cubic-bezier(0.34,1.56,0.64,1);
   --ease:   cubic-bezier(0.16,1,0.3,1);
-  --nav-h:  58px;
+  --nav-h:  62px;
   --safe-b: env(safe-area-inset-bottom,0px);
-  --num: 'Space Grotesk',sans-serif;
+  --num: 'DM Sans',sans-serif;
+  --font-head: 'Playfair Display',Georgia,serif;
+  --font-body: 'DM Sans',sans-serif;
 }
 [data-theme="dark"]{
-  --bg:#0a0a0a; --surface:#161616; --surface2:#1e1e1e;
-  --border:#2a2a2a; --border2:#222222;
-  --text1:#f0f0f0; --text2:#888888; --text3:#555555;
-  --green:#48bb78; --green-bg:rgba(72,187,120,0.08); --green-light:rgba(72,187,120,0.15);
-  --red:#fc8181; --red-bg:rgba(252,129,129,0.08); --red-light:rgba(252,129,129,0.15);
-  --shadow-xs:0 1px 2px rgba(0,0,0,0.3); --shadow-sm:0 1px 4px rgba(0,0,0,0.4);
-  --shadow-md:0 2px 12px rgba(0,0,0,0.5); --shadow-lg:0 8px 32px rgba(0,0,0,0.6);
+  --bg:#1a1007; --surface:#241508; --surface2:#2e1c0a;
+  --border:#3d2710; --border2:#2e1c0a;
+  --text1:#f5e6d0; --text2:#c4956a; --text3:#7a5c3e;
+  --brown:#c4844a; --brown-light:#2e1c0a; --brown-card:#241508;
+  --green:#48bb78; --green-bg:rgba(72,187,120,0.10); --green-light:rgba(72,187,120,0.15);
+  --red:#fc8181; --red-bg:rgba(252,129,129,0.10); --red-light:rgba(252,129,129,0.15);
+  --shadow-xs:0 1px 2px rgba(0,0,0,0.4); --shadow-sm:0 2px 6px rgba(0,0,0,0.5);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.55); --shadow-lg:0 8px 32px rgba(0,0,0,0.65);
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:100%;overflow-x:hidden}
 body{
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
   background:var(--bg);color:var(--text1);
   min-height:100vh;max-width:100vw;
   padding-bottom:calc(var(--nav-h) + var(--safe-b) + 6px);
@@ -63,116 +69,163 @@ body{
 }
 ::-webkit-scrollbar{width:0;height:0}
 
+/* ── GLOBAL: DM Sans everywhere ── */
+*, *::before, *::after {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.hero-amount { font-weight: 800 !important; }
+.sec-hdr-title { font-weight: 700 !important; font-size: 1rem !important; }
+.mini-goal-name { font-size: 0.92rem !important; font-weight: 700 !important; }
+.row-title { font-weight: 700 !important; }
+.goal-row-name { font-weight: 700 !important; }
+.tab-label { font-size: 0.7rem !important; font-weight: 700 !important; letter-spacing: 0.1px !important; }
+.hdr-name { font-weight: 800 !important; }
+.hdr-greeting { font-weight: 500 !important; }
+.child-name { font-weight: 800 !important; }
+.phase-name { font-weight: 700 !important; }
+.inv-stat-label { font-weight: 700 !important; }
+.fl { font-weight: 700 !important; }
+.sheet-title { font-weight: 800 !important; }
+.confirm-title { font-weight: 800 !important; }
+.btn { font-weight: 700 !important; }
+.empty-state-text { font-weight: 500 !important; }
+
 .page{display:none;max-width:100%;overflow-x:hidden}
 .page.active{display:block;animation:pageIn 0.28s var(--ease) both}
 @keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.container{width:100%;max-width:520px;margin:0 auto;padding:0 0 20px;overflow-x:hidden}
+.container{width:100%;max-width:520px;margin:0 auto;padding:14px 14px 20px;overflow-x:hidden}
 
-/* ── HEADER — Coin style: Hi [Name] + avatar left ── */
+/* ── HEADER ── */
 .top-header{
   position:sticky;top:0;z-index:80;
-  background:rgba(245,245,245,0.95);
+  background:rgba(245,239,230,0.97);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border-bottom:1px solid var(--border2);
   padding:14px 18px 12px;
   display:flex;align-items:center;justify-content:space-between;
   width:100%;max-width:100%;overflow:hidden;
 }
-[data-theme="dark"] .top-header{background:rgba(10,10,10,0.95)}
+[data-theme="dark"] .top-header{background:rgba(26,16,7,0.97)}
 .hdr-left{display:flex;align-items:center;gap:11px}
 .avatar-btn{
-  width:40px;height:40px;border-radius:50%;
+  width:42px;height:42px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:0.8rem;font-weight:700;cursor:pointer;border:none;color:#fff;
+  font-size:0.85rem;font-weight:700;cursor:pointer;border:none;color:#fff;
   transition:transform 180ms var(--spring);letter-spacing:-0.3px;flex-shrink:0;
 }
 .avatar-btn:active{transform:scale(0.9)}
-.hdr-greeting{font-size:0.72rem;color:var(--text3);font-weight:500;margin-bottom:1px;letter-spacing:0.1px}
-.hdr-name{font-size:1.05rem;font-weight:700;color:var(--text1);letter-spacing:-0.4px}
+.hdr-greeting{font-size:0.75rem;color:var(--text3);font-weight:500;margin-bottom:1px;letter-spacing:0.1px}
+.hdr-name{font-size:1.08rem;font-weight:700;color:var(--text1);letter-spacing:-0.4px}
 .hdr-right{display:flex;align-items:center;gap:8px}
 .icon-btn{
-  width:34px;height:34px;border-radius:50%;
+  width:36px;height:36px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--surface);border:1.5px solid var(--border);
   cursor:pointer;font-size:1rem;
   transition:transform 180ms var(--spring),background 150ms;
 }
 .icon-btn:active{transform:scale(0.88);background:var(--surface2)}
 
-/* ── HERO — Coin P&L style ── */
-.hero-wrap{background:var(--surface);border-bottom:1px solid var(--border2);padding:20px 18px 0}
-.hero-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
-.hero-label{font-size:0.72rem;color:var(--text2);font-weight:500;margin-bottom:6px}
-.hero-amount{font-family:var(--num);font-size:2.6rem;font-weight:700;line-height:1;letter-spacing:-2px;color:var(--text1)}
-.hero-pnl{display:flex;align-items:center;gap:6px;margin-top:7px;margin-bottom:18px}
-.hero-pnl-val{font-family:var(--num);font-size:1rem;font-weight:700}
-.hero-pnl-pct{font-size:0.8rem;font-weight:600;padding:2px 7px;border-radius:99px}
-.hero-stats-row{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border2)}
-.hero-stat{padding:13px 14px;position:relative}
-.hero-stat:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:1px;background:var(--border2)}
-.hero-stat-label{font-size:0.62rem;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
-.hero-stat-val{font-family:var(--num);font-size:0.97rem;font-weight:700;color:var(--text1)}
+/* ── HERO — bordered card (matches summary grid style) ── */
+.hero-wrap{
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-xl);
+  margin: 14px 14px 0;
+  padding: 20px 18px 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.hero-wrap::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(92,51,23,0.05) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none;
+}
+.hero-label{font-size:0.72rem;color:var(--text2);font-weight:700;margin-bottom:8px;letter-spacing:0.1em;text-transform:uppercase;position:relative}
+.hero-amount{font-family:'DM Sans',sans-serif;font-size:3rem;font-weight:800;line-height:1;letter-spacing:-1px;color:var(--brown);position:relative}
+.hero-pnl{display:flex;align-items:center;gap:7px;margin-top:10px;margin-bottom:18px;position:relative}
+.hero-pnl-val{font-family:'DM Sans',sans-serif;font-size:1.05rem;font-weight:700}
+.hero-pnl-pct{font-size:0.82rem;font-weight:700;padding:4px 11px;border-radius:99px}
+.hero-stats-row{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);position:relative}
+.hero-stat{padding:15px 14px}
+.hero-stat:not(:last-child){border-right:1px solid var(--border)}
+.hero-stat-label{font-size:0.65rem;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
+.hero-stat-val{font-family:'DM Sans',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text1)}
 
 /* ── SECTION ── */
-.section{background:var(--surface);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);margin-bottom:10px}
-.section+.section{margin-top:0;border-top:none}
+.section{background:transparent;margin-bottom:16px;padding:0 14px}
+.section+.section{margin-top:0}
 
-/* ── COLLAPSIBLE HEADER — Coin flat ── */
+/* ── SEC LABEL — like Renuka's uppercase label ── */
+.sec-label-row{
+  font-size:0.7rem;font-weight:700;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--text3);
+  margin:28px 0 10px 2px;
+  display:flex;align-items:center;gap:10px;
+}
+.sec-label-row::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── COLLAPSIBLE HEADER — Renuka warm brown ── */
 .sec-hdr{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 18px;cursor:pointer;user-select:none;
-  background:var(--surface);transition:background 120ms;
+  background:var(--brown);color:#fff;
+  border-radius:var(--r-xl);
+  margin-bottom:10px;
+  box-shadow:var(--shadow-sm);
+  transition:opacity 120ms;
 }
-.sec-hdr:active{background:var(--surface2)}
+.sec-hdr:active{opacity:0.9}
 .sec-hdr-left{display:flex;align-items:center;gap:9px;min-width:0}
-.sec-hdr-title{font-size:0.93rem;font-weight:700;color:var(--text1);white-space:nowrap}
-.sec-hdr-count{font-size:0.7rem;font-weight:500;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:99px;white-space:nowrap}
+.sec-hdr-title{font-size:1rem;font-weight:700;color:#fff;white-space:nowrap}
+.sec-hdr-count{font-size:0.75rem;font-weight:500;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);padding:2px 9px;border-radius:99px;white-space:nowrap}
 .sec-hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.sec-total{font-family:var(--num);font-size:0.88rem;font-weight:700}
-.sec-caret{font-size:0.6rem;color:var(--text3);transition:transform 0.25s var(--ease)}
+.sec-total{font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:800;color:#fff}
+.sec-caret{font-size:0.65rem;color:rgba(255,255,255,0.8);transition:transform 0.25s var(--ease)}
 .sec-caret.open{transform:rotate(180deg)}
 
 .sec-body{overflow:hidden;max-height:5000px;transition:max-height 0.35s var(--ease),opacity 0.22s ease;opacity:1}
 .sec-body.closed{max-height:0;opacity:0;pointer-events:none}
 
 /* ── DIVIDER ── */
-.row-divider{height:1px;background:var(--border2);margin:0 18px}
+.row-divider{height:1px;background:var(--border2);margin:0 14px}
 
-/* ── ROW ITEMS ── */
-.row-item{display:flex;align-items:center;gap:12px;padding:13px 18px;transition:background 120ms;cursor:default}
+/* ── ROW ITEMS — card style ── */
+.row-item{display:flex;align-items:center;gap:12px;padding:14px 16px;transition:background 120ms;cursor:default;background:var(--surface);border-radius:var(--r-lg);margin-bottom:8px;border:1.5px solid var(--border);box-shadow:var(--shadow-xs)}
 .row-item:active{background:var(--surface2)}
-.row-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.row-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;background:var(--brown-light)}
 .row-body{flex:1;min-width:0}
-.row-title{font-size:0.88rem;font-weight:600;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row-sub{font-size:0.7rem;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row-change{font-size:0.68rem;font-weight:600;margin-top:2px}
+.row-title{font-size:0.95rem;font-weight:700;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-sub{font-size:0.75rem;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-change{font-size:0.72rem;font-weight:600;margin-top:3px}
 .row-right{text-align:right;flex-shrink:0}
-.row-value{font-family:var(--num);font-size:0.9rem;font-weight:700;color:var(--text1)}
+.row-value{font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800;color:var(--text1)}
 .row-actions{display:flex;gap:5px;margin-top:6px;justify-content:flex-end}
 
-/* ── GOAL ROW — Coin list style ── */
-.goal-row{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;transition:background 120ms}
+/* ── GOAL ROW — rounded card ── */
+.goal-row{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background 120ms;background:var(--surface);border-radius:var(--r-lg);margin-bottom:8px;border:1.5px solid var(--border);box-shadow:var(--shadow-xs)}
 .goal-row:active{background:var(--surface2)}
-.goal-row-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.goal-row-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
 .goal-row-body{flex:1;min-width:0}
-.goal-row-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
-.goal-row-name{font-size:0.9rem;font-weight:600;color:var(--text1)}
-.goal-row-pct{font-family:var(--num);font-size:0.82rem;font-weight:700;color:var(--text2);flex-shrink:0}
-.goal-row-amounts{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
-.goal-row-saved{font-family:var(--num);font-size:0.78rem;font-weight:600;color:var(--text1)}
-.goal-row-target{font-size:0.7rem;color:var(--text3)}
+.goal-row-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.goal-row-name{font-size:0.95rem;font-weight:700;color:var(--text1)}
+.goal-row-pct{font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text2);flex-shrink:0}
+.goal-row-amounts{display:flex;align-items:center;justify-content:space-between;margin-top:5px}
+.goal-row-saved{font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:800;color:var(--text1)}
+.goal-row-target{font-size:0.72rem;color:var(--text3)}
 
 /* ── MINI GOAL (dashboard) ── */
-.mini-goal{display:flex;align-items:center;gap:12px;padding:11px 18px;transition:background 120ms;cursor:pointer}
+.mini-goal{display:flex;align-items:center;gap:12px;padding:13px 16px;transition:background 120ms;cursor:pointer;background:var(--surface);border-radius:var(--r-lg);margin-bottom:8px;border:1.5px solid var(--border);box-shadow:var(--shadow-xs)}
 .mini-goal:active{background:var(--surface2)}
-.mini-goal:not(:last-child){border-bottom:1px solid var(--border2)}
-.mini-goal-ico{font-size:1rem;flex-shrink:0;width:22px;text-align:center}
+.mini-goal:not(:last-child){border-bottom:none}
+.mini-goal-ico{font-size:1.15rem;flex-shrink:0;width:28px;text-align:center}
 .mini-goal-body{flex:1;min-width:0}
-.mini-goal-name{font-size:0.87rem;font-weight:500;color:var(--text1)}
-.mini-goal-hint{font-size:0.68rem;color:var(--text3);margin-top:1px}
+.mini-goal-name{font-size:0.9rem;font-weight:600;color:var(--text1)}
+.mini-goal-hint{font-size:0.7rem;color:var(--text3);margin-top:1px}
 .mini-goal-right{text-align:right;flex-shrink:0}
-.mini-goal-pct{font-family:var(--num);font-size:0.9rem;font-weight:700}
-.mini-goal-prog{height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:4px}
+.mini-goal-pct{font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800}
+.mini-goal-prog{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:5px}
 .mini-goal-fill{height:100%;border-radius:99px;transition:width 0.6s var(--ease)}
 
 /* ── PROGRESS ── */
@@ -190,26 +243,26 @@ body{
 .pill-teal{background:var(--teal-light);color:var(--teal)}
 .pill-muted{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;font-family:'Inter',sans-serif;font-weight:600;border:none;cursor:pointer;transition:transform 150ms var(--spring),opacity 120ms;-webkit-user-select:none;user-select:none}
+/* ── BUTTONS — warm ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Sans',sans-serif;font-weight:700;border:none;cursor:pointer;transition:transform 150ms var(--spring),opacity 120ms;-webkit-user-select:none;user-select:none}
 .btn:active{transform:scale(0.94);opacity:0.88}
-.btn-primary{background:var(--text1);color:var(--surface);padding:10px 18px;border-radius:var(--r-md);font-size:0.83rem}
-.btn-ghost{background:var(--surface2);color:var(--text2);padding:9px 16px;border-radius:var(--r-md);font-size:0.8rem;border:1px solid var(--border)}
-.btn-danger{background:var(--red-bg);color:var(--red);padding:9px 16px;border-radius:var(--r-md);font-size:0.8rem;border:1px solid rgba(229,62,62,0.2)}
-.btn-teal{background:var(--teal);color:#fff;padding:10px 18px;border-radius:var(--r-md);font-size:0.83rem}
-.btn-sm{padding:7px 13px;font-size:0.76rem;border-radius:8px}
-.btn-xs{padding:4px 10px;font-size:0.68rem;border-radius:6px;font-weight:600}
-.btn-circle{width:28px;height:28px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);font-size:0.78rem;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.btn-primary{background:var(--brown);color:#fff;padding:12px 20px;border-radius:var(--r-md);font-size:0.88rem}
+.btn-ghost{background:var(--surface2);color:var(--text2);padding:11px 17px;border-radius:var(--r-md);font-size:0.84rem;border:1.5px solid var(--border)}
+.btn-danger{background:var(--red-bg);color:var(--red);padding:11px 17px;border-radius:var(--r-md);font-size:0.84rem;border:1px solid rgba(229,62,62,0.2)}
+.btn-teal{background:var(--teal);color:#fff;padding:12px 20px;border-radius:var(--r-md);font-size:0.88rem}
+.btn-sm{padding:8px 14px;font-size:0.8rem;border-radius:10px}
+.btn-xs{padding:5px 11px;font-size:0.72rem;border-radius:8px;font-weight:700}
+.btn-circle{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);font-size:0.8rem;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .btn-circle:active{transform:scale(0.88)}
-.btn-del{width:28px;height:28px;border-radius:50%;background:var(--red-bg);border:1px solid rgba(229,62,62,0.2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:transform 150ms var(--spring)}
+.btn-del{width:30px;height:30px;border-radius:50%;background:var(--red-bg);border:1px solid rgba(229,62,62,0.2);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:transform 150ms var(--spring)}
 .btn-del:active{transform:scale(0.88);background:var(--red)}
 .btn-del svg path{stroke:var(--red)}
 .btn-del:active svg path{stroke:#fff}
 
-/* ── TAB BAR — Coin flat ── */
+/* ── TAB BAR — warm ── */
 .tab-bar{
   position:fixed;bottom:0;left:0;right:0;z-index:200;
-  background:rgba(245,245,245,0.97);
+  background:rgba(245,239,230,0.97);
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   border-top:1px solid var(--border);
   height:calc(var(--nav-h) + var(--safe-b));
@@ -217,17 +270,17 @@ body{
   display:flex;align-items:flex-start;justify-content:space-around;
   padding-top:8px;
 }
-[data-theme="dark"] .tab-bar{background:rgba(10,10,10,0.97)}
+[data-theme="dark"] .tab-bar{background:rgba(26,16,7,0.97)}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0;background:none;border:none;color:var(--text3);transition:color 120ms}
-.tab-item.active{color:var(--text1)}
-.tab-icon{font-size:1.2rem;line-height:1;height:26px;display:flex;align-items:center;justify-content:center;transition:transform 180ms var(--spring)}
-.tab-item.active .tab-icon{transform:scale(1.08)}
-.tab-label{font-size:0.6rem;font-weight:600;letter-spacing:0.2px}
-.tab-item.active .tab-label{color:var(--text1)}
-.tab-dot{width:4px;height:4px;border-radius:50%;background:var(--text1);margin-top:1px;opacity:0;transition:opacity 150ms}
+.tab-item.active{color:var(--brown)}
+.tab-icon{font-size:1.3rem;line-height:1;height:28px;display:flex;align-items:center;justify-content:center;transition:transform 180ms var(--spring)}
+.tab-item.active .tab-icon{transform:scale(1.1)}
+.tab-label{font-size:0.65rem;font-weight:700;letter-spacing:0.2px}
+.tab-item.active .tab-label{color:var(--brown)}
+.tab-dot{width:5px;height:5px;border-radius:50%;background:var(--brown);margin-top:1px;opacity:0;transition:opacity 150ms}
 .tab-item.active .tab-dot{opacity:1}
 
-/* ── SHEET ── */
+/* ── SHEET — warm modal ── */
 .sheet-overlay{position:fixed;inset:0;z-index:500;background:var(--scrim);opacity:0;pointer-events:none;transition:opacity 0.24s}
 .sheet-overlay.open{opacity:1;pointer-events:all}
 .sheet{
@@ -244,24 +297,24 @@ body{
   .sheet{border-radius:var(--r-2xl);bottom:50%;left:50%;right:auto;transform:translate(-50%,50%) scale(0.96);width:100%;max-height:88vh}
   .sheet.open{transform:translate(-50%,50%) scale(1)}
 }
-.sheet-drag{width:36px;height:4px;background:var(--border);border-radius:99px;margin:10px auto 0;opacity:0;transition:opacity 0.2s}
+.sheet-drag{width:40px;height:4px;background:var(--border);border-radius:99px;margin:12px auto 0;opacity:0;transition:opacity 0.2s}
 .sheet.open .sheet-drag{opacity:1}
-.sheet-hdr{padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border2)}
-.sheet-title{font-size:0.95rem;font-weight:700;letter-spacing:-0.2px}
-.sheet-close{width:26px;height:26px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--text2)}
-.sheet-body{padding:16px 18px}
+.sheet-hdr{padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border2)}
+.sheet-title{font-size:1.05rem;font-weight:700;letter-spacing:-0.2px;color:var(--text1)}
+.sheet-close{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--text2)}
+.sheet-body{padding:18px 20px}
 
-/* ── FORMS ── */
-.fg{margin-bottom:13px}
-.fl{font-size:0.68rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;display:block}
-.fi{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r-md);font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:500;background:var(--surface2);color:var(--text1);outline:none;-webkit-appearance:none;transition:border-color 150ms,box-shadow 150ms}
-.fi:focus{border-color:var(--text1);box-shadow:0 0 0 3px rgba(17,17,17,0.08);background:var(--surface)}
+/* ── FORMS — warm style ── */
+.fg{margin-bottom:15px}
+.fl{font-size:0.75rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;display:block}
+.fi{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:500;background:var(--bg);color:var(--text1);outline:none;-webkit-appearance:none;transition:border-color 150ms,box-shadow 150ms}
+.fi:focus{border-color:var(--brown);box-shadow:0 0 0 3px rgba(107,68,35,0.1);background:var(--surface)}
 .fi::placeholder{color:var(--text3)}
-.fi-sel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaaaaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;cursor:pointer}
+.fi-sel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A8886A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;cursor:pointer}
 .form-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border2)}
-.form-hint{font-size:0.65rem;color:var(--text3);margin-top:3px}
-.form-sec{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border2)}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid var(--border2)}
+.form-hint{font-size:0.7rem;color:var(--text3);margin-top:4px}
+.form-sec{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin:18px 0 9px;padding-bottom:6px;border-bottom:1px solid var(--border2)}
 
 /* ── GENDER TOGGLE ── */
 .gender-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
@@ -280,7 +333,7 @@ body{
 /* ── SIP CALLOUT ── */
 .sip-callout{background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--r-md);padding:11px 14px;margin-top:10px}
 .sip-callout-title{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--amber);margin-bottom:3px}
-.sip-callout-val{font-family:var(--num);font-size:1.2rem;font-weight:700;color:var(--text1)}
+.sip-callout-val{font-family:'DM Sans',sans-serif;font-size:1.2rem;font-weight:800;color:var(--text1)}
 
 /* ── INV LINK ── */
 .inv-link-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:var(--r-md);border:1.5px solid var(--border);background:var(--surface2);cursor:pointer;margin-bottom:6px;transition:all 140ms}
@@ -288,107 +341,141 @@ body{
 .inv-link-check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:0.56rem;color:#fff;flex-shrink:0;transition:all 150ms var(--spring)}
 .inv-link-item.on .inv-link-check{background:var(--text1);border-color:var(--text1)}
 
-/* ── CHILD CARD ── */
-.child-card{border-bottom:1px solid var(--border2);overflow:hidden}
-.child-hdr{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 120ms}
+/* ── CHILD CARD — rounded card ── */
+.child-card{background:var(--surface);border-radius:var(--r-xl);border:1.5px solid var(--border);overflow:hidden;margin-bottom:10px;box-shadow:var(--shadow-xs)}
+.child-hdr{padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 120ms}
 .child-hdr:active{background:var(--surface2)}
-.child-avatar{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.child-avatar{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
 .child-avatar-boy{background:#eff6ff}
 .child-avatar-girl{background:#f0fdf9}
-.child-name{font-size:0.93rem;font-weight:700;letter-spacing:-0.2px}
-.child-meta{font-size:0.7rem;color:var(--text2);margin-top:2px}
+.child-name{font-size:0.98rem;font-weight:700;letter-spacing:-0.2px;color:var(--text1)}
+.child-meta{font-size:0.74rem;color:var(--text2);margin-top:2px}
 
-.phase-row{display:flex;align-items:center;gap:10px;padding:11px 18px;cursor:pointer;transition:background 120ms;border-bottom:1px solid var(--border2)}
+.phase-row{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;transition:background 120ms;border-top:1px solid var(--border2)}
 .phase-row:active{background:var(--surface2)}
-.phase-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.phase-ico{font-size:0.95rem;flex-shrink:0;width:20px;text-align:center}
+.phase-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.phase-ico{font-size:1rem;flex-shrink:0;width:22px;text-align:center}
 .phase-info{flex:1;min-width:0}
-.phase-name{font-size:0.8rem;font-weight:600}
-.phase-age{font-size:0.64rem;color:var(--text3);margin-top:1px}
-.phase-mini-prog{width:55px;height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:3px}
+.phase-name{font-size:0.84rem;font-weight:600;color:var(--text1)}
+.phase-age{font-size:0.66rem;color:var(--text3);margin-top:1px}
+.phase-mini-prog{width:55px;height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:3px}
 .phase-mini-fill{height:100%;border-radius:99px}
 .phase-stats{display:flex;gap:10px;flex-shrink:0}
 .phase-stat{text-align:right}
-.phase-stat-label{font-size:0.56rem;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3)}
-.phase-stat-val{font-size:0.74rem;font-weight:700;margin-top:1px}
-.child-toggle{padding:9px 18px;display:flex;align-items:center;justify-content:center;gap:5px;border-bottom:1px solid var(--border2);cursor:pointer;background:var(--surface2);font-size:0.7rem;font-weight:600;color:var(--text2);transition:background 120ms}
+.phase-stat-label{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.4px;color:var(--text3)}
+.phase-stat-val{font-size:0.78rem;font-weight:700;margin-top:1px;color:var(--text1)}
+.child-toggle{padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:5px;border-top:1px solid var(--border2);cursor:pointer;background:var(--surface2);font-size:0.74rem;font-weight:600;color:var(--text2);transition:background 120ms}
 .phases-body{border-top:1px solid var(--border2)}
 .phases-body.hidden{display:none}
-.manage-phases-row{padding:10px 18px;display:flex;align-items:center;gap:7px;cursor:pointer;color:var(--text3);font-size:0.75rem;font-weight:500;transition:background 120ms,color 120ms;border-bottom:1px solid var(--border2)}
+.manage-phases-row{padding:11px 16px;display:flex;align-items:center;gap:7px;cursor:pointer;color:var(--text3);font-size:0.78rem;font-weight:600;transition:background 120ms,color 120ms;border-top:1px solid var(--border2)}
 .manage-phases-row:hover{background:var(--surface2);color:var(--text1)}
 
 /* ── KIDS EMPTY ── */
 .kids-empty{padding:32px 18px;text-align:center}
-.kids-empty-icon{font-size:2.6rem;margin-bottom:10px}
-.kids-empty-title{font-size:0.95rem;font-weight:700;margin-bottom:5px}
-.kids-empty-sub{font-size:0.8rem;color:var(--text2);margin-bottom:18px;line-height:1.6}
+.kids-empty-icon{font-size:2.8rem;margin-bottom:10px}
+.kids-empty-title{font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--text1)}
+.kids-empty-sub{font-size:0.84rem;color:var(--text2);margin-bottom:20px;line-height:1.6}
 
 /* ── CHECKLIST ── */
-.check-item{display:flex;align-items:center;gap:14px;padding:13px 18px;cursor:pointer;transition:background 120ms;border-bottom:1px solid var(--border2)}
+.check-item{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;transition:background 120ms;background:var(--surface);border-radius:var(--r-lg);margin-bottom:8px;border:1.5px solid var(--border)}
 .check-item:active{background:var(--surface2)}
-.check-circle{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.68rem;color:#fff;transition:all 0.2s var(--spring);background:var(--surface)}
+.check-circle{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.7rem;color:#fff;transition:all 0.2s var(--spring);background:var(--bg)}
 .check-item.done .check-circle{background:var(--green);border-color:var(--green)}
-.check-label{font-size:0.85rem;font-weight:600}
-.check-desc{font-size:0.68rem;color:var(--text2);margin-top:2px}
+.check-label{font-size:0.9rem;font-weight:700;color:var(--text1)}
+.check-desc{font-size:0.72rem;color:var(--text2);margin-top:2px}
 .check-item.done .check-label{color:var(--green)}
 
-/* ── TOOLS GRID ── */
-.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border2)}
-.tool-tile{background:var(--surface);padding:16px 10px;text-align:center;cursor:pointer;transition:background 120ms}
+/* ── TOOLS GRID — rounded cards ── */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tool-tile{background:var(--surface);padding:18px 10px;text-align:center;cursor:pointer;transition:background 120ms;border-radius:var(--r-xl);border:1.5px solid var(--border);box-shadow:var(--shadow-xs)}
 .tool-tile:active{background:var(--surface2)}
-.tool-tile-icon{font-size:1.3rem;margin-bottom:5px}
-.tool-tile-label{font-size:0.63rem;font-weight:600;color:var(--text2)}
+.tool-tile-icon{font-size:1.5rem;margin-bottom:7px}
+.tool-tile-label{font-size:0.72rem;font-weight:700;color:var(--text2)}
 
-/* ── ADD ROW ── */
-.add-row{display:flex;align-items:center;justify-content:center;padding:13px 18px;border-top:1px dashed var(--border);cursor:pointer;color:var(--text1);font-size:0.78rem;font-weight:600;gap:6px;transition:background 120ms}
+/* ── ADD ROW — warm dashed ── */
+.add-row{display:flex;align-items:center;justify-content:center;padding:14px;border:2px dashed var(--border);border-radius:var(--r-lg);cursor:pointer;color:var(--brown);font-size:0.84rem;font-weight:700;gap:7px;transition:background 120ms;margin-top:4px}
 .add-row:active{background:var(--surface2)}
 
 /* ── EMPTY STATE ── */
-.empty-state{text-align:center;padding:28px 16px;color:var(--text2)}
-.empty-state-icon{font-size:2rem;margin-bottom:8px;opacity:0.4}
-.empty-state-text{font-size:0.82rem;line-height:1.5}
-
-/* ── PAGE TITLE AREA ── */
-.page-title-bar{padding:18px 18px 14px;background:var(--surface);border-bottom:1px solid var(--border2)}
-.page-title-label{font-size:0.65rem;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:2px}
-.page-title-text{font-size:1.2rem;font-weight:700;letter-spacing:-0.4px}
+.empty-state{text-align:center;padding:30px 16px;color:var(--text2)}
+.empty-state-icon{font-size:2.2rem;margin-bottom:9px;opacity:0.5}
+.empty-state-text{font-size:0.86rem;line-height:1.5}
 
 /* ── CONFIRM DIALOG ── */
-.confirm-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.22s}
+.confirm-overlay{position:fixed;inset:0;z-index:900;background:rgba(59,32,16,0.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.22s}
 .confirm-overlay.open{opacity:1;pointer-events:all}
-.confirm-box{background:var(--surface);border-radius:var(--r-2xl);width:100%;max-width:290px;overflow:hidden;box-shadow:var(--shadow-lg);transform:scale(0.88) translateY(10px);transition:transform 0.3s var(--spring)}
+.confirm-box{background:var(--surface);border-radius:var(--r-2xl);width:100%;max-width:300px;overflow:hidden;box-shadow:var(--shadow-lg);transform:scale(0.88) translateY(10px);transition:transform 0.3s var(--spring)}
 .confirm-overlay.open .confirm-box{transform:scale(1) translateY(0)}
-.confirm-icon-wrap{display:flex;align-items:center;justify-content:center;padding:26px 22px 6px}
-.confirm-icon-circle{width:50px;height:50px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center}
-.confirm-title{font-size:0.97rem;font-weight:700;text-align:center;padding:0 20px 4px;letter-spacing:-0.2px}
-.confirm-sub{font-size:0.78rem;color:var(--text2);text-align:center;padding:0 20px 20px;line-height:1.5}
+.confirm-icon-wrap{display:flex;align-items:center;justify-content:center;padding:28px 22px 6px}
+.confirm-icon-circle{width:54px;height:54px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center}
+.confirm-title{font-size:1rem;font-weight:700;text-align:center;padding:0 20px 5px;letter-spacing:-0.2px;color:var(--text1)}
+.confirm-sub{font-size:0.82rem;color:var(--text2);text-align:center;padding:0 20px 22px;line-height:1.5}
 .confirm-actions{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border2)}
-.confirm-cancel{padding:14px;text-align:center;font-size:0.88rem;font-weight:600;color:var(--text2);cursor:pointer;background:none;border:none;border-right:1px solid var(--border2);font-family:'Inter',sans-serif;transition:background 120ms}
+.confirm-cancel{padding:15px;text-align:center;font-size:0.9rem;font-weight:600;color:var(--text2);cursor:pointer;background:none;border:none;border-right:1px solid var(--border2);font-family:'DM Sans',sans-serif;transition:background 120ms}
 .confirm-cancel:active{background:var(--surface2)}
-.confirm-delete{padding:14px;text-align:center;font-size:0.88rem;font-weight:700;color:var(--red);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;transition:background 120ms}
+.confirm-delete{padding:15px;text-align:center;font-size:0.9rem;font-weight:700;color:var(--red);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;transition:background 120ms}
 .confirm-delete:active{background:var(--red-bg)}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:calc(var(--nav-h) + 12px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(8px);background:#111;color:#fff;padding:9px 18px;border-radius:99px;font-size:0.78rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s var(--spring);white-space:nowrap;z-index:9999;box-shadow:var(--shadow-lg)}
+/* ── TOAST — warm ── */
+.toast{position:fixed;bottom:calc(var(--nav-h) + 14px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(8px);background:var(--brown);color:#fff;padding:10px 22px;border-radius:99px;font-size:0.82rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity 0.2s,transform 0.2s var(--spring);white-space:nowrap;z-index:9999;box-shadow:var(--shadow-lg)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ── PROFILE ── */
 .color-picker-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0 14px}
-.color-dot{width:26px;height:26px;border-radius:50%;cursor:pointer;transition:transform 150ms var(--spring);border:2px solid transparent}
+.color-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;transition:transform 150ms var(--spring);border:2px solid transparent}
 .color-dot:active{transform:scale(1.15)}
-.color-dot.selected{border-color:#111;box-shadow:0 0 0 3px rgba(17,17,17,0.1)}
+.color-dot.selected{border-color:var(--brown);box-shadow:0 0 0 3px rgba(107,68,35,0.2)}
 
-/* ── ASSET BREAKDOWN (dashboard) ── */
-.breakdown-row{display:flex;align-items:center;gap:11px;padding:10px 18px;border-bottom:1px solid var(--border2);transition:background 120ms}
-.breakdown-row:last-child{border-bottom:none}
+/* ── ASSET BREAKDOWN (dashboard) — cards ── */
+.breakdown-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-lg);background:var(--surface);border:1.5px solid var(--border);margin-bottom:8px;box-shadow:var(--shadow-xs);transition:background 120ms}
+.breakdown-row:last-child{margin-bottom:0}
 
-/* ── INVESTMENT SUMMARY CARD ── */
-.inv-summary{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border-bottom:1px solid var(--border2)}
-.inv-stat{padding:14px 18px;position:relative}
-.inv-stat:nth-child(odd){border-right:1px solid var(--border2)}
-.inv-stat:nth-child(1),.inv-stat:nth-child(2){border-bottom:1px solid var(--border2)}
-.inv-stat-label{font-size:0.62rem;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
-.inv-stat-val{font-family:var(--num);font-size:1.1rem;font-weight:700;color:var(--text1)}
+/* ── INVESTMENT SUMMARY CARD — rounded ── */
+.inv-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;background:transparent}
+.inv-stat{padding:16px;background:var(--surface);border-radius:var(--r-lg);border:1.5px solid var(--border);box-shadow:var(--shadow-xs)}
+.inv-stat-label{font-size:0.68rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.inv-stat-val{font-family:'DM Sans',sans-serif;font-size:1.2rem;font-weight:800;color:var(--text1)}
+/* ── QUICK-ADD FAB ── */
+.fab{
+  position:fixed;right:18px;bottom:calc(var(--nav-h) + 16px + var(--safe-b));
+  width:52px;height:52px;border-radius:50%;
+  background:var(--brown);color:#fff;border:none;
+  font-size:1.5rem;cursor:pointer;z-index:150;
+  box-shadow:0 4px 16px rgba(107,68,35,0.35);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 200ms var(--spring),box-shadow 200ms;
+}
+.fab:active{transform:scale(0.9)}
+.fab-menu{
+  position:fixed;right:18px;bottom:calc(var(--nav-h) + 78px + var(--safe-b));
+  display:flex;flex-direction:column;gap:10px;align-items:flex-end;
+  z-index:149;pointer-events:none;opacity:0;transform:translateY(12px);
+  transition:opacity 0.2s,transform 0.2s var(--ease);
+}
+.fab-menu.open{pointer-events:all;opacity:1;transform:translateY(0)}
+.fab-item{
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+}
+.fab-item-label{
+  background:var(--surface);border:1.5px solid var(--border);
+  padding:7px 14px;border-radius:99px;
+  font-size:0.82rem;font-weight:700;color:var(--text1);
+  box-shadow:var(--shadow-sm);white-space:nowrap;
+}
+.fab-item-btn{
+  width:40px;height:40px;border-radius:50%;border:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;cursor:pointer;box-shadow:var(--shadow-sm);
+  transition:transform 150ms var(--spring);
+}
+.fab-item-btn:active{transform:scale(0.9)}
+/* ── EMI STRIP ── */
+.emi-strip{
+  margin:0 14px 0;background:var(--surface);
+  border-radius:var(--r-lg);border:1.5px solid var(--border);
+  padding:13px 16px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--shadow-xs);
+}
 </style>
 </head>
 <body>
@@ -408,69 +495,100 @@ body{
     </div>
   </div>
 
-  <!-- HERO — Coin P&L style -->
+  <!-- HERO — bordered Total Wealth card -->
   <div class="hero-wrap">
-    <div class="hero-label">Total Net Worth</div>
+    <div class="hero-label">Total Wealth</div>
     <div class="hero-amount" id="dash-networth">₹0</div>
-    <div class="hero-pnl" id="dash-pnl-row">
+    <div style="font-size:0.7rem;color:var(--text3);font-weight:600;margin-top:3px;letter-spacing:0.02em;position:relative">Assets + Investments − Liabilities</div>
+    <div class="hero-pnl" id="dash-pnl-row" style="margin-top:10px;margin-bottom:14px">
       <span class="hero-pnl-val" id="dash-pnl-val" style="color:var(--green)">+₹0</span>
       <span class="hero-pnl-pct" id="dash-pnl-pct" style="background:var(--green-bg);color:var(--green)">+0%</span>
-      <span style="font-size:0.72rem;color:var(--text3)">total gains on investments</span>
+      <span style="font-size:0.72rem;color:var(--text3);font-weight:500">investment gains</span>
     </div>
     <div class="hero-stats-row">
-      <div class="hero-stat"><div class="hero-stat-label">Invested</div><div class="hero-stat-val" id="dash-invested">₹0</div></div>
-      <div class="hero-stat"><div class="hero-stat-label">Current Value</div><div class="hero-stat-val" id="dash-current" style="color:var(--green)">₹0</div></div>
+      <div class="hero-stat"><div class="hero-stat-label">Assets</div><div class="hero-stat-val" id="dash-invested" style="color:var(--green)">₹0</div></div>
+      <div class="hero-stat"><div class="hero-stat-label">Investments</div><div class="hero-stat-val" id="dash-current" style="color:var(--teal)">₹0</div></div>
       <div class="hero-stat"><div class="hero-stat-label">Monthly SIP</div><div class="hero-stat-val" id="dash-sip">₹0</div></div>
     </div>
   </div>
 
-  <!-- SUMMARY ROW -->
-  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--surface);border-bottom:1px solid var(--border2);margin-bottom:10px">
-    <div style="padding:13px 10px 13px 18px;border-right:1px solid var(--border2);min-width:0">
-      <div style="font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Assets</div>
-      <div style="font-family:var(--num);font-size:0.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="dash-stat-assets">₹0</div>
-    </div>
-    <div style="padding:13px 10px;border-right:1px solid var(--border2);min-width:0">
-      <div style="font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Liabilities</div>
-      <div style="font-family:var(--num);font-size:0.9rem;font-weight:700;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="dash-stat-liab">₹0</div>
-    </div>
-    <div style="padding:13px 10px;border-right:1px solid var(--border2);min-width:0">
-      <div style="font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Goals</div>
-      <div style="font-family:var(--num);font-size:0.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="dash-stat-goals">0%</div>
-    </div>
-    <div style="padding:13px 10px 13px 10px;min-width:0">
-      <div style="font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Health</div>
-      <div style="font-family:var(--num);font-size:0.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="dash-stat-health">0%</div>
+  <!-- SUMMARY GRID — single bordered card with inner grid lines -->
+  <div style="margin:14px 14px 0;background:var(--surface);border-radius:var(--r-xl);border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow-sm)">
+    <div style="display:grid;grid-template-columns:1fr 1fr">
+      <div style="padding:16px 18px;border-right:1.5px solid var(--border);border-bottom:1.5px solid var(--border)">
+        <div style="font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;font-weight:700">Assets</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:800;color:var(--green)" id="dash-stat-assets">₹0</div>
+      </div>
+      <div style="padding:16px 18px;border-bottom:1.5px solid var(--border)">
+        <div style="font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;font-weight:700">Liabilities</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:800;color:var(--red)" id="dash-stat-liab">₹0</div>
+      </div>
+      <div style="padding:16px 18px;border-right:1.5px solid var(--border)">
+        <div style="font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;font-weight:700">Goals Avg</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text1)" id="dash-stat-goals">0%</div>
+      </div>
+      <div style="padding:16px 18px">
+        <div style="font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px;font-weight:700">Health Score</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:800;color:var(--teal)" id="dash-stat-health">0%</div>
+      </div>
     </div>
   </div>
 
-  <!-- GOAL PROGRESS -->
-  <div class="section">
-    <div class="sec-hdr" onclick="navigate('goals',document.querySelectorAll('.tab-item')[2])">
-      <div class="sec-hdr-left"><span class="sec-hdr-title">Goal Progress</span></div>
-      <div class="sec-hdr-right"><span style="font-size:0.78rem;color:var(--text3);font-weight:500">See all →</span></div>
+  <!-- EMI STRIP -->
+  <div class="emi-strip" style="margin-top:10px" id="dash-emi-strip">
+    <div>
+      <div style="font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:3px">Monthly EMI Outflow</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800;color:var(--red)" id="dash-emi-val">₹0</div>
     </div>
-    <div id="dash-goals-mini"></div>
+    <div style="text-align:right">
+      <div style="font-size:0.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:3px">Monthly SIP</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800;color:var(--teal)" id="dash-sip2">₹0</div>
+    </div>
   </div>
 
-  <!-- KIDS EDUCATION -->
-  <div class="section">
-    <div class="sec-hdr">
-      <div class="sec-hdr-left"><span class="sec-hdr-title">Kids Education</span></div>
-      <div id="dash-kids-pill" class="sec-hdr-right"></div>
+  <!-- GOAL PROGRESS — collapsible -->
+  <div style="padding:0 14px;margin-top:14px">
+    <div class="sec-hdr" onclick="toggleSec('dash-goals-body')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">🎯 Goal Progress</span></div>
+      <div class="sec-hdr-right">
+        <span onclick="event.stopPropagation();navigate('goals',document.querySelectorAll('.tab-item')[2])" style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:8px;cursor:pointer">See all →</span>
+        <span class="sec-caret open" id="caret-dash-goals-body">▼</span>
+      </div>
     </div>
-    <div id="dash-kids-mini"></div>
+    <div class="sec-body" id="dash-goals-body">
+      <div id="dash-goals-mini"></div>
+    </div>
   </div>
 
-  <!-- ASSET BREAKDOWN -->
-  <div class="section">
-    <div class="sec-hdr">
-      <div class="sec-hdr-left"><span class="sec-hdr-title">Asset Breakdown</span></div>
+  <!-- KIDS EDUCATION — collapsible -->
+  <div style="padding:0 14px;margin-top:8px">
+    <div class="sec-hdr" onclick="toggleSec('dash-kids-body')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">👨‍👩‍👧‍👦 Kids Education</span></div>
+      <div class="sec-hdr-right">
+        <div id="dash-kids-pill" style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:99px"></div>
+        <span class="sec-caret open" id="caret-dash-kids-body">▼</span>
+      </div>
     </div>
-    <div id="dash-breakdown"></div>
+    <div class="sec-body" id="dash-kids-body">
+      <div id="dash-kids-mini"></div>
+    </div>
   </div>
 
-  <div style="text-align:center;padding:16px 0 4px;color:var(--text3);font-size:0.65rem;font-weight:500;letter-spacing:0.3px">All data stored on your device only</div>
+  <!-- ASSET BREAKDOWN — collapsible -->
+  <div style="padding:0 14px;margin-top:8px">
+    <div class="sec-hdr" onclick="toggleSec('dash-breakdown-body')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">🏦 Asset Breakdown</span></div>
+      <div class="sec-hdr-right">
+        <span onclick="event.stopPropagation();navigate('assets',document.querySelectorAll('.tab-item')[1])" style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:8px;cursor:pointer">See all →</span>
+        <span class="sec-caret open" id="caret-dash-breakdown-body">▼</span>
+      </div>
+    </div>
+    <div class="sec-body" id="dash-breakdown-body">
+      <div id="dash-breakdown"></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:20px 0 6px;color:var(--text3);font-size:0.68rem;font-weight:600;letter-spacing:0.3px">All data stored on your device only 🔒</div>
 </div>
 
 <!-- ══ ASSETS ══ -->
@@ -481,26 +599,35 @@ body{
     </div>
   </div>
   <div class="container">
-    <div class="section">
-      <div class="sec-hdr" onclick="toggleSec('sec-assets')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">Assets</span><span class="sec-hdr-count" id="assets-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" style="color:var(--green)" id="assets-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-assets">▼</span></div>
-      </div>
-      <div class="sec-body" id="sec-assets">
-        <div id="assets-list"></div>
-        <div class="add-row" onclick="openSheet('asset')">Add Asset</div>
-      </div>
+    <div class="sec-hdr" onclick="toggleSec('sec-assets')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">🏦 Assets</span><span class="sec-hdr-count" id="assets-sec-count">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-assets">▼</span></div>
+    </div>
+    <div class="sec-body" id="sec-assets">
+      <div id="assets-list"></div>
+      <div class="add-row" onclick="openSheet('asset')">＋ Add Asset</div>
     </div>
 
-    <div class="section">
-      <div class="sec-hdr" onclick="toggleSec('sec-liab')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">Liabilities</span><span class="sec-hdr-count" id="liab-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" style="color:var(--red)" id="liab-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-liab">▼</span></div>
-      </div>
-      <div class="sec-body" id="sec-liab">
-        <div style="padding:10px 18px 8px;border-bottom:1px solid var(--border2)"><span style="font-size:0.72rem;color:var(--text2)" id="liab-emi-info">Monthly EMI: ₹0</span></div>
-        <div id="liabilities-list"></div>
-        <div class="add-row" style="color:var(--red)" onclick="openSheet('liability')">Add Liability</div>
+    <div style="margin-top:16px">
+    <div class="sec-hdr" onclick="toggleSec('sec-liab')" style="background:var(--red)">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">💳 Liabilities</span><span class="sec-hdr-count" id="liab-sec-count">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="liab-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-liab">▼</span></div>
+    </div>
+    <div class="sec-body" id="sec-liab">
+      <div style="padding:10px 4px 8px"><span style="font-size:0.76rem;color:var(--text2);font-weight:600" id="liab-emi-info">Monthly EMI: ₹0</span></div>
+      <div id="liabilities-list"></div>
+      <div class="add-row" style="color:var(--red);border-color:rgba(229,62,62,0.3)" onclick="openSheet('liability')">＋ Add Liability</div>
+    </div>
+    </div>
+
+    <!-- WEALTH SUMMARY CARD -->
+    <div id="wealth-card" style="margin-top:20px;background:linear-gradient(135deg,var(--brown),#8B5E2E);border-radius:var(--r-xl);padding:20px;box-shadow:var(--shadow-md)">
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.7);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Net Wealth (Assets + Investments − Liabilities)</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:2rem;font-weight:800;color:#fff;letter-spacing:-1px" id="wealth-display">₹0</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.2)">
+        <div><div style="font-size:0.62rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">Assets</div><div style="font-family:var(--num);font-size:0.9rem;font-weight:700;color:#fff" id="wealth-assets">₹0</div></div>
+        <div><div style="font-size:0.62rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">Investments</div><div style="font-family:var(--num);font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.9)" id="wealth-inv">₹0</div></div>
+        <div><div style="font-size:0.62rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">Liabilities</div><div style="font-family:var(--num);font-size:0.9rem;font-weight:700;color:#fca5a5" id="wealth-liab">₹0</div></div>
       </div>
     </div>
   </div>
@@ -512,24 +639,22 @@ body{
     <div class="hdr-left"><div><div class="hdr-greeting">Planning</div><div class="hdr-name">Goals</div></div></div>
   </div>
   <div class="container">
-    <div class="section">
-      <div class="sec-hdr" onclick="toggleSec('sec-kids')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">Children</span><span class="sec-hdr-count" id="kids-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-kids">▼</span></div>
-      </div>
-      <div class="sec-body" id="sec-kids">
-        <div id="kids-list"></div>
-      </div>
+    <div class="sec-hdr" onclick="toggleSec('sec-kids')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">👨‍👩‍👧‍👦 Children</span><span class="sec-hdr-count" id="kids-sec-count">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-kids">▼</span></div>
+    </div>
+    <div class="sec-body" id="sec-kids">
+      <div id="kids-list"></div>
     </div>
 
-    <div class="section">
-      <div class="sec-hdr" onclick="toggleSec('sec-goals')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">Financial Goals</span><span class="sec-hdr-count" id="goals-sec-count">5</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-goals">▼</span></div>
-      </div>
-      <div class="sec-body" id="sec-goals">
-        <div id="goals-list"></div>
-      </div>
+    <div style="margin-top:16px">
+    <div class="sec-hdr" onclick="toggleSec('sec-goals')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">🎯 Financial Goals</span><span class="sec-hdr-count" id="goals-sec-count">5</span></div>
+      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-goals">▼</span></div>
+    </div>
+    <div class="sec-body" id="sec-goals">
+      <div id="goals-list"></div>
+    </div>
     </div>
   </div>
 </div>
@@ -540,21 +665,19 @@ body{
     <div class="hdr-left"><div><div class="hdr-greeting">Portfolio</div><div class="hdr-name">Investments</div></div></div>
   </div>
   <div class="container">
-    <div class="section">
-      <div class="inv-summary">
-        <div class="inv-stat"><div class="inv-stat-label">Invested</div><div class="inv-stat-val" id="inv-invested">₹0</div></div>
-        <div class="inv-stat"><div class="inv-stat-label">Current Value</div><div class="inv-stat-val" style="color:var(--green)" id="inv-current">₹0</div></div>
-        <div class="inv-stat"><div class="inv-stat-label">P&L</div><div class="inv-stat-val" id="inv-pnl">₹0</div></div>
-        <div class="inv-stat"><div class="inv-stat-label">Monthly SIP</div><div class="inv-stat-val" style="color:var(--teal)" id="inv-sip">₹0</div></div>
-      </div>
-      <div class="sec-hdr" onclick="toggleSec('sec-inv-list')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">Holdings</span><span class="sec-hdr-count" id="inv-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-inv-list">▼</span></div>
-      </div>
-      <div class="sec-body" id="sec-inv-list">
-        <div id="investments-list"></div>
-        <div class="add-row" onclick="openSheet('investment')">Add Investment</div>
-      </div>
+    <div class="inv-summary" id="inv-summary-grid">
+      <div class="inv-stat"><div class="inv-stat-label">Invested</div><div class="inv-stat-val" id="inv-invested">₹0</div></div>
+      <div class="inv-stat"><div class="inv-stat-label">Current Value</div><div class="inv-stat-val" style="color:var(--green)" id="inv-current">₹0</div></div>
+      <div class="inv-stat"><div class="inv-stat-label">P&L</div><div class="inv-stat-val" id="inv-pnl">₹0</div></div>
+      <div class="inv-stat"><div class="inv-stat-label">Monthly SIP</div><div class="inv-stat-val" style="color:var(--teal)" id="inv-sip">₹0</div></div>
+    </div>
+    <div class="sec-hdr" onclick="toggleSec('sec-inv-list')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">📊 Holdings</span><span class="sec-hdr-count" id="inv-sec-count">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-inv-list">▼</span></div>
+    </div>
+    <div class="sec-body" id="sec-inv-list">
+      <div id="investments-list"></div>
+      <div class="add-row" onclick="openSheet('investment')">＋ Add Investment</div>
     </div>
   </div>
 </div>
@@ -563,39 +686,58 @@ body{
 <div id="page-checklist" class="page">
   <div class="top-header">
     <div class="hdr-left"><div><div class="hdr-greeting">Foundations</div><div class="hdr-name">Financial Health</div></div></div>
-    <span id="checklist-top-badge" class="pill pill-green">0% done</span>
+    <span id="checklist-top-badge" class="pill pill-green" style="background:var(--brown-light);color:var(--brown)">0% done</span>
   </div>
   <div class="container">
-    <div class="section">
-      <div class="sec-hdr" onclick="toggleSec('sec-checklist')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">Health Checklist</span><span class="sec-hdr-count" id="check-sec-count">0/6</span></div>
-        <div class="sec-hdr-right"><span id="checklist-pct-text" style="font-family:var(--num);font-size:0.88rem;font-weight:700">0%</span><span class="sec-caret open" id="caret-sec-checklist">▼</span></div>
-      </div>
-      <div class="sec-body" id="sec-checklist">
-        <div style="padding:10px 18px 8px"><div class="prog-track prog-thick" style="height:6px"><div class="prog-fill" id="checklist-bar" style="background:linear-gradient(90deg,var(--green),var(--teal));width:0%"></div></div></div>
-        <div id="checklist-items"></div>
-      </div>
+    <div class="sec-hdr" onclick="toggleSec('sec-checklist')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">✅ Health Checklist</span><span class="sec-hdr-count" id="check-sec-count">0/6</span></div>
+      <div class="sec-hdr-right"><span id="checklist-pct-text" style="font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:800;color:rgba(255,255,255,0.9)">0%</span><span class="sec-caret open" id="caret-sec-checklist">▼</span></div>
+    </div>
+    <div class="sec-body" id="sec-checklist">
+      <div style="padding:4px 0 8px"><div class="prog-track prog-thick" style="height:7px"><div class="prog-fill" id="checklist-bar" style="background:linear-gradient(90deg,var(--green),var(--teal));width:0%"></div></div></div>
+      <div id="checklist-items"></div>
     </div>
 
-    <div class="section">
-      <div class="sec-hdr" onclick="toggleSec('sec-tools')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">Tools & Data</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-tools">▼</span></div>
+    <div style="margin-top:16px">
+    <div class="sec-hdr" onclick="toggleSec('sec-tools')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">🛠️ Tools & Data</span></div>
+      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-tools">▼</span></div>
+    </div>
+    <div class="sec-body" id="sec-tools">
+      <div class="tools-grid" style="margin-top:10px">
+        <div class="tool-tile" onclick="exportData()"><div class="tool-tile-icon">📤</div><div class="tool-tile-label">Export</div></div>
+        <div class="tool-tile" onclick="document.getElementById('import-file').click()"><div class="tool-tile-icon">📥</div><div class="tool-tile-label">Import</div></div>
+        <div class="tool-tile" onclick="loadSampleData()"><div class="tool-tile-icon">📊</div><div class="tool-tile-label">Sample Data</div></div>
+        <div class="tool-tile" onclick="toggleDark()"><div class="tool-tile-icon">🌙</div><div class="tool-tile-label">Dark Mode</div></div>
+        <div class="tool-tile" onclick="openSheet('profile')"><div class="tool-tile-icon">👤</div><div class="tool-tile-label">Profile</div></div>
+        <div class="tool-tile" onclick="resetData()"><div class="tool-tile-icon">🗑️</div><div class="tool-tile-label" style="color:var(--red)">Reset</div></div>
       </div>
-      <div class="sec-body" id="sec-tools">
-        <div class="tools-grid">
-          <div class="tool-tile" onclick="exportData()"><div class="tool-tile-icon">📤</div><div class="tool-tile-label">Export</div></div>
-          <div class="tool-tile" onclick="document.getElementById('import-file').click()"><div class="tool-tile-icon">📥</div><div class="tool-tile-label">Import</div></div>
-          <div class="tool-tile" onclick="loadSampleData()"><div class="tool-tile-icon">📊</div><div class="tool-tile-label">Sample Data</div></div>
-          <div class="tool-tile" onclick="toggleDark()"><div class="tool-tile-icon">🌙</div><div class="tool-tile-label">Dark Mode</div></div>
-          <div class="tool-tile" onclick="openSheet('profile')"><div class="tool-tile-icon">👤</div><div class="tool-tile-label">Profile</div></div>
-          <div class="tool-tile" onclick="resetData()"><div class="tool-tile-icon">🗑️</div><div class="tool-tile-label" style="color:var(--red)">Reset</div></div>
-        </div>
-      </div>
+    </div>
     </div>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
   </div>
 </div>
+
+<!-- QUICK ADD FAB -->
+<div class="fab-menu" id="fab-menu">
+  <div class="fab-item" onclick="closeFab();openSheet('asset')">
+    <span class="fab-item-label">Add Asset</span>
+    <button class="fab-item-btn" style="background:#e8f5e9;color:var(--green)">🏦</button>
+  </div>
+  <div class="fab-item" onclick="closeFab();openSheet('liability')">
+    <span class="fab-item-label">Add Liability</span>
+    <button class="fab-item-btn" style="background:var(--red-bg);color:var(--red)">💳</button>
+  </div>
+  <div class="fab-item" onclick="closeFab();openSheet('investment')">
+    <span class="fab-item-label">Add Investment</span>
+    <button class="fab-item-btn" style="background:var(--teal-light);color:var(--teal)">📈</button>
+  </div>
+  <div class="fab-item" onclick="closeFab();openSheet('goal','emergency')">
+    <span class="fab-item-label">Update Goal</span>
+    <button class="fab-item-btn" style="background:var(--amber-light);color:var(--amber)">🎯</button>
+  </div>
+</div>
+<button class="fab" id="fab-btn" onclick="toggleFab()">＋</button>
 
 <!-- ══ TAB BAR ══ -->
 <nav class="tab-bar">
@@ -721,7 +863,8 @@ function renderDashboard(){
   const totalInvested=data.investments.reduce((s,i)=>s+Number(i.invested||0),0);
   const totalCurrent=data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
   const monthlySIP=data.investments.reduce((s,i)=>s+Number(i.sip||0),0);
-  const netWorth=totalAssets-totalLiab;
+  // Wealth = Assets + Investment Current Value - Liabilities
+  const netWorth=totalAssets+totalCurrent-totalLiab;
   const pnl=totalCurrent-totalInvested;
   const pnlPct=totalInvested>0?((pnl/totalInvested)*100):0;
   const isPos=pnl>=0;
@@ -732,11 +875,16 @@ function renderDashboard(){
   document.getElementById('dash-pnl-pct').textContent=(isPos?'+':'')+pnlPct.toFixed(2)+'%';
   document.getElementById('dash-pnl-pct').style.background=isPos?'var(--green-bg)':'var(--red-bg)';
   document.getElementById('dash-pnl-pct').style.color=isPos?'var(--green)':'var(--red)';
-  document.getElementById('dash-invested').textContent=fmt(totalInvested);
+  document.getElementById('dash-invested').textContent=fmt(totalAssets);
   document.getElementById('dash-current').textContent=fmt(totalCurrent);
   document.getElementById('dash-sip').textContent=fmt(monthlySIP);
+  const e1=document.getElementById('dash-emi-val');const e2=document.getElementById('dash-sip2');
+  const totalEMI=data.liabilities.reduce((s,l)=>s+Number(l.emi||0),0);
+  if(e1)e1.textContent=fmt(totalEMI);if(e2)e2.textContent=fmt(monthlySIP);
   document.getElementById('dash-stat-assets').textContent=fmt(totalAssets);
   document.getElementById('dash-stat-liab').textContent=fmt(totalLiab);
+  // Update wealth card on assets page if visible
+  updateWealthCard(totalAssets,totalCurrent,totalLiab);
 
   const goalPcts=GOAL_PRESETS.map(p=>{const g=data.goals.find(x=>x.type===p.id)||{};return pct(g.current||0,g.target||0)});
   const kidPcts=data.kids.map(k=>{const ep=k.phases.filter(p=>p.enabled);return pct(ep.reduce((s,p)=>s+Number(p.current||0),0),ep.reduce((s,p)=>s+Number(p.target||0),0))});
@@ -767,7 +915,8 @@ function renderDashboard(){
     </div>`).join('');
 
   const totalKidSaved=data.kids.reduce((s,k)=>s+k.phases.filter(p=>p.enabled).reduce((ss,p)=>ss+Number(p.current||0),0),0);
-  document.getElementById('dash-kids-pill').innerHTML=`<span class="pill pill-teal">${fmt(totalKidSaved)} saved</span>`;
+  const kpEl=document.getElementById('dash-kids-pill');
+  if(kpEl)kpEl.textContent=data.kids.length?fmt(totalKidSaved)+' saved':'';
   const kEl=document.getElementById('dash-kids-mini');
   kEl.innerHTML=data.kids.length?data.kids.map(k=>{
     const ep=k.phases.filter(p=>p.enabled);
@@ -796,17 +945,32 @@ function renderDashboard(){
         <div style="height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:5px"><div style="height:100%;border-radius:99px;background:${info.color};width:${p}%;transition:width 0.5s"></div></div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-family:var(--num);font-size:0.84rem;font-weight:700">${fmt(val)}</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:800">${fmt(val)}</div>
         <div style="font-size:0.62rem;color:var(--text3);margin-top:1px">${p}%</div>
       </div>
     </div>`;
   }).join(''):`<div class="empty-state"><div class="empty-state-icon">🏦</div><div class="empty-state-text">Add assets to see breakdown</div></div>`;
 }
 
+function updateWealthCard(assets,inv,liab){
+  const wealth=assets+inv-liab;
+  const wd=document.getElementById('wealth-display');
+  const wa=document.getElementById('wealth-assets');
+  const wi=document.getElementById('wealth-inv');
+  const wl=document.getElementById('wealth-liab');
+  if(wd)wd.textContent=fmt(wealth);
+  if(wa)wa.textContent=fmt(assets);
+  if(wi)wi.textContent=fmt(inv);
+  if(wl)wl.textContent=fmt(liab);
+}
+
 function renderAssets(){
   const total=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
   const c=document.getElementById('assets-sec-count');const h=document.getElementById('assets-total-hdr');
   if(c)c.textContent=data.assets.length;if(h)h.textContent=fmt(total);
+  const totalInvCurrent=data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
+  const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
+  updateWealthCard(total,totalInvCurrent,totalLiab);
   const el=document.getElementById('assets-list');if(!el)return;
   if(!data.assets.length){el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🏦</div><div class="empty-state-text">No assets yet</div></div>';return}
   el.innerHTML=data.assets.map(a=>{
@@ -835,6 +999,9 @@ function renderLiabilities(){
   const totalEMI=data.liabilities.reduce((s,l)=>s+Number(l.emi||0),0);
   const h=document.getElementById('liab-total-hdr');const c=document.getElementById('liab-sec-count');const e=document.getElementById('liab-emi-info');
   if(h)h.textContent=fmt(total);if(c)c.textContent=data.liabilities.length;if(e)e.textContent='Monthly EMI: '+fmt(totalEMI);
+  const totalAssets=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
+  const totalInvCurrent=data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
+  updateWealthCard(totalAssets,totalInvCurrent,total);
   const el=document.getElementById('liabilities-list');if(!el)return;
   if(!data.liabilities.length){el.innerHTML='<div class="empty-state"><div class="empty-state-icon">🎉</div><div class="empty-state-text">No liabilities</div></div>';return}
   el.innerHTML=data.liabilities.map(l=>{
@@ -1160,7 +1327,10 @@ function loadSampleData(){
   save();renderDashboard();renderKids();renderGoals();renderProfile();toast('Sample data loaded ✓');
 }
 
-let _confirmCb=null;
+let _fabOpen=false;
+function toggleFab(){_fabOpen=!_fabOpen;document.getElementById('fab-menu').classList.toggle('open',_fabOpen);document.getElementById('fab-btn').textContent=_fabOpen?'✕':'＋';document.getElementById('fab-btn').style.transform=_fabOpen?'rotate(45deg)':'rotate(0)'}
+function closeFab(){_fabOpen=false;document.getElementById('fab-menu').classList.remove('open');document.getElementById('fab-btn').textContent='＋';document.getElementById('fab-btn').style.transform='rotate(0)'}
+document.addEventListener('click',function(e){if(_fabOpen&&!e.target.closest('.fab')&&!e.target.closest('.fab-menu'))closeFab()});
 function showConfirm(title,sub,onConfirm){_confirmCb=onConfirm;document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-sub').textContent=sub;document.getElementById('confirm-overlay').classList.add('open');document.getElementById('confirm-ok-btn').onclick=()=>{const cb=_confirmCb;closeConfirm();if(cb)cb()}}
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null}
 document.getElementById('confirm-overlay').addEventListener('click',function(e){if(e.target===this)closeConfirm()});
