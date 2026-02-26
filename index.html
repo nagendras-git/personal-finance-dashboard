@@ -216,16 +216,15 @@ body{
 .goal-row-target{font-size:0.72rem;color:var(--text3)}
 
 /* ── MINI GOAL (dashboard) ── */
-.mini-goal{display:flex;align-items:center;gap:12px;padding:13px 16px;transition:background 120ms;cursor:pointer;background:var(--surface);border-radius:var(--r-lg);margin-bottom:8px;border:1.5px solid var(--border);box-shadow:var(--shadow-xs)}
+.mini-goal{display:flex;align-items:center;gap:10px;padding:9px 14px;transition:background 120ms;cursor:pointer;background:var(--surface);border-radius:var(--r-md);margin-bottom:6px;border:1.5px solid var(--border);box-shadow:var(--shadow-xs)}
 .mini-goal:active{background:var(--surface2)}
-.mini-goal:not(:last-child){border-bottom:none}
-.mini-goal-ico{font-size:1.15rem;flex-shrink:0;width:28px;text-align:center}
+.mini-goal-ico{font-size:1rem;flex-shrink:0;width:22px;text-align:center}
 .mini-goal-body{flex:1;min-width:0}
-.mini-goal-name{font-size:0.9rem;font-weight:600;color:var(--text1)}
+.mini-goal-name{font-size:0.82rem;font-weight:700;color:var(--text1)}
 .mini-goal-hint{font-size:0.7rem;color:var(--text3);margin-top:1px}
 .mini-goal-right{text-align:right;flex-shrink:0}
-.mini-goal-pct{font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:800}
-.mini-goal-prog{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:5px}
+.mini-goal-pct{font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:800}
+.mini-goal-prog{height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:4px}
 .mini-goal-fill{height:100%;border-radius:99px;transition:width 0.6s var(--ease)}
 
 /* ── PROGRESS ── */
@@ -269,6 +268,7 @@ body{
   padding-bottom:var(--safe-b);
   display:flex;align-items:flex-start;justify-content:space-around;
   padding-top:8px;
+  box-shadow:0 -2px 12px rgba(107,68,35,0.08);
 }
 [data-theme="dark"] .tab-bar{background:rgba(26,16,7,0.97)}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0;background:none;border:none;color:var(--text3);transition:color 120ms}
@@ -551,11 +551,10 @@ body{
     <div class="sec-hdr" onclick="toggleSec('dash-goals-body')">
       <div class="sec-hdr-left"><span class="sec-hdr-title">🎯 Goal Progress</span></div>
       <div class="sec-hdr-right">
-        <span onclick="event.stopPropagation();navigate('goals',document.querySelectorAll('.tab-item')[2])" style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:8px;cursor:pointer">See all →</span>
-        <span class="sec-caret open" id="caret-dash-goals-body">▼</span>
+        <span class="sec-caret" id="caret-dash-goals-body">▼</span>
       </div>
     </div>
-    <div class="sec-body" id="dash-goals-body">
+    <div class="sec-body closed" id="dash-goals-body">
       <div id="dash-goals-mini"></div>
     </div>
   </div>
@@ -565,11 +564,10 @@ body{
     <div class="sec-hdr" onclick="toggleSec('dash-kids-body')">
       <div class="sec-hdr-left"><span class="sec-hdr-title">👨‍👩‍👧‍👦 Kids Education</span></div>
       <div class="sec-hdr-right">
-        <div id="dash-kids-pill" style="font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.15);padding:3px 10px;border-radius:99px"></div>
-        <span class="sec-caret open" id="caret-dash-kids-body">▼</span>
+        <span class="sec-caret" id="caret-dash-kids-body">▼</span>
       </div>
     </div>
-    <div class="sec-body" id="dash-kids-body">
+    <div class="sec-body closed" id="dash-kids-body">
       <div id="dash-kids-mini"></div>
     </div>
   </div>
@@ -577,13 +575,12 @@ body{
   <!-- ASSET BREAKDOWN — collapsible -->
   <div style="padding:0 14px;margin-top:8px">
     <div class="sec-hdr" onclick="toggleSec('dash-breakdown-body')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title">🏦 Asset Breakdown</span></div>
+      <div class="sec-hdr-left"><span class="sec-hdr-title">🏦 Asset Allocation</span></div>
       <div class="sec-hdr-right">
-        <span onclick="event.stopPropagation();navigate('assets',document.querySelectorAll('.tab-item')[1])" style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:8px;cursor:pointer">See all →</span>
-        <span class="sec-caret open" id="caret-dash-breakdown-body">▼</span>
+        <span class="sec-caret" id="caret-dash-breakdown-body">▼</span>
       </div>
     </div>
-    <div class="sec-body" id="dash-breakdown-body">
+    <div class="sec-body closed" id="dash-breakdown-body">
       <div id="dash-breakdown"></div>
     </div>
   </div>
@@ -601,9 +598,9 @@ body{
   <div class="container">
     <div class="sec-hdr" onclick="toggleSec('sec-assets')">
       <div class="sec-hdr-left"><span class="sec-hdr-title">🏦 Assets</span><span class="sec-hdr-count" id="assets-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-assets">▼</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-assets">▼</span></div>
     </div>
-    <div class="sec-body" id="sec-assets">
+    <div class="sec-body closed" id="sec-assets">
       <div id="assets-list"></div>
       <div class="add-row" onclick="openSheet('asset')">＋ Add Asset</div>
     </div>
@@ -611,26 +608,16 @@ body{
     <div style="margin-top:16px">
     <div class="sec-hdr" onclick="toggleSec('sec-liab')" style="background:var(--red)">
       <div class="sec-hdr-left"><span class="sec-hdr-title">💳 Liabilities</span><span class="sec-hdr-count" id="liab-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-total" id="liab-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-liab">▼</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="liab-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-liab">▼</span></div>
     </div>
-    <div class="sec-body" id="sec-liab">
+    <div class="sec-body closed" id="sec-liab">
       <div style="padding:10px 4px 8px"><span style="font-size:0.76rem;color:var(--text2);font-weight:600" id="liab-emi-info">Monthly EMI: ₹0</span></div>
       <div id="liabilities-list"></div>
       <div class="add-row" style="color:var(--red);border-color:rgba(229,62,62,0.3)" onclick="openSheet('liability')">＋ Add Liability</div>
     </div>
     </div>
 
-    <!-- WEALTH SUMMARY CARD -->
-    <div id="wealth-card" style="margin-top:20px;background:linear-gradient(135deg,var(--brown),#8B5E2E);border-radius:var(--r-xl);padding:20px;box-shadow:var(--shadow-md)">
-      <div style="font-size:0.72rem;color:rgba(255,255,255,0.7);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Net Wealth (Assets + Investments − Liabilities)</div>
-      <div style="font-family:'DM Sans',sans-serif;font-size:2rem;font-weight:800;color:#fff;letter-spacing:-1px" id="wealth-display">₹0</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.2)">
-        <div><div style="font-size:0.62rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">Assets</div><div style="font-family:var(--num);font-size:0.9rem;font-weight:700;color:#fff" id="wealth-assets">₹0</div></div>
-        <div><div style="font-size:0.62rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">Investments</div><div style="font-family:var(--num);font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.9)" id="wealth-inv">₹0</div></div>
-        <div><div style="font-size:0.62rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px">Liabilities</div><div style="font-family:var(--num);font-size:0.9rem;font-weight:700;color:#fca5a5" id="wealth-liab">₹0</div></div>
-      </div>
-    </div>
-  </div>
+    <!-- wealth card removed -->
 </div>
 
 <!-- ══ GOALS ══ -->
@@ -641,18 +628,18 @@ body{
   <div class="container">
     <div class="sec-hdr" onclick="toggleSec('sec-kids')">
       <div class="sec-hdr-left"><span class="sec-hdr-title">👨‍👩‍👧‍👦 Children</span><span class="sec-hdr-count" id="kids-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-kids">▼</span></div>
+      <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-kids">▼</span></div>
     </div>
-    <div class="sec-body" id="sec-kids">
+    <div class="sec-body closed" id="sec-kids">
       <div id="kids-list"></div>
     </div>
 
     <div style="margin-top:16px">
     <div class="sec-hdr" onclick="toggleSec('sec-goals')">
       <div class="sec-hdr-left"><span class="sec-hdr-title">🎯 Financial Goals</span><span class="sec-hdr-count" id="goals-sec-count">5</span></div>
-      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-goals">▼</span></div>
+      <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-goals">▼</span></div>
     </div>
-    <div class="sec-body" id="sec-goals">
+    <div class="sec-body closed" id="sec-goals">
       <div id="goals-list"></div>
     </div>
     </div>
@@ -671,13 +658,57 @@ body{
       <div class="inv-stat"><div class="inv-stat-label">P&L</div><div class="inv-stat-val" id="inv-pnl">₹0</div></div>
       <div class="inv-stat"><div class="inv-stat-label">Monthly SIP</div><div class="inv-stat-val" style="color:var(--teal)" id="inv-sip">₹0</div></div>
     </div>
-    <div class="sec-hdr" onclick="toggleSec('sec-inv-list')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title">📊 Holdings</span><span class="sec-hdr-count" id="inv-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-inv-list">▼</span></div>
+    <div class="sec-hdr" onclick="toggleSec('sec-inv-mf')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">📊 Mutual Funds</span><span class="sec-hdr-count" id="inv-count-mf">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="inv-total-mf">₹0</span><span class="sec-caret" id="caret-sec-inv-mf">▼</span></div>
     </div>
-    <div class="sec-body" id="sec-inv-list">
-      <div id="investments-list"></div>
-      <div class="add-row" onclick="openSheet('investment')">＋ Add Investment</div>
+    <div class="sec-body closed" id="sec-inv-mf">
+      <div id="inv-list-mf"></div>
+      <div class="add-row" onclick="openSheet('investment',{type:'MutualFund'})">＋ Add Mutual Fund</div>
+    </div>
+
+    <div style="margin-top:10px">
+    <div class="sec-hdr" onclick="toggleSec('sec-inv-stock')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">📈 Stocks</span><span class="sec-hdr-count" id="inv-count-stock">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="inv-total-stock">₹0</span><span class="sec-caret" id="caret-sec-inv-stock">▼</span></div>
+    </div>
+    <div class="sec-body closed" id="sec-inv-stock">
+      <div id="inv-list-stock"></div>
+      <div class="add-row" onclick="openSheet('investment',{type:'Stock'})">＋ Add Stock</div>
+    </div>
+    </div>
+
+    <div style="margin-top:10px">
+    <div class="sec-hdr" onclick="toggleSec('sec-inv-etf')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">💹 ETFs</span><span class="sec-hdr-count" id="inv-count-etf">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="inv-total-etf">₹0</span><span class="sec-caret" id="caret-sec-inv-etf">▼</span></div>
+    </div>
+    <div class="sec-body closed" id="sec-inv-etf">
+      <div id="inv-list-etf"></div>
+      <div class="add-row" onclick="openSheet('investment',{type:'ETF'})">＋ Add ETF</div>
+    </div>
+    </div>
+
+    <div style="margin-top:10px">
+    <div class="sec-hdr" onclick="toggleSec('sec-inv-re')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">🏠 Real Estate</span><span class="sec-hdr-count" id="inv-count-re">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="inv-total-re">₹0</span><span class="sec-caret" id="caret-sec-inv-re">▼</span></div>
+    </div>
+    <div class="sec-body closed" id="sec-inv-re">
+      <div id="inv-list-re"></div>
+      <div class="add-row" onclick="openSheet('investment',{type:'RealEstate'})">＋ Add Real Estate</div>
+    </div>
+    </div>
+
+    <div style="margin-top:10px">
+    <div class="sec-hdr" onclick="toggleSec('sec-inv-other')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title">💰 Other</span><span class="sec-hdr-count" id="inv-count-other">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="inv-total-other">₹0</span><span class="sec-caret" id="caret-sec-inv-other">▼</span></div>
+    </div>
+    <div class="sec-body closed" id="sec-inv-other">
+      <div id="inv-list-other"></div>
+      <div class="add-row" onclick="openSheet('investment',{type:'Other'})">＋ Add Other</div>
+    </div>
     </div>
   </div>
 </div>
@@ -691,9 +722,9 @@ body{
   <div class="container">
     <div class="sec-hdr" onclick="toggleSec('sec-checklist')">
       <div class="sec-hdr-left"><span class="sec-hdr-title">✅ Health Checklist</span><span class="sec-hdr-count" id="check-sec-count">0/6</span></div>
-      <div class="sec-hdr-right"><span id="checklist-pct-text" style="font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:800;color:rgba(255,255,255,0.9)">0%</span><span class="sec-caret open" id="caret-sec-checklist">▼</span></div>
+      <div class="sec-hdr-right"><span id="checklist-pct-text" style="font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:800;color:rgba(255,255,255,0.9)">0%</span><span class="sec-caret" id="caret-sec-checklist">▼</span></div>
     </div>
-    <div class="sec-body" id="sec-checklist">
+    <div class="sec-body closed" id="sec-checklist">
       <div style="padding:4px 0 8px"><div class="prog-track prog-thick" style="height:7px"><div class="prog-fill" id="checklist-bar" style="background:linear-gradient(90deg,var(--green),var(--teal));width:0%"></div></div></div>
       <div id="checklist-items"></div>
     </div>
@@ -701,9 +732,9 @@ body{
     <div style="margin-top:16px">
     <div class="sec-hdr" onclick="toggleSec('sec-tools')">
       <div class="sec-hdr-left"><span class="sec-hdr-title">🛠️ Tools & Data</span></div>
-      <div class="sec-hdr-right"><span class="sec-caret open" id="caret-sec-tools">▼</span></div>
+      <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-tools">▼</span></div>
     </div>
-    <div class="sec-body" id="sec-tools">
+    <div class="sec-body closed" id="sec-tools">
       <div class="tools-grid" style="margin-top:10px">
         <div class="tool-tile" onclick="exportData()"><div class="tool-tile-icon">📤</div><div class="tool-tile-label">Export</div></div>
         <div class="tool-tile" onclick="document.getElementById('import-file').click()"><div class="tool-tile-icon">📥</div><div class="tool-tile-label">Import</div></div>
@@ -895,14 +926,14 @@ function renderDashboard(){
   const done=data.checklist.filter(Boolean).length;
   document.getElementById('dash-stat-health').textContent=Math.round((done/CHECKLIST_ITEMS.length)*100)+'%';
 
-  // Goals mini
+  // Goals mini — exclude insurance, tap opens goal sheet
   const allGoals=[
-    ...GOAL_PRESETS.map(pr=>{const g=data.goals.find(x=>x.type===pr.id)||{};return{name:pr.name,icon:pr.icon,color:pr.color,p:pct(g.current||0,g.target||0),hasTarget:(g.target||0)>0}}),
-    ...data.kids.map(k=>{const ep=k.phases.filter(p=>p.enabled);return{name:k.name+' Education',icon:k.gender==='girl'?'👧':'👦',color:'#2c7a7b',p:pct(ep.reduce((s,p)=>s+Number(p.current||0),0),ep.reduce((s,p)=>s+Number(p.target||0),0)),hasTarget:true}})
+    ...GOAL_PRESETS.filter(pr=>pr.id!=='insurance').map(pr=>{const g=data.goals.find(x=>x.type===pr.id)||{};return{name:pr.name,icon:pr.icon,color:pr.color,p:pct(g.current||0,g.target||0),hasTarget:(g.target||0)>0,type:pr.id,isKid:false}}),
+    ...data.kids.map(k=>{const ep=k.phases.filter(p=>p.enabled);return{name:k.name+' Education',icon:k.gender==='girl'?'👧':'👦',color:'#2c7a7b',p:pct(ep.reduce((s,p)=>s+Number(p.current||0),0),ep.reduce((s,p)=>s+Number(p.target||0),0)),hasTarget:true,kidId:k.id,isKid:true}})
   ];
   const gEl=document.getElementById('dash-goals-mini');
   gEl.innerHTML=allGoals.map(g=>`
-    <div class="mini-goal" onclick="navigate('goals',document.querySelectorAll('.tab-item')[2])">
+    <div class="mini-goal" onclick="${g.isKid?`navigate('goals',document.querySelectorAll('.tab-item')[2])`:`openSheet('goal','${g.type}')`}" style="cursor:pointer">
       <span class="mini-goal-ico">${g.icon}</span>
       <div class="mini-goal-body">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
@@ -914,9 +945,6 @@ function renderDashboard(){
       <div class="mini-goal-right"><div class="mini-goal-pct" style="color:${g.p>0?g.color:'var(--text3)'}">${g.p}%</div></div>
     </div>`).join('');
 
-  const totalKidSaved=data.kids.reduce((s,k)=>s+k.phases.filter(p=>p.enabled).reduce((ss,p)=>ss+Number(p.current||0),0),0);
-  const kpEl=document.getElementById('dash-kids-pill');
-  if(kpEl)kpEl.textContent=data.kids.length?fmt(totalKidSaved)+' saved':'';
   const kEl=document.getElementById('dash-kids-mini');
   kEl.innerHTML=data.kids.length?data.kids.map(k=>{
     const ep=k.phases.filter(p=>p.enabled);
@@ -953,6 +981,7 @@ function renderDashboard(){
 }
 
 function updateWealthCard(assets,inv,liab){
+  // Wealth card removed from Assets page; update dashboard hero only
   const wealth=assets+inv-liab;
   const wd=document.getElementById('wealth-display');
   const wa=document.getElementById('wealth-assets');
@@ -1122,29 +1151,44 @@ function renderInvestments(){
   document.getElementById('inv-current').textContent=fmt(current);
   document.getElementById('inv-sip').textContent=fmt(sip);
   const pEl=document.getElementById('inv-pnl');pEl.textContent=(pnl>=0?'+':'')+fmt(pnl);pEl.style.color=pnl>=0?'var(--green)':'var(--red)';
-  const c=document.getElementById('inv-sec-count');if(c)c.textContent=data.investments.length;
-  const el=document.getElementById('investments-list');if(!el)return;
-  if(!data.investments.length){el.innerHTML='<div class="empty-state"><div class="empty-state-icon">📈</div><div class="empty-state-text">No investments yet</div></div>';return}
-  el.innerHTML=data.investments.map(inv=>{
-    const pnl=Number(inv.currentValue||0)-Number(inv.invested||0);const pp=inv.invested>0?((pnl/inv.invested)*100).toFixed(1):0;
-    const icon=inv.type==='MutualFund'?'📊':inv.type==='Stock'?'📈':inv.type==='ETF'?'💹':'💰';
-    return`<div class="row-item">
-      <div class="row-icon" style="background:#f5f5f5">${icon}</div>
-      <div class="row-body">
-        <div class="row-title">${inv.name}</div>
-        <div class="row-sub">${inv.type||'Investment'}${inv.sip>0?' · SIP '+fmt(inv.sip)+'/mo':''}</div>
-        <div class="row-change" style="color:${pnl>=0?'var(--green)':'var(--red)'}">${pnl>=0?'▲':'▼'} ${fmt(Math.abs(pnl))} (${pp}%)</div>
-      </div>
-      <div class="row-right">
-        <div class="row-value" style="color:var(--green)">${fmt(inv.currentValue)}</div>
-        <div style="font-size:0.65rem;color:var(--text3);margin-top:2px">${fmt(inv.invested)}</div>
-        <div class="row-actions">
-          <button class="btn-circle" onclick="openSheet('investment',data.investments.find(x=>x.id==='${inv.id}'))"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M11 4H4C3.45 4 3 4.45 3 5V20C3 20.55 3.45 21 4 21H19C19.55 21 20 20.55 20 19V12M18.5 2.5C19.33 1.67 20.67 1.67 21.5 2.5C22.33 3.33 22.33 4.67 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <button class="btn-del" onclick="delInv('${inv.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 6H21M8 6V4C8 3.45 8.45 3 9 3H15C15.55 3 16 3.45 16 4V6M19 6L18.12 19.13C18.05 20.19 17.17 21 16.11 21H7.89C6.83 21 5.95 20.19 5.88 19.13L5 6M10 11V17M14 11V17" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
+  const TYPE_GROUPS=[
+    {key:'MutualFund', secId:'sec-inv-mf', listId:'inv-list-mf', countId:'inv-count-mf', totalId:'inv-total-mf', icon:'📊'},
+    {key:'Stock',      secId:'sec-inv-stock', listId:'inv-list-stock', countId:'inv-count-stock', totalId:'inv-total-stock', icon:'📈'},
+    {key:'ETF',        secId:'sec-inv-etf', listId:'inv-list-etf', countId:'inv-count-etf', totalId:'inv-total-etf', icon:'💹'},
+    {key:'RealEstate', secId:'sec-inv-re', listId:'inv-list-re', countId:'inv-count-re', totalId:'inv-total-re', icon:'🏠'},
+    {key:'Other',      secId:'sec-inv-other', listId:'inv-list-other', countId:'inv-count-other', totalId:'inv-total-other', icon:'💰'},
+  ];
+
+  TYPE_GROUPS.forEach(grp=>{
+    const items=data.investments.filter(i=>(i.type||'Other')===grp.key);
+    const groupTotal=items.reduce((s,i)=>s+Number(i.currentValue||0),0);
+    const cEl=document.getElementById(grp.countId);
+    const tEl=document.getElementById(grp.totalId);
+    if(cEl)cEl.textContent=items.length;
+    if(tEl)tEl.textContent=groupTotal>0?fmt(groupTotal):'₹0';
+    const el=document.getElementById(grp.listId);if(!el)return;
+    if(!items.length){el.innerHTML='<div class="empty-state" style="padding:16px 0 4px"><div class="empty-state-text">No '+grp.key+' investments yet</div></div>';return}
+    el.innerHTML=items.map(inv=>{
+      const pnl=Number(inv.currentValue||0)-Number(inv.invested||0);const pp=inv.invested>0?((pnl/inv.invested)*100).toFixed(1):0;
+      return`<div class="row-item">
+        <div class="row-icon" style="background:#f5f5f5">${grp.icon}</div>
+        <div class="row-body">
+          <div class="row-title">${inv.name}</div>
+          <div class="row-sub">${inv.type||'Investment'}${inv.sip>0?' · SIP '+fmt(inv.sip)+'/mo':''}</div>
+          <div class="row-change" style="color:${pnl>=0?'var(--green)':'var(--red)'}">${pnl>=0?'▲':'▼'} ${fmt(Math.abs(pnl))} (${pp}%)</div>
         </div>
-      </div>
-    </div><div class="row-divider"></div>`;
-  }).join('');
+        <div class="row-right">
+          <div class="row-value" style="color:var(--green)">${fmt(inv.currentValue)}</div>
+          <div style="font-size:0.65rem;color:var(--text3);margin-top:2px">${fmt(inv.invested)}</div>
+          <div class="row-actions">
+            <button class="btn-circle" onclick="openSheet('investment',data.investments.find(x=>x.id==='${inv.id}'))"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M11 4H4C3.45 4 3 4.45 3 5V20C3 20.55 3.45 21 4 21H19C19.55 21 20 20.55 20 19V12M18.5 2.5C19.33 1.67 20.67 1.67 21.5 2.5C22.33 3.33 22.33 4.67 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="btn-del" onclick="delInv('${inv.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 6H21M8 6V4C8 3.45 8.45 3 9 3H15C15.55 3 16 3.45 16 4V6M19 6L18.12 19.13C18.05 20.19 17.17 21 16.11 21H7.89C6.83 21 5.95 20.19 5.88 19.13L5 6M10 11V17M14 11V17" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+      </div><div class="row-divider"></div>`;
+    }).join('');
+  });
 }
 function delInv(id){const inv=data.investments.find(x=>x.id===id);showConfirm('Delete Investment?',`"${inv?inv.name:'This investment'}" will be removed.`,()=>{data.kids.forEach(k=>k.phases.forEach(p=>{p.linkedInvestmentIds=(p.linkedInvestmentIds||[]).filter(x=>x!==id)}));data.investments=data.investments.filter(i=>i.id!==id);save();renderInvestments();renderDashboard();toast('Deleted')})}
 
@@ -1171,7 +1215,7 @@ function buildSheet(type,a,b){
   if(type==='asset')return sheetAsset(a||{});
   if(type==='liability')return sheetLiability(a||{});
   if(type==='goal')return sheetGoal(typeof a==='string'?a:'emergency');
-  if(type==='investment')return sheetInvestment(a||{});
+  if(type==='investment')return sheetInvestment(typeof a==='object'?a:a?data.investments.find(x=>x.id===a)||{}:{});
   if(type==='addChild')return sheetChild(null);
   if(type==='editChild')return sheetChild(data.kids.find(k=>k.id===a));
   if(type==='managePhases')return sheetManagePhases(a);
@@ -1235,16 +1279,16 @@ function sheetGoal(pid){
   </div>`}
 function saveGoal(){const type=document.getElementById('f-gtype').value;const pr=GOAL_PRESETS.find(p=>p.id===type);const obj={type,name:pr.name,target:Number(document.getElementById('f-gtarget').value),current:Number(document.getElementById('f-gcurrent').value),timePeriod:document.getElementById('f-gtime').value};const ex=data.goals.find(g=>g.type===type);if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓')}
 
-function sheetInvestment(inv){return`<div class="sheet-hdr"><div class="sheet-title">${inv.id?'Edit':'Add'} Investment</div><button class="sheet-close" onclick="closeSheet()">✕</button></div>
+function sheetInvestment(inv){const t=inv?inv.type||'MutualFund':'MutualFund';return`<div class="sheet-hdr"><div class="sheet-title">${inv&&inv.id?'Edit':'Add'} Investment</div><button class="sheet-close" onclick="closeSheet()">✕</button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Type</label><select class="fi fi-sel" id="f-itype"><option value="MutualFund" ${inv.type==='MutualFund'?'selected':''}>📊 Mutual Fund</option><option value="Stock" ${inv.type==='Stock'?'selected':''}>📈 Stock</option><option value="ETF" ${inv.type==='ETF'?'selected':''}>💹 ETF</option><option value="Other" ${inv.type==='Other'?'selected':''}>💰 Other</option></select></div>
-    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-iname" placeholder="e.g. Nifty 50 Index Fund" value="${inv.name||''}"/></div>
+    <div class="fg"><label class="fl">Type</label><select class="fi fi-sel" id="f-itype"><option value="MutualFund" ${t==='MutualFund'?'selected':''}>📊 Mutual Fund</option><option value="Stock" ${t==='Stock'?'selected':''}>📈 Stock</option><option value="ETF" ${t==='ETF'?'selected':''}>💹 ETF</option><option value="RealEstate" ${t==='RealEstate'?'selected':''}>🏠 Real Estate</option><option value="Other" ${t==='Other'?'selected':''}>💰 Other</option></select></div>
+    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-iname" placeholder="e.g. Nifty 50 Index Fund" value="${inv&&inv.name||''}"/></div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-iinv" type="number" value="${inv.invested||''}"/></div>
-      <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-icur" type="number" value="${inv.currentValue||''}"/></div>
+      <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-iinv" type="number" value="${inv&&inv.invested||''}"/></div>
+      <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-icur" type="number" value="${inv&&inv.currentValue||''}"/></div>
     </div>
-    <div class="fg"><label class="fl">Monthly SIP (₹)</label><input class="fi" id="f-isip" type="number" value="${inv.sip||''}"/></div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveInvestment('${inv.id||''}')">Save</button></div>
+    <div class="fg"><label class="fl">Monthly SIP (₹)</label><input class="fi" id="f-isip" type="number" value="${inv&&inv.sip||''}"/></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveInvestment('${inv&&inv.id||''}')">Save</button></div>
   </div>`}
 function saveInvestment(editId){const name=document.getElementById('f-iname').value.trim();if(!name){toast('Enter a name');return}const obj={type:document.getElementById('f-itype').value,name,invested:Number(document.getElementById('f-iinv').value),currentValue:Number(document.getElementById('f-icur').value),sip:Number(document.getElementById('f-isip').value)};if(editId){Object.assign(data.investments.find(x=>x.id===editId)||{},obj)}else data.investments.push({id:uid(),...obj});save();closeSheet();renderInvestments();renderDashboard();toast('Saved ✓')}
 
