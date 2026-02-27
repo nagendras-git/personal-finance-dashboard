@@ -427,6 +427,14 @@ body {
 .phase-opt.on { border-color:rgba(255,255,255,0.25); background:var(--surface3) }
 .phase-opt-check { width:17px; height:17px; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:var(--bg); flex-shrink:0; transition:all 150ms var(--spring) }
 .phase-opt.on .phase-opt-check { background:var(--text1); border-color:var(--text1) }
+.phase-opt.custom { border-style:dashed }
+.add-custom-phase-row {
+  display:flex; gap:7px; margin-top:6px; padding:10px 12px;
+  background:var(--surface2); border:1.5px dashed var(--border);
+  border-radius:var(--r); align-items:center;
+}
+.add-custom-phase-row .fi { font-size:14px !important; padding:7px 10px; flex:1 }
+.add-custom-phase-row .fi-sm { width:64px; flex:none }
 
 /* ── SIP CALLOUT ── */
 .sip-callout { background:var(--green-bg); border:1px solid rgba(74,222,128,0.2); border-radius:var(--r); padding:10px 13px; margin-top:9px }
@@ -455,35 +463,60 @@ body {
 
 /* ── FAB ── */
 .fab {
-  position:fixed; right:16px; bottom:calc(var(--nav-h) + 14px + var(--safe-b));
-  width:48px; height:48px; border-radius:50%;
+  position:fixed; right:20px; bottom:calc(var(--nav-h) + 16px + var(--safe-b));
+  width:52px; height:52px; border-radius:50%;
   background:var(--text1); color:var(--bg); border:none;
-  font-size:1.4rem; cursor:pointer; z-index:150;
-  box-shadow:0 4px 20px rgba(0,0,0,0.6);
+  cursor:pointer; z-index:150;
+  box-shadow:0 4px 24px rgba(0,0,0,0.55);
   display:flex; align-items:center; justify-content:center;
-  transition:transform 200ms var(--spring);
+  transition:transform 220ms var(--spring), box-shadow 200ms;
 }
-.fab:active { transform:scale(0.9) }
-.fab-menu {
-  position:fixed; right:16px; bottom:calc(var(--nav-h) + 72px + var(--safe-b));
-  display:flex; flex-direction:column; gap:9px; align-items:flex-end;
-  z-index:149; pointer-events:none; opacity:0; transform:translateY(10px);
-  transition:opacity 0.18s,transform 0.18s var(--ease);
+.fab:active { transform:scale(0.88); box-shadow:0 2px 10px rgba(0,0,0,0.4) }
+.fab-icon { transition:transform 280ms var(--spring); display:flex; align-items:center; justify-content:center }
+.fab.open .fab-icon { transform:rotate(45deg) }
+
+/* ── QUICK ADD SHEET ── */
+.qa-overlay {
+  position:fixed; inset:0; z-index:400; background:var(--scrim);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.22s;
 }
-.fab-menu.open { pointer-events:all; opacity:1; transform:translateY(0) }
-.fab-item { display:flex; align-items:center; gap:9px; cursor:pointer }
-.fab-item-label {
+.qa-overlay.open { opacity:1; pointer-events:all }
+.qa-sheet {
+  position:fixed; bottom:0; left:0; right:0; z-index:401;
+  max-width:480px; margin:0 auto;
+  background:var(--surface); border-radius:24px 24px 0 0;
+  padding-bottom:calc(20px + var(--safe-b));
+  transform:translateY(110%); transition:transform 0.32s var(--ease);
+  visibility:hidden;
+}
+.qa-sheet.open { transform:translateY(0); visibility:visible }
+.qa-handle { width:36px; height:4px; background:var(--border); border-radius:99px; margin:12px auto 0 }
+.qa-title {
+  font-size:0.7rem; font-weight:700; color:var(--text3);
+  text-transform:uppercase; letter-spacing:0.1em;
+  padding:16px 20px 10px; border-bottom:1px solid var(--border2);
+}
+.qa-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; padding:14px 16px;
+}
+.qa-action {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:10px; padding:18px 12px;
   background:var(--surface2); border:1px solid var(--border);
-  padding:6px 13px; border-radius:99px;
-  font-size:0.78rem; font-weight:600; color:var(--text1);
-  white-space:nowrap;
+  border-radius:var(--r-lg); cursor:pointer;
+  transition:background 130ms, transform 150ms var(--spring), border-color 130ms;
+  text-align:center;
 }
-.fab-item-btn {
-  width:38px; height:38px; border-radius:50%; border:none; background:var(--surface2);
-  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
-  font-size:1rem; cursor:pointer; transition:transform 150ms var(--spring); color:var(--text1);
+.qa-action:active { transform:scale(0.95); background:var(--surface3) }
+.qa-action-icon {
+  width:44px; height:44px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem;
 }
-.fab-item-btn:active { transform:scale(0.9) }
+.qa-action-label { font-size:0.82rem; font-weight:700; color:var(--text1); line-height:1.2 }
+.qa-action-sub { font-size:0.65rem; color:var(--text3); line-height:1.3; margin-top:1px }
 
 /* ── CONFIRM ── */
 .confirm-overlay {
@@ -570,7 +603,7 @@ body {
       <!-- Total Wealth -->
       <div style="padding:18px 18px 16px;border-bottom:1px solid var(--border2)">
         <div style="font-size:0.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px">Total Wealth</div>
-        <div style="font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--text1);letter-spacing:-1.5px;line-height:1" id="dash-networth">₹0</div>
+        <div style="font-family:var(--mono);font-size:2rem;font-weight:700;letter-spacing:-1.5px;line-height:1" id="dash-networth">₹0</div>
       </div>
       <!-- Row 1: Assets · Liabilities · SIP -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border2)">
@@ -594,8 +627,8 @@ body {
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-invested">₹0</div>
         </div>
         <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Value</div>
-          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-current">₹0</div>
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Returns</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700" id="dash-returns">—</div>
         </div>
         <div style="padding:13px 16px">
           <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">P&amp;L</div>
@@ -746,14 +779,33 @@ body {
   </div>
 </div>
 
-<!-- FAB MENU -->
-<div class="fab-menu" id="fab-menu">
-  <div class="fab-item" onclick="closeFab();openSheet('asset')"><span class="fab-item-label">Add Asset</span><button class="fab-item-btn">🏦</button></div>
-  <div class="fab-item" onclick="closeFab();openSheet('liability')"><span class="fab-item-label">Add Liability</span><button class="fab-item-btn">💳</button></div>
-  <div class="fab-item" onclick="closeFab();openSheet('goal','emergency')"><span class="fab-item-label">Update Goal</span><button class="fab-item-btn">🎯</button></div>
-  <div class="fab-item" onclick="closeFab();openSheet('child',null)"><span class="fab-item-label">Add Child</span><button class="fab-item-btn">👶</button></div>
+<!-- QUICK ADD OVERLAY + SHEET -->
+<div class="qa-overlay" id="qa-overlay" onclick="closeQuickAdd()"></div>
+<div class="qa-sheet" id="qa-sheet">
+  <div class="qa-handle"></div>
+  <div class="qa-title">Quick Add</div>
+  <div class="qa-grid">
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('asset')" style="border-color:rgba(96,165,250,0.25)">
+      <div class="qa-action-icon" style="background:rgba(96,165,250,0.12)">🏦</div>
+      <div><div class="qa-action-label">Add Asset</div><div class="qa-action-sub">EPF, MF, Gold, FD…</div></div>
+    </div>
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('liability')" style="border-color:rgba(248,113,113,0.25)">
+      <div class="qa-action-icon" style="background:rgba(248,113,113,0.12)">💳</div>
+      <div><div class="qa-action-label">Add Liability</div><div class="qa-action-sub">Loan, EMI, Credit card…</div></div>
+    </div>
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:rgba(74,222,128,0.25)">
+      <div class="qa-action-icon" style="background:rgba(74,222,128,0.12)">🎯</div>
+      <div><div class="qa-action-label">Update Goal</div><div class="qa-action-sub">Emergency, Retirement…</div></div>
+    </div>
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('child',null)" style="border-color:rgba(251,191,36,0.25)">
+      <div class="qa-action-icon" style="background:rgba(251,191,36,0.12)">👶</div>
+      <div><div class="qa-action-label">Add Child</div><div class="qa-action-sub">Education planning…</div></div>
+    </div>
+  </div>
 </div>
-<button class="fab" id="fab-btn" onclick="toggleFab()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+<button class="fab" id="fab-btn" onclick="toggleQuickAdd()" aria-label="Quick add">
+  <div class="fab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+</button>
 
 <!-- TAB BAR -->
 <nav class="tab-bar">
@@ -822,6 +874,7 @@ const GOAL_PRESETS = [
   {id:'retirement',icon:'🌴', name:'Retirement',       color:'#fbbf24', light:'rgba(251,191,36,0.1)',  isIns:false},
 ];
 const KID_PHASES = [
+  {id:'preprimary', label:'Pre-Primary',     icon:'🎒', ageStart:0,  ageEnd:5},
   {id:'primary',    label:'Primary School',  icon:'📚', ageStart:6,  ageEnd:11},
   {id:'intermediate',label:'Middle School',  icon:'📖', ageStart:12, ageEnd:14},
   {id:'graduation', label:'Graduation',      icon:'🎓', ageStart:18, ageEnd:22},
@@ -854,7 +907,11 @@ function sipNeeded(target,current,years){const r=0.12/12;const n=years*12;if(n<=
 function linkedAssetTotal(ids){if(!ids||!ids.length)return 0;return (ids).reduce((s,id)=>{const a=data.assets.find(x=>x.id===id);return s+Number(a?.currentValue||0)},0)}
 function getAsset(v){return ASSET_CATS.find(c=>c.v===v)||ASSET_CATS[ASSET_CATS.length-1]}
 function getLiab(v){return LIAB_CATS.find(c=>c.v===v)||LIAB_CATS[LIAB_CATS.length-1]}
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
+/** Escape user strings before inserting into innerHTML to prevent XSS */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+/** Time-aware greeting */
+function greeting(){const h=new Date().getHours();if(h<12)return'Good morning ☀️';if(h<17)return'Good afternoon 👋';if(h<21)return'Good evening 🌙';return'Good night 🌙'}
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){toast('⚠️ Storage full — export a backup!')}}
 function load(){
   try{const d=localStorage.getItem(STORAGE_KEY);if(d){data=JSON.parse(d)}}catch(e){}
   // Migration: merge old data.investments into data.assets
@@ -903,13 +960,15 @@ function renderDashboard(){
   const monthlySIP=data.assets.reduce((s,a)=>s+Number(a.sip||0),0);
   const netWorth=totalAssets-totalLiab;
   const pnl=totalAssets-totalInvested;const isPos=pnl>=0;
+  const returnPct=totalInvested>0?((pnl/totalInvested)*100).toFixed(1):null;
+  const nwColor=netWorth<0?'var(--red)':netWorth>0?'var(--green)':'var(--text2)';
   const set=(id,v,clr)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(clr)el.style.color=clr}};
-  set('dash-networth',fmt(netWorth));
+  set('dash-networth',fmt(netWorth),nwColor);
   set('dash-sip',fmt(monthlySIP));
   set('dash-assets-val',fmt(totalAssets));
   set('dash-liab-val',fmt(totalLiab));
   set('dash-invested',fmt(totalInvested));
-  set('dash-current',fmt(totalAssets));
+  set('dash-returns',returnPct!==null?(isPos?'+':'')+returnPct+'%':'—',isPos?'var(--green)':'var(--red)');
   set('dash-pnl',(isPos?'+':'')+fmt(pnl),isPos?'var(--green)':'var(--red)');
   updateWealthCard(totalAssets,totalLiab);
 
@@ -1114,26 +1173,49 @@ function renderKids(){
   el.innerHTML=data.kids.map(k=>{
     const ep=k.phases.filter(p=>p.enabled);
     // Auto-derive each phase current from linked assets
-    const ks=ep.reduce((s,p)=>{const linkedIds=p.linkedAssetIds||[];return s+(linkedIds.length>0?linkedAssetTotal(linkedIds):Number(p.current||0))},0);
-    const kt=ep.reduce((s,p)=>s+Number(p.target||0),0);const kp=pct(ks,kt);
-    const phaseRows=k.phases.filter(ph=>ph.enabled).map(ph=>{
-      const pd=KID_PHASES.find(p=>p.id===ph.phaseId);if(!pd)return'';
+    const ks=ep.reduce((s,p)=>{const linkedIds=p.linkedAssetIds||[];return s+(linkedIds.length>0?linkedAssetTotal(linkedIds):Number(p.current||0))},0)
+      + (k.customPhases||[]).reduce((s,cp)=>s+Number(cp.current||0),0);
+    const kt=ep.reduce((s,p)=>s+Number(p.target||0),0)
+      + (k.customPhases||[]).reduce((s,cp)=>s+Number(cp.target||0),0);
+    const kp=pct(ks,kt);
+    // Build phase rows in KID_PHASES definition order (Pre-Primary first, Marriage last)
+    const stdPhaseRows=KID_PHASES.map(pd=>{
+      const ph=k.phases.find(p=>p.phaseId===pd.id&&p.enabled);
+      if(!ph)return'';
       const linkedIds=ph.linkedAssetIds||[];
       const phaseCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
       const p=pct(phaseCurrent,ph.target||0);
       const yl=yearsUntil(k.birthYear,pd.ageStart);
       return`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
-        <span class="phase-ico"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span>
+        <span class="phase-ico" style="font-size:0.9rem">${pd.icon}</span>
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
         </div>
         <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.78rem;font-weight:700;text-align:right;color:${p>0?'var(--text1)':'var(--text3)'}; margin-bottom:3px">${p}%</div>
+          <div style="font-family:var(--mono);font-size:0.78rem;font-weight:700;text-align:right;color:${p>0?'var(--text1)':'var(--text3)'};margin-bottom:3px">${p}%</div>
           <div class="prog-track"><div class="prog-fill" style="background:var(--green);width:${p}%"></div></div>
         </div>
       </div>`;
     }).join('');
+    // Custom phases rows
+    const customPhaseRows=(k.customPhases||[]).map(cp=>{
+      const current=Number(cp.current||0);const target=Number(cp.target||0);
+      const p=pct(current,target);
+      const yl=yearsUntil(k.birthYear,cp.ageStart);
+      return`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
+        <span class="phase-ico" style="font-size:0.9rem">📌</span>
+        <div class="phase-info">
+          <div class="phase-name">${esc(cp.label)}</div>
+          <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+        </div>
+        <div class="phase-prog">
+          <div style="font-family:var(--mono);font-size:0.78rem;font-weight:700;text-align:right;color:${p>0?'var(--text1)':'var(--text3)'};margin-bottom:3px">${p}%</div>
+          <div class="prog-track"><div class="prog-fill" style="background:#a78bfa;width:${p}%"></div></div>
+        </div>
+      </div>`;
+    }).join('');
+    const phaseRows=stdPhaseRows+customPhaseRows;
     return`<div class="child-card">
       <div class="child-hdr" onclick="this.parentElement.querySelector('.child-phases').classList.toggle('closed')">
         <div class="child-avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
@@ -1185,6 +1267,7 @@ function toggleCheck(i){data.checklist[i]=!data.checklist[i];save();renderCheckl
 
 /* ── SHEETS ── */
 function openSheet(type,arg,arg2){
+  closeQuickAdd(); // always close quick-add before opening a detail sheet
   let html='';
   if(type==='asset')html=sheetAsset(arg||{});
   else if(type==='liability')html=sheetLiability(arg||{});
@@ -1193,6 +1276,7 @@ function openSheet(type,arg,arg2){
   else if(type==='managePhases')html=sheetManagePhases(arg);
   else if(type==='phase')html=sheetEditPhase(arg,arg2);
   else if(type==='customGoal')html=sheetCustomGoal(arg||null);
+  else if(type==='customPhase')html=sheetEditCustomPhase(arg,arg2);
   else if(type==='profile')html=sheetProfile();
   document.getElementById('sheet-content').innerHTML=html;
   document.getElementById('sheet-overlay').classList.add('open');
@@ -1454,11 +1538,80 @@ function saveChild(editId){
 
 function sheetManagePhases(kidId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';
-  const phasesHtml=KID_PHASES.map(ph=>{const ex=kid.phases.find(p=>p.phaseId===ph.id)||{};const on=ex.enabled||false;return`<div class="phase-opt ${on?'on':''}" id="mpopt-${ph.id}" onclick="toggleMPhaseOpt('${ph.id}')"><div style="font-size:0.9rem">${ph.icon}</div><div style="flex:1"><div style="font-size:0.81rem;font-weight:600">${ph.label}</div><div style="font-size:0.66rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div><div class="phase-opt-check">${on?'✓':''}</div></div>`}).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">⚙ ${kid.name}'s Phases</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-  <div class="sheet-body"><div class="phase-opts">${phasesHtml}</div><div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveManagePhases('${kidId}')">Save</button></div></div>`}
+  if(!kid.customPhases)kid.customPhases=[];
+  const stdHtml=KID_PHASES.map(ph=>{
+    const ex=kid.phases.find(p=>p.phaseId===ph.id)||{};const on=ex.enabled||false;
+    return`<div class="phase-opt ${on?'on':''}" id="mpopt-${ph.id}" onclick="toggleMPhaseOpt('${ph.id}')">
+      <div style="font-size:0.9rem">${ph.icon}</div>
+      <div style="flex:1"><div style="font-size:0.81rem;font-weight:600">${ph.label}</div><div style="font-size:0.66rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div>
+      <div class="phase-opt-check">${on?'✓':''}</div>
+    </div>`;
+  }).join('');
+  const customHtml=kid.customPhases.map(cp=>{
+    return`<div class="phase-opt on custom" id="mpopt-custom-${cp.id}">
+      <div style="font-size:0.9rem">📌</div>
+      <div style="flex:1"><div style="font-size:0.81rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.66rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div>
+      <button class="btn-del" aria-label="Delete custom phase" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`;
+  }).join('');
+  return`<div class="sheet-hdr"><div class="sheet-title">⚙ ${esc(kid.name)}'s Phases</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="sheet-body">
+    <div class="form-sec" style="margin-top:0">Standard Phases</div>
+    <div class="phase-opts">${stdHtml}</div>
+    <div class="form-sec">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— e.g. Coaching, Exchange Program</span></div>
+    <div class="phase-opts" id="custom-phase-list">${customHtml||'<div style="font-size:0.74rem;color:var(--text3);padding:4px 2px">No custom phases yet.</div>'}</div>
+    <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
+      <input class="fi" id="cp-name" placeholder="Phase name" style="flex:1"/>
+      <input class="fi" id="cp-age-start" type="number" min="0" max="35" placeholder="Age from" style="width:82px"/>
+      <input class="fi" id="cp-age-end" type="number" min="0" max="40" placeholder="Age to" style="width:72px"/>
+      <button class="btn btn-primary btn-sm" onclick="addCustomPhaseInSheet('${kidId}')" style="white-space:nowrap;padding:10px 13px">+ Add</button>
+    </div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveManagePhases('${kidId}')">Save</button></div>
+  </div>`}
 function toggleMPhaseOpt(id){const el=document.getElementById('mpopt-'+id);const on=el.classList.toggle('on');el.querySelector('.phase-opt-check').textContent=on?'✓':''}
-function saveManagePhases(kidId){const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;KID_PHASES.forEach(ph=>{const on=document.getElementById('mpopt-'+ph.id)?.classList.contains('on');let ex=kid.phases.find(p=>p.phaseId===ph.id);if(!ex){ex={phaseId:ph.id,enabled:false,target:0,current:0,linkedInvestmentIds:[],notes:''};kid.phases.push(ex)}ex.enabled=!!on});save();closeSheet();renderKids();toast('Updated ✓')}
+function addCustomPhaseInSheet(kidId){
+  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
+  if(!kid.customPhases)kid.customPhases=[];
+  const name=document.getElementById('cp-name').value.trim();
+  const s=Number(document.getElementById('cp-age-start').value||0);
+  const e=Number(document.getElementById('cp-age-end').value||0);
+  if(!name){toast('Enter a phase name');return}
+  if(s<0||e<s){toast('Check the age range');return}
+  const cp={id:uid(),label:name,ageStart:s,ageEnd:e};
+  kid.customPhases.push(cp);
+  // Refresh sheet in-place
+  const listEl=document.getElementById('custom-phase-list');
+  if(listEl){
+    const div=document.createElement('div');
+    div.className='phase-opt on custom';div.id='mpopt-custom-'+cp.id;
+    div.innerHTML=`<div style="font-size:0.9rem">📌</div><div style="flex:1"><div style="font-size:0.81rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.66rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    // Remove "No custom phases" placeholder if present
+    listEl.querySelectorAll('div:not(.phase-opt)').forEach(el=>el.remove());
+    listEl.appendChild(div);
+  }
+  document.getElementById('cp-name').value='';
+  document.getElementById('cp-age-start').value='';
+  document.getElementById('cp-age-end').value='';
+  toast('Phase added — tap Save to confirm');
+}
+function deleteCustomPhaseInSheet(kidId,cpId){
+  const kid=data.kids.find(k=>k.id===kidId);if(!kid||!kid.customPhases)return;
+  kid.customPhases=kid.customPhases.filter(p=>p.id!==cpId);
+  const el=document.getElementById('mpopt-custom-'+cpId);if(el)el.remove();
+  toast('Removed — tap Save to confirm');
+}
+function saveManagePhases(kidId){
+  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
+  KID_PHASES.forEach(ph=>{
+    const on=document.getElementById('mpopt-'+ph.id)?.classList.contains('on');
+    let ex=kid.phases.find(p=>p.phaseId===ph.id);
+    if(!ex){ex={phaseId:ph.id,enabled:false,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ex)}
+    ex.enabled=!!on;
+  });
+  save();closeSheet();renderKids();toast('Updated ✓');
+}
 
 function sheetEditPhase(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';const pd=KID_PHASES.find(p=>p.id===phaseId);if(!pd)return'';
@@ -1494,6 +1647,49 @@ function sheetEditPhase(kidId,phaseId){
     <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Save Phase</button></div>
   </div>`}
+function sheetEditCustomPhase(kidId,cpId){
+  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';
+  if(!kid.customPhases)kid.customPhases=[];
+  const cp=kid.customPhases.find(p=>p.id===cpId);if(!cp)return'';
+  const yl=yearsUntil(kid.birthYear,cp.ageStart);
+  const sip=cp.target>0&&yl>0?sipNeeded(cp.target,Number(cp.current||0),yl):0;
+  return`<div class="sheet-hdr"><div class="sheet-title">📌 ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="sheet-body">
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
+      <div style="font-size:1.4rem">${kid.gender==='girl'?'👧':'👦'}</div>
+      <div><div style="font-weight:700;font-size:0.83rem">${esc(kid.name)}</div><div style="font-size:0.68rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${cp.target||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cph-current" type="number" min="0" placeholder="0" value="${cp.current||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+    </div>
+    <div id="cph-sip-box" style="${sip>0?'':'display:none'}" class="sip-callout">
+      <div class="sip-label">Monthly SIP Needed</div>
+      <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'—'}</div>
+    </div>
+    <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes…" value="${esc(cp.notes||'')}"/></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Save</button></div>
+  </div>`
+}
+function updateCustomPhaseSIP(kidId,cpId){
+  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
+  const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
+  const t=Number(document.getElementById('f-cph-target')?.value||0);
+  const c=Number(document.getElementById('f-cph-current')?.value||0);
+  const yl=yearsUntil(kid.birthYear,cp.ageStart);
+  const box=document.getElementById('cph-sip-box');
+  const valEl=document.getElementById('cph-sip-val');
+  if(t>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,yl));}
+  else{if(box)box.style.display='none';}
+}
+function saveCustomPhase(kidId,cpId){
+  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
+  const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
+  cp.target=Number(document.getElementById('f-cph-target')?.value||0);
+  cp.current=Number(document.getElementById('f-cph-current')?.value||0);
+  cp.notes=document.getElementById('f-cph-notes')?.value?.trim()||'';
+  save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
+}
 function toggleInvLink(invId){const el=document.getElementById('il-'+invId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
 function togglePhaseAssetLink(assetId,kidId,phaseId){
   const el=document.getElementById('pal-'+assetId);if(!el)return;
@@ -1604,10 +1800,20 @@ function loadSampleData(){
   save();renderDashboard();renderKids();renderGoals();renderProfile();toast('Sample data loaded ✓');
 }
 
-let _fabOpen=false;
-function toggleFab(){_fabOpen=!_fabOpen;document.getElementById('fab-menu').classList.toggle('open',_fabOpen);document.getElementById('fab-btn').textContent=_fabOpen?'✕':'＋';document.getElementById('fab-btn').style.transform=_fabOpen?'rotate(45deg)':'';}
-function closeFab(){_fabOpen=false;document.getElementById('fab-menu').classList.remove('open');document.getElementById('fab-btn').textContent='＋';document.getElementById('fab-btn').style.transform='';}
-document.addEventListener('click',function(e){if(_fabOpen&&!e.target.closest('.fab')&&!e.target.closest('.fab-menu'))closeFab()});
+function toggleQuickAdd(){
+  const open=document.getElementById('qa-sheet').classList.contains('open');
+  if(open){closeQuickAdd();}else{openQuickAdd();}
+}
+function openQuickAdd(){
+  document.getElementById('qa-overlay').classList.add('open');
+  document.getElementById('qa-sheet').classList.add('open');
+  document.getElementById('fab-btn').classList.add('open');
+}
+function closeQuickAdd(){
+  document.getElementById('qa-overlay').classList.remove('open');
+  document.getElementById('qa-sheet').classList.remove('open');
+  document.getElementById('fab-btn').classList.remove('open');
+}
 
 function showConfirm(title,sub,onConfirm){_confirmCb=onConfirm;document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-sub').textContent=sub;document.getElementById('confirm-overlay').classList.add('open');document.getElementById('confirm-ok-btn').onclick=()=>{const cb=_confirmCb;closeConfirm();if(cb)cb()}}
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null}
