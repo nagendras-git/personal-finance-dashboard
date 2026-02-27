@@ -594,7 +594,7 @@ body {
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-invested">₹0</div>
         </div>
         <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Current</div>
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Value</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-current">₹0</div>
         </div>
         <div style="padding:13px 16px">
@@ -750,7 +750,6 @@ body {
 <div class="fab-menu" id="fab-menu">
   <div class="fab-item" onclick="closeFab();openSheet('asset')"><span class="fab-item-label">Add Asset</span><button class="fab-item-btn">🏦</button></div>
   <div class="fab-item" onclick="closeFab();openSheet('liability')"><span class="fab-item-label">Add Liability</span><button class="fab-item-btn">💳</button></div>
-  <div class="fab-item" onclick="closeFab();openSheet('investment')"><span class="fab-item-label">Add Investment</span><button class="fab-item-btn">📈</button></div>
   <div class="fab-item" onclick="closeFab();openSheet('goal','emergency')"><span class="fab-item-label">Update Goal</span><button class="fab-item-btn">🎯</button></div>
   <div class="fab-item" onclick="closeFab();openSheet('child',null)"><span class="fab-item-label">Add Child</span><button class="fab-item-btn">👶</button></div>
 </div>
@@ -837,19 +836,9 @@ const CHECKLIST_ITEMS = [
   {label:'No high-interest debt',        desc:'Credit card / personal loans cleared'},
   {label:'Will / Nomination updated',    desc:'Nominees set on all accounts'},
 ];
-const INV_TYPES = [
-  {v:'MutualFund',l:'Mutual Fund', icon:'📊', group:'Growth'},
-  {v:'ETF',       l:'ETF',         icon:'💹', group:'Growth'},
-  {v:'Stock',     l:'Stock',       icon:'📈', group:'Growth'},
-  {v:'PPF',       l:'PPF (Safe Debt)',icon:'🏦',group:'Safe Debt'},
-  {v:'EPF',       l:'EPF/EPFO (Safe Debt)',icon:'🏛️',group:'Safe Debt'},
-  {v:'Gold',      l:'Gold / Hedge',icon:'🥇', group:'Hedge'},
-  {v:'Other',     l:'Other',       icon:'💼', group:'Other'},
-];
-
 let data = {
   profile:{name:'', avatarColor:'#6366f1'},
-  assets:[], liabilities:[], goals:[], kids:[], investments:[], customGoals:[],
+  assets:[], liabilities:[], goals:[], kids:[], customGoals:[],
   checklist:[false,false,false,false,false,false]
 };
 let _confirmCb=null;
@@ -862,11 +851,26 @@ function year(){return new Date().getFullYear()}
 function age(bYear){return year()-bYear}
 function yearsUntil(bYear,ageTarget){return Math.max(0,(bYear+ageTarget)-year())}
 function sipNeeded(target,current,years){const r=0.12/12;const n=years*12;if(n<=0)return Math.max(0,target-current);const fv=current*Math.pow(1+r,n);const needed=target-fv;return needed<=0?0:needed*r/(Math.pow(1+r,n)-1)}
+function linkedAssetTotal(ids){if(!ids||!ids.length)return 0;return (ids).reduce((s,id)=>{const a=data.assets.find(x=>x.id===id);return s+Number(a?.currentValue||0)},0)}
 function getAsset(v){return ASSET_CATS.find(c=>c.v===v)||ASSET_CATS[ASSET_CATS.length-1]}
 function getLiab(v){return LIAB_CATS.find(c=>c.v===v)||LIAB_CATS[LIAB_CATS.length-1]}
-function getInvType(v){return INV_TYPES.find(t=>t.v===v)||INV_TYPES[INV_TYPES.length-1]}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
-function load(){try{const d=localStorage.getItem(STORAGE_KEY);if(d){data=JSON.parse(d)}}catch(e){}}
+function load(){
+  try{const d=localStorage.getItem(STORAGE_KEY);if(d){data=JSON.parse(d)}}catch(e){}
+  // Migration: merge old data.investments into data.assets
+  if(data.investments&&data.investments.length){
+    const INV_TO_CAT={'MutualFund':'MutualFunds','ETF':'ETF','Stock':'Stocks','PPF':'PPF','EPF':'EPF','Gold':'Gold','Other':'Other'};
+    data.investments.forEach(inv=>{
+      const cat=INV_TO_CAT[inv.type]||'Other';
+      // Only add if not already duplicated (match by name+category)
+      const exists=data.assets.some(a=>a.name===inv.name&&a.category===cat);
+      if(!exists){data.assets.push({id:inv.id,category:cat,name:inv.name,currentValue:Number(inv.currentValue||0),invested:Number(inv.invested||0),sip:Number(inv.sip||0)})}
+    });
+    delete data.investments;
+    save();
+  }
+  if(!data.customGoals)data.customGoals=[];
+}
 
 function renderProfile(){
   const n=data.profile.name||'';const firstName=n.split(' ')[0]||'WealthPilot';
@@ -888,52 +892,40 @@ function navigate(page,btn){
 function renderPage(p){
   if(p==='dashboard')renderDashboard();
   if(p==='goals'){renderKids();renderGoals()}
-  if(p==='investments'){renderAssets();renderLiabilities();renderInvestments()}
+  if(p==='investments'){renderAssets();renderLiabilities()}
   if(p==='more'){renderChecklist()}
 }
 
 function renderDashboard(){
   const totalAssets=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
   const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
-  const totalCurrent=data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
-  const monthlySIP=data.investments.reduce((s,i)=>s+Number(i.sip||0),0);
-  const netWorth=totalAssets+totalCurrent-totalLiab;
-
-  const totalInvested=data.investments.reduce((s,i)=>s+Number(i.invested||0),0);
-  const pnl=totalCurrent-totalInvested;const isPos=pnl>=0;
+  const totalInvested=data.assets.reduce((s,a)=>s+Number(a.invested||0),0);
+  const monthlySIP=data.assets.reduce((s,a)=>s+Number(a.sip||0),0);
+  const netWorth=totalAssets-totalLiab;
+  const pnl=totalAssets-totalInvested;const isPos=pnl>=0;
   const set=(id,v,clr)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(clr)el.style.color=clr}};
   set('dash-networth',fmt(netWorth));
   set('dash-sip',fmt(monthlySIP));
   set('dash-assets-val',fmt(totalAssets));
   set('dash-liab-val',fmt(totalLiab));
   set('dash-invested',fmt(totalInvested));
-  set('dash-current',fmt(totalCurrent));
+  set('dash-current',fmt(totalAssets));
   set('dash-pnl',(isPos?'+':'')+fmt(pnl),isPos?'var(--green)':'var(--red)');
-  updateWealthCard(totalAssets,totalCurrent,totalLiab);
+  updateWealthCard(totalAssets,totalLiab);
 
   // Asset Category Breakdown
   const catEl=document.getElementById('dash-asset-cats');
   const catCntEl=document.getElementById('dash-cat-count');
   if(catEl){
-    if(!data.assets.length&&!data.investments.length){
+    if(!data.assets.length){
       catEl.innerHTML='<div style="padding:10px 4px 6px;font-size:0.76rem;color:var(--text3);text-align:center">Add assets to see breakdown</div>';
       if(catCntEl)catCntEl.textContent='No assets';
     } else {
-      // Build per-category totals from assets
       const catMap={};
       data.assets.forEach(a=>{
         const info=getAsset(a.category);const v=Number(a.currentValue||0);
         if(!catMap[a.category])catMap[a.category]={info,total:0,count:0};
         catMap[a.category].total+=v;catMap[a.category].count++;
-      });
-      // Also include MutualFund / investments as a group under their asset cat
-      data.investments.forEach(inv=>{
-        // Map inv types to asset category display
-        const typeToAssetCat={'MutualFund':'MutualFunds','ETF':'ETF','Stock':'Stocks','PPF':'PPF','EPF':'EPF','Gold':'Gold','Other':'Other'};
-        const catKey=typeToAssetCat[inv.type]||'Other';
-        const info=getAsset(catKey);const v=Number(inv.currentValue||0);
-        if(!catMap[catKey])catMap[catKey]={info,total:0,count:0};
-        catMap[catKey].total+=v;catMap[catKey].count++;
       });
       const cats=Object.values(catMap).filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
       const grandTotal=cats.reduce((s,c)=>s+c.total,0)||1;
@@ -954,28 +946,27 @@ function renderDashboard(){
   }
 }
 
-function updateWealthCard(assets,inv,liab){
-  const w=assets+inv-liab;
+function updateWealthCard(assets,liab){
+  const w=assets-liab;
   const set=(id,v,style)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(style)el.style.cssText=style}};
-  set('wealth-display',fmt(w));set('wealth-assets',fmt(assets));set('wealth-inv',fmt(inv));set('wealth-liab',fmt(liab));
+  set('wealth-display',fmt(w));set('wealth-assets',fmt(assets));set('wealth-liab',fmt(liab));
 }
 
 function renderAssets(){
   const total=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
   const el1=document.getElementById('assets-sec-count');const el2=document.getElementById('assets-total-hdr');
   if(el1)el1.textContent=data.assets.length;if(el2)el2.textContent=fmt(total);
-  const totalInvCurrent=data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
   const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
-  updateWealthCard(total,totalInvCurrent,totalLiab);
+  updateWealthCard(total,totalLiab);
   const el=document.getElementById('assets-list');if(!el)return;
   if(!data.assets.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg><div class="empty-text">No assets yet</div></div>';return}
   el.innerHTML=data.assets.map(a=>{
     const info=getAsset(a.category);const gain=Number(a.currentValue||0)-Number(a.invested||0);const gp=a.invested>0?((gain/a.invested)*100).toFixed(1):0;const isPos=gain>=0;
     return`<div class="row-item">
-      <div class="row-icon" style="background:var(--surface2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg></div>
+      <div class="row-icon" style="background:${info.color}22;color:${info.color};font-size:1.1rem;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;flex-shrink:0">${info.icon}</div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
-        <div class="row-sub">${info.l} · Invested ${fmt(a.invested)}</div>
+        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
         <div class="row-change" style="color:${isPos?'var(--green)':'var(--red)'}">${isPos?'▲':'▼'} ${fmt(Math.abs(gain))} (${gp}%)</div>
       </div>
       <div class="row-right">
@@ -996,8 +987,7 @@ function renderLiabilities(){
   const h=document.getElementById('liab-total-hdr');const c=document.getElementById('liab-sec-count');const e=document.getElementById('liab-emi-info');
   if(h)h.textContent=fmt(total);if(c)c.textContent=data.liabilities.length;if(e)e.textContent='Monthly EMI: '+fmt(totalEMI);
   const totalAssets=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
-  const totalInvCurrent=data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
-  updateWealthCard(totalAssets,totalInvCurrent,total);
+  updateWealthCard(totalAssets,total);
   const el=document.getElementById('liabilities-list');if(!el)return;
   if(!data.liabilities.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><div class="empty-text">Debt-free!</div></div>';return}
   el.innerHTML=data.liabilities.map(l=>{
@@ -1056,16 +1046,21 @@ function renderGoals(){
 
   function savingsRow(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
-    const target=Number(g.target||0),current=Number(g.current||0);const p=pct(current,target);
+    const target=Number(g.target||0);
+    // Auto-derive current from linked assets; fall back to manual if no assets linked
+    const linkedIds=g.linkedAssetIds||[];
+    const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(g.current||0);
+    const p=pct(current,target);
     let pCls='pill-muted',pTxt='Not Set';
     if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-amber':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    const autoTag=linkedIds.length>0?`<span style="font-size:0.6rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
     return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
       <div class="goal-icon" style="background:var(--surface2)">${targetIco}</div>
       <div class="goal-body">
         <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
         <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:${pr.color};width:${p}%"></div></div>
         <div class="goal-amounts">
-          <span class="goal-saved">${fmt(current)}</span>
+          <span class="goal-saved">${fmt(current)}${autoTag}</span>
           <span class="goal-target">${target>0?'of '+fmt(target)+(g.timePeriod?' · '+g.timePeriod+'y':''):'Tap to set'}</span>
           <span class="goal-pct">${p}%</span>
         </div>
@@ -1077,16 +1072,20 @@ function renderGoals(){
   const divider=(label,ico)=>`<div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px">${ico||targetIco} ${label}</div>`;
 
   function customRow(cg){
-    const target=Number(cg.target||0),current=Number(cg.current||0);const p=pct(current,target);
+    const target=Number(cg.target||0);
+    const linkedIds=cg.linkedAssetIds||[];
+    const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(cg.current||0);
+    const p=pct(current,target);
     let pCls='pill-muted',pTxt='Not Set';
     if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-amber':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    const autoTag=linkedIds.length>0?`<span style="font-size:0.6rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
     return`<div class="goal-row" onclick="openSheet('customGoal','${cg.id}')">
       <div class="goal-icon" style="background:var(--surface2)">${targetIco}</div>
       <div class="goal-body">
         <div class="goal-top"><span class="goal-name">${cg.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
         <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#a78bfa;width:${p}%"></div></div>
         <div class="goal-amounts">
-          <span class="goal-saved">${fmt(current)}</span>
+          <span class="goal-saved">${fmt(current)}${autoTag}</span>
           <span class="goal-target">${target>0?'of '+fmt(target)+(cg.timePeriod?' · '+cg.timePeriod+'y':''):'Tap to set'}</span>
           <span class="goal-pct">${p}%</span>
         </div>
@@ -1114,10 +1113,14 @@ function renderKids(){
   if(!data.kids.length){el.innerHTML=`<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg><div class="empty-text" style="margin-bottom:12px">No children added yet</div><button class="btn btn-primary btn-sm" onclick="openSheet('child',null)" style="margin:0 auto">Add Child</button></div>`;return}
   el.innerHTML=data.kids.map(k=>{
     const ep=k.phases.filter(p=>p.enabled);
-    const ks=ep.reduce((s,p)=>s+Number(p.current||0),0);const kt=ep.reduce((s,p)=>s+Number(p.target||0),0);const kp=pct(ks,kt);
+    // Auto-derive each phase current from linked assets
+    const ks=ep.reduce((s,p)=>{const linkedIds=p.linkedAssetIds||[];return s+(linkedIds.length>0?linkedAssetTotal(linkedIds):Number(p.current||0))},0);
+    const kt=ep.reduce((s,p)=>s+Number(p.target||0),0);const kp=pct(ks,kt);
     const phaseRows=k.phases.filter(ph=>ph.enabled).map(ph=>{
       const pd=KID_PHASES.find(p=>p.id===ph.phaseId);if(!pd)return'';
-      const p=pct(ph.current||0,ph.target||0);
+      const linkedIds=ph.linkedAssetIds||[];
+      const phaseCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
+      const p=pct(phaseCurrent,ph.target||0);
       const yl=yearsUntil(k.birthYear,pd.ageStart);
       return`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
         <span class="phase-ico"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span>
@@ -1151,7 +1154,7 @@ function renderKids(){
   const dkEl=document.getElementById('dash-kids-mini');
   if(dkEl)dkEl.innerHTML=data.kids.map(k=>{
     const ep=k.phases.filter(p=>p.enabled);
-    const ks=ep.reduce((s,p)=>s+Number(p.current||0),0);const kt=ep.reduce((s,p)=>s+Number(p.target||0),0);const kp=pct(ks,kt);
+    const ks=ep.reduce((s,p)=>{const linkedIds=p.linkedAssetIds||[];return s+(linkedIds.length>0?linkedAssetTotal(linkedIds):Number(p.current||0))},0);const kt=ep.reduce((s,p)=>s+Number(p.target||0),0);const kp=pct(ks,kt);
     return`<div class="mini-goal" onclick="navigate('goals',document.querySelectorAll('.tab-item')[1])">
       <span class="mini-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></span>
       <div class="mini-body"><span class="mini-name">${k.name} · Age ${age(k.birthYear)}</span>
@@ -1162,57 +1165,6 @@ function renderKids(){
   }).join('');
 }
 function delKid(id){const k=data.kids.find(x=>x.id===id);showConfirm('Remove Child?',`"${k?.name||'This child'}" and all phases will be removed.`,()=>{data.kids=data.kids.filter(k=>k.id!==id);save();renderKids();renderDashboard();toast('Removed')})}
-
-function renderInvestments(){
-  const totalInvested=data.investments.reduce((s,i)=>s+Number(i.invested||0),0);
-  const totalCurrent=data.investments.reduce((s,i)=>s+Number(i.currentValue||0),0);
-  const pnl=totalCurrent-totalInvested;const isPos=pnl>=0;
-  const monthlySIP=data.investments.reduce((s,i)=>s+Number(i.sip||0),0);
-  const set=(id,t,style)=>{const el=document.getElementById(id);if(el){el.textContent=t;if(style)Object.assign(el.style,style)}};
-  set('inv-invested',fmt(totalInvested));set('inv-current',fmt(totalCurrent));
-  set('inv-pnl',(isPos?'+':'')+fmt(pnl),{color:isPos?'var(--green)':'var(--red)'});
-  set('inv-sip',fmt(monthlySIP));
-  const c=document.getElementById('inv-sec-count');if(c)c.textContent=data.investments.length;
-  const el=document.getElementById('investments-list');if(!el)return;
-  if(!data.investments.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg><div class="empty-text">No investments yet</div></div>';return}
-  // Group by type category
-  const groups={};data.investments.forEach(inv=>{
-    const t=getInvType(inv.type);const g=t.group;
-    if(!groups[g])groups[g]=[];groups[g].push(inv);
-  });
-  const groupOrder=['Safe Debt','Growth','Hedge','Other'];
-  let html='';
-  groupOrder.forEach(grp=>{
-    if(!groups[grp])return;
-    const catIco = {
-      'Safe Debt': '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
-      'Growth':    '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-      'Hedge':     '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-      'Other':     '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="8" y1="16" x2="8" y2="12"/><line x1="12" y1="16" x2="12" y2="8"/><line x1="16" y1="16" x2="16" y2="10"/></svg>',
-    };
-    html+=`<div class="inv-cat-label" style="display:flex;align-items:center;gap:5px">${catIco[grp]||''} ${grp}</div>`;
-    html+=groups[grp].map(inv=>{
-      const t=getInvType(inv.type);const pnl=Number(inv.currentValue||0)-Number(inv.invested||0);const isPos=pnl>=0;const gp=inv.invested>0?((pnl/inv.invested)*100).toFixed(1):0;
-      return`<div class="row-item">
-        <div class="row-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-        <div class="row-body">
-          <div class="row-title">${inv.name}</div>
-          <div class="row-sub">${t.l}${inv.sip>0?' · SIP '+fmt(inv.sip)+'/mo':''}</div>
-          <div class="row-change" style="color:${isPos?'var(--green)':'var(--red)'}">${isPos?'▲':'▼'} ${fmt(Math.abs(pnl))} (${gp}%)</div>
-        </div>
-        <div class="row-right">
-          <div class="row-value">${fmt(inv.currentValue)}</div>
-          <div class="row-actions">
-            <button class="btn-circle" onclick="openSheet('investment',data.investments.find(x=>x.id==='${inv.id}'))">✎</button>
-            <button class="btn-del" onclick="delInvestment('${inv.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-  });
-  el.innerHTML=html;
-}
-function delInvestment(id){const inv=data.investments.find(x=>x.id===id);showConfirm('Delete Investment?',`"${inv?.name||'This investment'}" will be removed.`,()=>{data.investments=data.investments.filter(i=>i.id!==id);save();renderInvestments();renderDashboard();toast('Deleted')})}
 
 function renderChecklist(){
   const done=data.checklist.filter(Boolean).length;const total=CHECKLIST_ITEMS.length;const p=Math.round((done/total)*100);
@@ -1237,7 +1189,6 @@ function openSheet(type,arg,arg2){
   if(type==='asset')html=sheetAsset(arg||{});
   else if(type==='liability')html=sheetLiability(arg||{});
   else if(type==='goal')html=sheetGoal(arg||'emergency');
-  else if(type==='investment')html=sheetInvestment(arg||{});
   else if(type==='child')html=sheetChild(arg||null);
   else if(type==='managePhases')html=sheetManagePhases(arg);
   else if(type==='phase')html=sheetEditPhase(arg,arg2);
@@ -1250,24 +1201,22 @@ function openSheet(type,arg,arg2){
 function closeSheet(){document.getElementById('sheet-overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open')}
 function closeSheetOnBg(e){if(e.target===document.getElementById('sheet-overlay'))closeSheet()}
 
-function onAssetCatChange(){
-  const sel=document.getElementById('f-cat');
-  if(sel&&sel.value==='MutualFunds'){closeSheet();openSheet('investment',{type:'MutualFund'});}
-}
+function onAssetCatChange(){}  // kept for safety, no redirect needed anymore
 function sheetAsset(a){
-  // If adding a new Mutual Fund asset, redirect to investment form
-  if(!a.id && a.category==='MutualFunds'){return sheetInvestment({type:'MutualFund'});}
+  const sipHint={MutualFunds:'Monthly SIP amount',EPF:'Monthly contribution',PPF:'Monthly contribution',Gold:'Monthly buy',ETF:'Monthly SIP',Stocks:'Monthly buy',FD:'',NPS:'Monthly contribution',RealEstate:'',Other:''};
+  const cat=a.category||'EPF';
   return`<div class="sheet-hdr"><div class="sheet-title">${a.id?'Edit':'Add'} Asset</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat" onchange="onAssetCatChange()">${ASSET_CATS.map(c=>`<option value="${c.v}" ${(a.category||'EPF')===c.v?'selected':''}>${c.icon} ${c.l}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value="${c.v}" ${cat===c.v?'selected':''}>${c.icon} ${c.l}</option>`).join('')}</select></div>
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value="${a.name||''}"/></div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-cur" type="number" placeholder="0" value="${a.currentValue||''}"/></div>
       <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
     </div>
+    <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.65rem">— optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">Save</button></div>
   </div>`}
-function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value),invested:Number(document.getElementById('f-inv').value)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast('Saved ✓')}
+function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast('Saved ✓')}
 
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -1301,33 +1250,71 @@ function sheetGoal(pid){
     </div>`;
   }
 
-  const sip=g.target&&g.timePeriod?sipNeeded(Number(g.target),Number(g.current||0),Number(g.timePeriod)):0;
+  const linkedIds=g.linkedAssetIds||[];
+  const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
+  const sip=g.target&&g.timePeriod?sipNeeded(Number(g.target),autoCurrent,Number(g.timePeriod)):0;
+
+  // Build saved display — auto if linked, editable if not
+  const savedField=linkedIds.length>0
+    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--green)">● auto from linked assets</span></label>
+       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+         <span style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
+         <span style="font-size:0.7rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
+       </div></div>`
+    :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>`;
+
   return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
       <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${g.target||''}" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
     </div>
-    <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
+    ${savedField}
     <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
       <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:2px">Monthly SIP Needed</div>
       <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
-    <div class="form-sec">Link Assets</div>
-    <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first</div>';})()} </div>
+    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— saved amount auto-updates</span></div>
+    <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save Goal</button></div>
   </div>`}
 
-function toggleGoalAssetLink(assetId){const el=document.getElementById('gal-'+assetId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
+function toggleGoalAssetLink(assetId){
+  const el=document.getElementById('gal-'+assetId);if(!el)return;
+  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':'';
+  // Recompute auto-total from currently checked items
+  const checkedIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('gal-',''));
+  const autoTotal=linkedAssetTotal(checkedIds);
+  // If there's a manual input, hide it and show auto display; otherwise update display
+  const manualEl=document.getElementById('f-gcurrent');
+  if(manualEl){
+    // Replace manual input with auto display in-place
+    const wrap=manualEl.closest('.fg');
+    if(wrap&&checkedIds.length>0){
+      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--green)">● auto from linked assets</span></label>
+        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+          <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
+          <span style="font-size:0.7rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
+        </div>`;
+    }
+  } else {
+    // Already in auto mode — update value
+    const autoValEl=document.getElementById('goal-auto-val');
+    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
+  }
+  updateGoalSIP();
+}
 function switchGoalType(){
   const sel=document.getElementById('f-gtype');if(!sel)return;
   closeSheet();openSheet('goal',sel.value);
 }
 function updateGoalSIP(){
   const t=Number(document.getElementById('f-gtarget')?.value||0);
-  const c=Number(document.getElementById('f-gcurrent')?.value||0);
   const y=Number(document.getElementById('f-gtime')?.value||0);
+  // Use auto total if assets linked, else manual input
+  const checkedIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('gal-',''));
+  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-gcurrent')?.value||0);
   const box=document.getElementById('goal-sip-box');
   const valEl=document.getElementById('goal-sip-val');
   if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
@@ -1344,9 +1331,10 @@ function saveGoal(){
     obj.notes=document.getElementById('f-ins-notes')?.value?.trim()||'';
   }else{
     obj.target=Number(document.getElementById('f-gtarget')?.value||0);
-    obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
     obj.timePeriod=document.getElementById('f-gtime')?.value||'';
     obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
+    // Only save manual current if no assets linked
+    if(!obj.linkedAssetIds.length) obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
   }
   const ex=data.goals.find(g=>g.type===type);
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
@@ -1357,32 +1345,62 @@ function sheetCustomGoal(id){
   const cg = id ? (data.customGoals||[]).find(x=>x.id===id)||{} : {};
   const isEdit = !!cg.id;
   const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-  const sip = cg.target&&cg.timePeriod ? sipNeeded(Number(cg.target),Number(cg.current||0),Number(cg.timePeriod)) : 0;
+  const linkedIds=cg.linkedAssetIds||[];
+  const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
+  const sip = cg.target&&cg.timePeriod ? sipNeeded(Number(cg.target),autoCurrent,Number(cg.timePeriod)) : 0;
+  const savedField=linkedIds.length>0
+    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--green)">● auto from linked assets</span></label>
+       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+         <span id="cg-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
+         <span style="font-size:0.7rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
+       </div></div>`
+    :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'New'} Custom Goal</div>${closeX}</div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-cg-name" placeholder="e.g. Car Purchase, Business Fund…" value="${cg.name||''}"/></div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cg-target" type="number" placeholder="0" value="${cg.target||''}" oninput="updateCustomSIP()"/></div>
-      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>
+      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-cg-time" type="number" placeholder="3" value="${cg.timePeriod||''}" oninput="updateCustomSIP()"/></div>
     </div>
-    <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-cg-time" type="number" placeholder="3" value="${cg.timePeriod||''}" oninput="updateCustomSIP()"/></div>
+    ${savedField}
     <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
       <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:2px">Monthly SIP Needed</div>
       <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
-    <div class="form-sec">Link Assets</div>
-    <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first</div>';})()} </div>
+    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— saved amount auto-updates</span></div>
+    <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions">
       <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
       <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">Save Goal</button>
     </div>
   </div>`}
 
-function toggleCGAssetLink(assetId){const el=document.getElementById('cgal-'+assetId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
+function toggleCGAssetLink(assetId){
+  const el=document.getElementById('cgal-'+assetId);if(!el)return;
+  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':'';
+  const checkedIds=Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cgal-',''));
+  const autoTotal=linkedAssetTotal(checkedIds);
+  const manualEl=document.getElementById('f-cg-current');
+  if(manualEl){
+    const wrap=manualEl.closest('.fg');
+    if(wrap&&checkedIds.length>0){
+      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--green)">● auto from linked assets</span></label>
+        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+          <span id="cg-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
+          <span style="font-size:0.7rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
+        </div>`;
+    }
+  } else {
+    const autoValEl=document.getElementById('cg-auto-val');
+    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
+  }
+  updateCustomSIP();
+}
 function updateCustomSIP(){
   const t=Number(document.getElementById('f-cg-target')?.value||0);
-  const c=Number(document.getElementById('f-cg-current')?.value||0);
   const y=Number(document.getElementById('f-cg-time')?.value||0);
+  const checkedIds=Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cgal-',''));
+  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-cg-current')?.value||0);
   const box=document.getElementById('cg-sip-box');
   const valEl=document.getElementById('cg-sip-val');
   if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
@@ -1393,7 +1411,9 @@ function saveCustomGoal(editId){
   const name=document.getElementById('f-cg-name')?.value?.trim();
   if(!name){toast('Enter a goal name');return}
   if(!data.customGoals)data.customGoals=[];
-  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),current:Number(document.getElementById('f-cg-current')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||'',linkedAssetIds:Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cgal-','')).filter(Boolean)};
+  const linkedAssetIds=Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cgal-','')).filter(Boolean);
+  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||'',linkedAssetIds};
+  if(!linkedAssetIds.length) obj.current=Number(document.getElementById('f-cg-current')?.value||0);
   if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
   else{data.customGoals.push({id:uid(),...obj});}
   save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
@@ -1406,20 +1426,6 @@ function delCustomGoal(id){
   });
 }
 
-function sheetInvestment(inv){
-  const typeOpts=INV_TYPES.map(t=>`<option value="${t.v}" ${inv.type===t.v?'selected':''}>${t.icon} ${t.l}</option>`).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">${inv.id?'Edit':'Add'} Investment</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-  <div class="sheet-body">
-    <div class="fg"><label class="fl">Type</label><select class="fi fi-sel" id="f-itype">${typeOpts}</select></div>
-    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-iname" placeholder="e.g. Parag Parikh Flexi Cap" value="${inv.name||''}"/></div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-iinv" type="number" placeholder="0" value="${inv.invested||''}"/></div>
-      <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-icur" type="number" placeholder="0" value="${inv.currentValue||''}"/></div>
-    </div>
-    <div class="fg"><label class="fl">Monthly SIP (₹)</label><input class="fi" id="f-isip" type="number" placeholder="0" value="${inv.sip||''}"/></div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveInvestment('${inv.id||''}')">Save</button></div>
-  </div>`}
-function saveInvestment(editId){const name=document.getElementById('f-iname').value.trim();if(!name){toast('Enter a name');return}const obj={type:document.getElementById('f-itype').value,name,invested:Number(document.getElementById('f-iinv').value),currentValue:Number(document.getElementById('f-icur').value),sip:Number(document.getElementById('f-isip').value)};if(editId){Object.assign(data.investments.find(x=>x.id===editId)||{},obj)}else data.investments.push({id:uid(),...obj});save();closeSheet();renderInvestments();renderDashboard();toast('Saved ✓')}
 
 function sheetChild(kid){
   const isEdit=!!kid;const gender=kid?kid.gender:'boy';
@@ -1457,7 +1463,17 @@ function saveManagePhases(kidId){const kid=data.kids.find(k=>k.id===kidId);if(!k
 function sheetEditPhase(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';const pd=KID_PHASES.find(p=>p.id===phaseId);if(!pd)return'';
   const ph=kid.phases.find(p=>p.phaseId===phaseId)||{target:0,current:0,linkedAssetIds:[],notes:''};
-  const yl=yearsUntil(kid.birthYear,pd.ageStart);const sip=ph.target>0&&yl>0?sipNeeded(ph.target,ph.current,yl):0;
+  const yl=yearsUntil(kid.birthYear,pd.ageStart);
+  const linkedIds=ph.linkedAssetIds||[];
+  const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
+  const sip=ph.target>0&&yl>0?sipNeeded(ph.target,autoCurrent,yl):0;
+  const savedField=linkedIds.length>0
+    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--green)">● auto from linked assets</span></label>
+       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+         <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
+         <span style="font-size:0.7rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
+       </div></div>`
+    :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title">${pd.icon} ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
@@ -1466,21 +1482,60 @@ function sheetEditPhase(kidId,phaseId){
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-pht" type="number" placeholder="0" value="${ph.target||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2)">${yl>0?yl+' yrs away':yl===0?'Now':'Passed'}</div></div>
     </div>
+    ${savedField}
     <div id="sip-preview" style="${sip>0?'':'display:none'}" class="sip-callout">
       <div class="sip-label">Monthly SIP Needed</div>
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
-    <div class="form-sec">Link Assets</div>
-    <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first</div>';})()} </div>
+    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— saved amount auto-updates</span></div>
+    <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Save Phase</button></div>
   </div>`}
 function toggleInvLink(invId){const el=document.getElementById('il-'+invId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
-function togglePhaseAssetLink(assetId){const el=document.getElementById('pal-'+assetId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
-function updateSIPLive(kidId,phaseId){const kid=data.kids.find(k=>k.id===kidId);const pd=KID_PHASES.find(p=>p.id===phaseId);if(!kid||!pd)return;const t=Number(document.getElementById('f-pht')?.value||0);const c=Number(document.getElementById('f-phc')?.value||0);const yl=yearsUntil(kid.birthYear,pd.ageStart);const box=document.getElementById('sip-preview');const valEl=document.getElementById('sip-val');if(t>0&&yl>0){box.style.display='';valEl.textContent=fmt(sipNeeded(t,c,yl))}else{box.style.display='none'}}
-function savePhase(kidId,phaseId){const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;let ph=kid.phases.find(p=>p.phaseId===phaseId);if(!ph){ph={phaseId,enabled:true,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ph)}ph.target=Number(document.getElementById('f-pht').value||0);ph.current=Number(document.getElementById('f-phc').value||0);ph.notes=document.getElementById('f-phn').value.trim();ph.linkedAssetIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('pal-','')).filter(Boolean);save();closeSheet();renderKids();renderDashboard();toast('Saved ✓')}
+function togglePhaseAssetLink(assetId,kidId,phaseId){
+  const el=document.getElementById('pal-'+assetId);if(!el)return;
+  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':'';
+  const checkedIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('pal-',''));
+  const autoTotal=linkedAssetTotal(checkedIds);
+  const manualEl=document.getElementById('f-phc');
+  if(manualEl){
+    const wrap=manualEl.closest('.fg');
+    if(wrap&&checkedIds.length>0){
+      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--green)">● auto from linked assets</span></label>
+        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+          <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
+          <span style="font-size:0.7rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
+        </div>`;
+    }
+  } else {
+    const autoValEl=document.getElementById('phase-auto-val');
+    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
+  }
+  if(kidId&&phaseId)updateSIPLive(kidId,phaseId);
+}
+function updateSIPLive(kidId,phaseId){
+  const kid=data.kids.find(k=>k.id===kidId);const pd=KID_PHASES.find(p=>p.id===phaseId);if(!kid||!pd)return;
+  const t=Number(document.getElementById('f-pht')?.value||0);
+  const checkedIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('pal-',''));
+  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-phc')?.value||0);
+  const yl=yearsUntil(kid.birthYear,pd.ageStart);
+  const box=document.getElementById('sip-preview');const valEl=document.getElementById('sip-val');
+  if(t>0&&yl>0){box.style.display='';valEl.textContent=fmt(sipNeeded(t,c,yl))}else{box.style.display='none'}
+}
+function savePhase(kidId,phaseId){
+  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
+  let ph=kid.phases.find(p=>p.phaseId===phaseId);
+  if(!ph){ph={phaseId,enabled:true,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ph)}
+  ph.target=Number(document.getElementById('f-pht').value||0);
+  ph.notes=document.getElementById('f-phn').value.trim();
+  ph.linkedAssetIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('pal-','')).filter(Boolean);
+  // Only save manual current if no assets linked
+  if(!ph.linkedAssetIds.length) ph.current=Number(document.getElementById('f-phc')?.value||0);
+  save();closeSheet();renderKids();renderDashboard();toast('Saved ✓')
+}
 
 function sheetProfile(){
   const colors=['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#f97316'];
@@ -1511,18 +1566,20 @@ function toggleDark(){
 
 function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wealthpilot-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Exported ✓')}
 function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
-function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;data={profile:{name:n,avatarColor:c},assets:[],liabilities:[],goals:[],kids:[],investments:[],checklist:[false,false,false,false,false,false]};save();renderDashboard();renderProfile();toast('Data reset')})}
+function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;data={profile:{name:n,avatarColor:c},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checklist:[false,false,false,false,false,false]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
   if(!confirm('Load sample data? This will overwrite current data.'))return;
-  const now=year();const i1=uid(),i2=uid(),i3=uid(),i4=uid(),i5=uid(),i6=uid();
+  const now=year();
   data.assets=[
-    {id:uid(),category:'EPF',  name:'Employee PF',          currentValue:850000, invested:700000},
-    {id:uid(),category:'PPF',  name:'PPF Account',          currentValue:420000, invested:380000},
-    {id:uid(),category:'MutualFunds',name:'Nifty 50 Index', currentValue:320000, invested:240000},
-    {id:uid(),category:'Gold', name:'SGB & Physical Gold',  currentValue:180000, invested:150000},
-    {id:uid(),category:'FD',   name:'SBI Fixed Deposit',    currentValue:200000, invested:200000},
-    {id:uid(),category:'RealEstate',name:'Home (Market)',   currentValue:8500000,invested:6500000},
+    {id:uid(),category:'EPF',       name:'Employee PF',          currentValue:850000,  invested:700000,  sip:0},
+    {id:uid(),category:'PPF',       name:'PPF Account',          currentValue:420000,  invested:380000,  sip:0},
+    {id:uid(),category:'MutualFunds',name:'Parag Parikh Flexi Cap',currentValue:650000, invested:480000,  sip:10000},
+    {id:uid(),category:'MutualFunds',name:'Nifty 50 Index Fund',  currentValue:320000,  invested:240000,  sip:5000},
+    {id:uid(),category:'ETF',       name:'Gold ETF',              currentValue:95000,   invested:80000,   sip:2000},
+    {id:uid(),category:'Gold',      name:'Sovereign Gold Bond',   currentValue:180000,  invested:150000,  sip:1000},
+    {id:uid(),category:'FD',        name:'SBI Fixed Deposit',     currentValue:200000,  invested:200000,  sip:0},
+    {id:uid(),category:'RealEstate',name:'Home (Market Value)',   currentValue:8500000, invested:6500000, sip:0},
   ];
   data.liabilities=[
     {id:uid(),category:'HomeLoan',  name:'SBI Home Loan',   outstanding:3200000,interestRate:8.5, emi:28500},
@@ -1535,23 +1592,16 @@ function loadSampleData(){
     {id:uid(),type:'retirement',name:'Retirement',      target:30000000,current:1470000,timePeriod:'25'},
     {id:uid(),type:'vacation',  name:'Vacation',        target:200000,  current:85000, timePeriod:'2'},
   ];
-  data.investments=[
-    {id:i1,type:'MutualFund',name:'Parag Parikh Flexi Cap',  invested:480000,currentValue:650000,sip:10000},
-    {id:i2,type:'MutualFund',name:'Nifty 50 Index Fund',     invested:240000,currentValue:320000,sip:5000},
-    {id:i3,type:'ETF',       name:'Gold ETF',                invested:80000, currentValue:95000, sip:2000},
-    {id:i4,type:'PPF',       name:'PPF (Annual)',            invested:380000,currentValue:420000,sip:0},
-    {id:i5,type:'EPF',       name:'Employee PF',             invested:700000,currentValue:850000,sip:0},
-    {id:i6,type:'Gold',      name:'Sovereign Gold Bond',     invested:150000,currentValue:180000,sip:1000},
-  ];
   data.kids=[{id:uid(),name:'Arjun',gender:'boy',birthYear:now-7,phases:[
-    {phaseId:'primary',enabled:true,target:300000,current:80000,linkedInvestmentIds:[i2],notes:''},
-    {phaseId:'graduation',enabled:true,target:1500000,current:50000,linkedInvestmentIds:[i1],notes:'IIT/NIT'},
-    {phaseId:'higher',enabled:true,target:3000000,current:10000,linkedInvestmentIds:[i1],notes:'MBA/MS'},
-    {phaseId:'marriage',enabled:true,target:2000000,current:0,linkedInvestmentIds:[],notes:''},
-    {phaseId:'intermediate',enabled:false,target:0,current:0,linkedInvestmentIds:[],notes:''},
+    {phaseId:'primary',    enabled:true, target:300000, current:80000, linkedAssetIds:[],notes:''},
+    {phaseId:'graduation', enabled:true, target:1500000,current:50000, linkedAssetIds:[],notes:'IIT/NIT'},
+    {phaseId:'higher',     enabled:true, target:3000000,current:10000, linkedAssetIds:[],notes:'MBA/MS'},
+    {phaseId:'marriage',   enabled:true, target:2000000,current:0,     linkedAssetIds:[],notes:''},
+    {phaseId:'intermediate',enabled:false,target:0,     current:0,     linkedAssetIds:[],notes:''},
   ]}];
   data.checklist=[true,true,true,true,false,false];
-  save();renderDashboard();renderKids();renderGoals();renderProfile();renderInvestments();toast('Sample data loaded ✓');
+  if(data.investments)delete data.investments;
+  save();renderDashboard();renderKids();renderGoals();renderProfile();toast('Sample data loaded ✓');
 }
 
 let _fabOpen=false;
@@ -1573,11 +1623,12 @@ function init(){
   document.documentElement.setAttribute('data-theme',theme);
   const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',theme==='light');
   if(!localStorage.getItem(STORAGE_KEY)){
-    const i1=uid();
-    data.assets=[{id:uid(),category:'EPF',name:'Employee PF',currentValue:850000,invested:700000},{id:uid(),category:'MutualFunds',name:'Nifty 50 Index Fund',currentValue:320000,invested:240000}];
+    data.assets=[
+      {id:uid(),category:'EPF',        name:'Employee PF',          currentValue:850000, invested:700000, sip:0},
+      {id:uid(),category:'MutualFunds',name:'Nifty 50 Index Fund',  currentValue:320000, invested:240000, sip:5000},
+    ];
     data.liabilities=[{id:uid(),category:'HomeLoan',name:'SBI Home Loan',outstanding:3200000,interestRate:8.5,emi:28500}];
     data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:300000,current:180000,timePeriod:'1'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
-    data.investments=[{id:i1,type:'MutualFund',name:'Nifty 50 Index Fund',invested:240000,currentValue:320000,sip:5000}];
     data.checklist=[true,true,false,true,false,false];data.profile.name='Nagendra';save();
   }
   renderProfile();renderDashboard();
