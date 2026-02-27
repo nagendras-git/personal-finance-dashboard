@@ -557,19 +557,34 @@ body {
         <div style="font-size:0.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px">Total Wealth</div>
         <div style="font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--text1);letter-spacing:-1.5px;line-height:1" id="dash-networth">₹0</div>
       </div>
-      <!-- 3 stats row -->
+      <!-- Row 1: Assets · Liabilities · SIP -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border2)">
+        <div style="padding:13px 16px;border-right:1px solid var(--border2)">
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Assets</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-assets-val">₹0</div>
+        </div>
+        <div style="padding:13px 16px;border-right:1px solid var(--border2)">
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Liabilities</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="dash-liab-val">₹0</div>
+        </div>
+        <div style="padding:13px 16px">
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">SIP / mo</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-sip">₹0</div>
+        </div>
+      </div>
+      <!-- Row 2: Invested · Current · P&L -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
-        <div style="padding:14px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.58rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">SIP / mo</div>
-          <div style="font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--text1)" id="dash-sip">₹0</div>
+        <div style="padding:13px 16px;border-right:1px solid var(--border2)">
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Invested</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-invested">₹0</div>
         </div>
-        <div style="padding:14px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.58rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Assets</div>
-          <div style="font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--green)" id="dash-assets-val">₹0</div>
+        <div style="padding:13px 16px;border-right:1px solid var(--border2)">
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Current</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-current">₹0</div>
         </div>
-        <div style="padding:14px 16px">
-          <div style="font-size:0.58rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Liabilities</div>
-          <div style="font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--red)" id="dash-liab-val">₹0</div>
+        <div style="padding:13px 16px">
+          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">P&amp;L</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700" id="dash-pnl">₹0</div>
         </div>
       </div>
     </div>
@@ -604,45 +619,9 @@ body {
 <!-- ══ INVESTMENTS ══ -->
 <div id="page-investments" class="page">
   <div class="top-header">
-    <div class="hdr-left"><div><div class="hdr-greeting">Portfolio</div><div class="hdr-name">Investments</div></div></div>
-    <div class="hdr-right"><button class="btn btn-primary btn-sm" onclick="openSheet('investment')">Add</button></div>
+    <div class="hdr-left"><div><div class="hdr-greeting">Portfolio</div><div class="hdr-name">Invest</div></div></div>
   </div>
   <div class="container">
-    <div class="inv-stats" id="inv-stats-grid">
-      <div class="inv-stat-card"><div class="inv-stat-label">Invested</div><div class="inv-stat-val" id="inv-invested">₹0</div></div>
-      <div class="inv-stat-card"><div class="inv-stat-label">Current</div><div class="inv-stat-val" style="color:var(--green)" id="inv-current">₹0</div></div>
-      <div class="inv-stat-card"><div class="inv-stat-label">P&amp;L</div><div class="inv-stat-val" id="inv-pnl">₹0</div></div>
-      <div class="inv-stat-card"><div class="inv-stat-label">Monthly SIP</div><div class="inv-stat-val" style="color:var(--amber)" id="inv-sip">₹0</div></div>
-    </div>
-    <div class="sec-hdr" onclick="toggleSec('sec-inv-list')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Holdings</span><span class="sec-badge" id="inv-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-inv-list">▼</span></div>
-    </div>
-    <div class="sec-body closed" id="sec-inv-list">
-      <div id="investments-list"></div>
-      <div class="add-row" onclick="openSheet('investment')">Add Investment</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MORE ══ -->
-<div id="page-more" class="page">
-  <div class="top-header">
-    <div class="hdr-left"><div><div class="hdr-greeting">Manage</div><div class="hdr-name">More</div></div></div>
-  </div>
-  <div class="container">
-
-    <!-- WEALTH CARD -->
-    <div class="wealth-card">
-      <div style="font-size:0.62rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Net Wealth</div>
-      <div class="wealth-val" id="wealth-display">₹0</div>
-      <div class="wealth-grid">
-        <div><div class="wealth-item-label">Assets</div><div class="wealth-item-val" style="color:var(--green)" id="wealth-assets">₹0</div></div>
-        <div><div class="wealth-item-label">Investments</div><div class="wealth-item-val" id="wealth-inv">₹0</div></div>
-        <div><div class="wealth-item-label">Liabilities</div><div class="wealth-item-val" style="color:var(--red)" id="wealth-liab">₹0</div></div>
-      </div>
-    </div>
-
     <!-- ASSETS -->
     <div class="sec-hdr" onclick="toggleSec('sec-assets')">
       <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
@@ -654,7 +633,7 @@ body {
     </div>
 
     <!-- LIABILITIES -->
-    <div style="margin-top:10px">
+    <div style="margin-top:8px">
       <div class="sec-hdr" onclick="toggleSec('sec-liab')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Liabilities</span><span class="sec-badge" id="liab-sec-count">0</span></div>
         <div class="sec-hdr-right"><span class="sec-total" style="color:var(--red)" id="liab-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-liab">▼</span></div>
@@ -662,9 +641,30 @@ body {
       <div class="sec-body closed" id="sec-liab">
         <div style="padding:8px 4px;font-size:0.72rem;color:var(--text3)" id="liab-emi-info">Monthly EMI: ₹0</div>
         <div id="liabilities-list"></div>
-        <div class="add-row" style="color:var(--red)" onclick="openSheet('liability')">Add Liability</div>
+        <div class="add-row" onclick="openSheet('liability')">Add Liability</div>
       </div>
     </div>
+
+    <!-- HOLDINGS -->
+    <div style="margin-top:8px">
+      <div class="sec-hdr" onclick="toggleSec('sec-inv-list')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Holdings</span><span class="sec-badge" id="inv-sec-count">0</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-inv-list">▼</span></div>
+      </div>
+      <div class="sec-body closed" id="sec-inv-list">
+        <div id="investments-list"></div>
+        <div class="add-row" onclick="openSheet('investment')">Add Investment</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MORE ══ -->
+<div id="page-more" class="page">
+  <div class="top-header">
+    <div class="hdr-left"><div><div class="hdr-greeting">Manage</div><div class="hdr-name">More</div></div></div>
+  </div>
+  <div class="container">
 
     <!-- CHECKLIST -->
     <div style="margin-top:10px">
@@ -871,8 +871,8 @@ function navigate(page,btn){
 function renderPage(p){
   if(p==='dashboard')renderDashboard();
   if(p==='goals'){renderKids();renderGoals()}
-  if(p==='investments')renderInvestments();
-  if(p==='more'){renderAssets();renderLiabilities();renderChecklist()}
+  if(p==='investments'){renderAssets();renderLiabilities();renderInvestments()}
+  if(p==='more'){renderChecklist()}
 }
 
 function renderDashboard(){
@@ -882,11 +882,16 @@ function renderDashboard(){
   const monthlySIP=data.investments.reduce((s,i)=>s+Number(i.sip||0),0);
   const netWorth=totalAssets+totalCurrent-totalLiab;
 
-  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+  const totalInvested=data.investments.reduce((s,i)=>s+Number(i.invested||0),0);
+  const pnl=totalCurrent-totalInvested;const isPos=pnl>=0;
+  const set=(id,v,clr)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(clr)el.style.color=clr}};
   set('dash-networth',fmt(netWorth));
   set('dash-sip',fmt(monthlySIP));
   set('dash-assets-val',fmt(totalAssets));
   set('dash-liab-val',fmt(totalLiab));
+  set('dash-invested',fmt(totalInvested));
+  set('dash-current',fmt(totalCurrent));
+  set('dash-pnl',(isPos?'+':'')+fmt(pnl),isPos?'var(--green)':'var(--red)');
   updateWealthCard(totalAssets,totalCurrent,totalLiab);
 }
 
