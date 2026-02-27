@@ -798,12 +798,12 @@ const LIAB_CATS = [
   {v:'Other',       l:'Other',         icon:'📋', color:'#9ca3af'},
 ];
 const GOAL_PRESETS = [
-  {id:'emergency', icon:'🛡️', name:'Emergency Fund',   color:'#60a5fa', light:'rgba(96,165,250,0.1)'},
-  {id:'health_ins',icon:'🏥', name:'Health Insurance', color:'#4ade80', light:'rgba(74,222,128,0.1)'},
-  {id:'term_ins',  icon:'🛡️', name:'Term Insurance',   color:'#818cf8', light:'rgba(129,140,248,0.1)'},
-  {id:'house',     icon:'🏠', name:'House Purchase',   color:'#34d399', light:'rgba(52,211,153,0.1)'},
-  {id:'vacation',  icon:'✈️', name:'Vacation',         color:'#fb923c', light:'rgba(251,146,60,0.1)'},
-  {id:'retirement',icon:'🌴', name:'Retirement',       color:'#fbbf24', light:'rgba(251,191,36,0.1)'},
+  {id:'emergency', icon:'🛡️', name:'Emergency Fund',   color:'#60a5fa', light:'rgba(96,165,250,0.1)',  isIns:false},
+  {id:'health_ins',icon:'🏥', name:'Health Insurance', color:'#4ade80', light:'rgba(74,222,128,0.1)',  isIns:true},
+  {id:'term_ins',  icon:'🛡️', name:'Term Insurance',   color:'#818cf8', light:'rgba(129,140,248,0.1)', isIns:true},
+  {id:'house',     icon:'🏠', name:'House Purchase',   color:'#34d399', light:'rgba(52,211,153,0.1)',  isIns:false},
+  {id:'vacation',  icon:'✈️', name:'Vacation',         color:'#fb923c', light:'rgba(251,146,60,0.1)',  isIns:false},
+  {id:'retirement',icon:'🌴', name:'Retirement',       color:'#fbbf24', light:'rgba(251,191,36,0.1)',  isIns:false},
 ];
 const KID_PHASES = [
   {id:'primary',    label:'Primary School',  icon:'📚', ageStart:6,  ageEnd:11},
@@ -964,16 +964,47 @@ function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('De
 function renderGoals(){
   const c=document.getElementById('goals-sec-count');if(c)c.textContent=GOAL_PRESETS.length;
   const el=document.getElementById('goals-list');if(!el)return;
-  el.innerHTML=GOAL_PRESETS.map(pr=>{
+
+  // Group: Protection (insurance) vs Savings goals
+  const savingsGoals = GOAL_PRESETS.filter(p=>!p.isIns);
+  const insGoals = GOAL_PRESETS.filter(p=>p.isIns);
+
+  const shieldIco = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.45"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+  const targetIco = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.45"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
+
+  function insRow(pr){
+    const g=data.goals.find(x=>x.type===pr.id)||{};
+    const hasData=g.policyName||g.premium||g.expiry;
+    let pCls=hasData?'pill-green':'pill-muted', pTxt=hasData?'Active':'Not Set';
+    let detailsHtml='';
+    if(hasData){
+      detailsHtml=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:5px">
+        ${g.policyName?`<span style="font-size:0.66rem;color:var(--text3)">Policy <span style="color:var(--text2);font-weight:600">${g.policyName}</span></span>`:''}
+        ${g.premium?`<span style="font-size:0.66rem;color:var(--text3)">Premium <span style="color:var(--text2);font-weight:600">${fmt(g.premium)}/yr</span></span>`:''}
+        ${g.expiry?`<span style="font-size:0.66rem;color:var(--text3)">Expires <span style="color:var(--text2);font-weight:600">${g.expiry}</span></span>`:''}
+      </div>`;
+    }else{
+      detailsHtml=`<div style="font-size:0.68rem;color:var(--text3);margin-top:4px">Tap to add policy details</div>`;
+    }
+    return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
+      <div class="goal-icon" style="background:var(--surface2)">${shieldIco}</div>
+      <div class="goal-body">
+        <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
+        ${detailsHtml}
+      </div>
+    </div>`;
+  }
+
+  function savingsRow(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
     const target=Number(g.target||0),current=Number(g.current||0);const p=pct(current,target);
     let pCls='pill-muted',pTxt='Not Set';
     if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-amber':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
     return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
-      <div class="goal-icon" style="background:var(--surface2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <div class="goal-icon" style="background:var(--surface2)">${targetIco}</div>
       <div class="goal-body">
         <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        <div class="prog-track"><div class="prog-fill" style="background:${pr.color};width:${p}%"></div></div>
+        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:${pr.color};width:${p}%"></div></div>
         <div class="goal-amounts">
           <span class="goal-saved">${fmt(current)}</span>
           <span class="goal-target">${target>0?'of '+fmt(target)+(g.timePeriod?' · '+g.timePeriod+'y':''):'Tap to set'}</span>
@@ -981,13 +1012,21 @@ function renderGoals(){
         </div>
       </div>
     </div>`;
-  }).join('');
+  }
+
+  const divider=(label)=>`<div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px">${label==='Protection'?shieldIco:targetIco} ${label}</div>`;
+
+  el.innerHTML =
+    divider('Protection') +
+    insGoals.map(insRow).join('') +
+    divider('Savings Goals') +
+    savingsGoals.map(savingsRow).join('');
 }
 
 function renderKids(){
   const c=document.getElementById('kids-sec-count');if(c)c.textContent=data.kids.length;
   const el=document.getElementById('kids-list');if(!el)return;
-  if(!data.kids.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg><div class="empty-text">No children added yet</div></div>';return}
+  if(!data.kids.length){el.innerHTML=`<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg><div class="empty-text" style="margin-bottom:12px">No children added yet</div><button class="btn btn-primary btn-sm" onclick="openSheet('child',null)" style="margin:0 auto">Add Child</button></div>`;return}
   el.innerHTML=data.kids.map(k=>{
     const ep=k.phases.filter(p=>p.enabled);
     const ks=ep.reduce((s,p)=>s+Number(p.current||0),0);const kt=ep.reduce((s,p)=>s+Number(p.target||0),0);const kp=pct(ks,kt);
@@ -1153,18 +1192,70 @@ function sheetLiability(l){
 function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value)};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast('Saved ✓')}
 
 function sheetGoal(pid){
-  const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];const g=data.goals.find(x=>x.type===pr.id)||{};
-  return`<div class="sheet-hdr"><div class="sheet-title">${pr.icon} ${pr.name}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
+  const g=data.goals.find(x=>x.type===pr.id)||{};
+  const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
+
+  if(pr.isIns){
+    return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
+    <div class="sheet-body">
+      ${typeSelect}
+      <div class="fg"><label class="fl">Policy Name</label><input class="fi" id="f-ins-policy" placeholder="e.g. LIC Tech Term, Star Health Family" value="${g.policyName||''}"/></div>
+      <div class="fg"><label class="fl">Annual Premium (₹)</label><input class="fi" id="f-ins-premium" type="number" placeholder="0" value="${g.premium||''}"/></div>
+      <div class="fg"><label class="fl">Policy Expiry Date</label><input class="fi" id="f-ins-expiry" type="date" value="${g.expiry||''}"/></div>
+      <div class="fg"><label class="fl">Notes</label><input class="fi" id="f-ins-notes" placeholder="Coverage amount, policy number…" value="${g.notes||''}"/></div>
+      <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save</button></div>
+    </div>`;
+  }
+
+  const sip=g.target&&g.timePeriod?sipNeeded(Number(g.target),Number(g.current||0),Number(g.timePeriod)):0;
+  return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype">${GOAL_PRESETS.map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.icon} ${p.name}</option>`).join('')}</select></div>
+    ${typeSelect}
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${g.target||''}"/></div>
-      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}"/></div>
+      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${g.target||''}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>
     </div>
-    <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}"/></div>
+    <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
+    <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--amber-bg);border:1px solid rgba(251,191,36,0.25);border-radius:var(--r);margin-top:2px">
+      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--amber);margin-bottom:2px">Monthly SIP Needed</div>
+      <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
+    </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save Goal</button></div>
   </div>`}
-function saveGoal(){const type=document.getElementById('f-gtype').value;const pr=GOAL_PRESETS.find(p=>p.id===type);const obj={type,name:pr.name,target:Number(document.getElementById('f-gtarget').value),current:Number(document.getElementById('f-gcurrent').value),timePeriod:document.getElementById('f-gtime').value};const ex=data.goals.find(g=>g.type===type);if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓')}
+
+function switchGoalType(){
+  const sel=document.getElementById('f-gtype');if(!sel)return;
+  closeSheet();openSheet('goal',sel.value);
+}
+function updateGoalSIP(){
+  const t=Number(document.getElementById('f-gtarget')?.value||0);
+  const c=Number(document.getElementById('f-gcurrent')?.value||0);
+  const y=Number(document.getElementById('f-gtime')?.value||0);
+  const box=document.getElementById('goal-sip-box');
+  const valEl=document.getElementById('goal-sip-val');
+  if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
+  else{if(box)box.style.display='none';}
+}
+function saveGoal(){
+  const type=document.getElementById('f-gtype')?.value;
+  const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
+  let obj={type,name:pr.name};
+  if(pr.isIns){
+    obj.policyName=document.getElementById('f-ins-policy')?.value?.trim()||'';
+    obj.premium=Number(document.getElementById('f-ins-premium')?.value||0);
+    obj.expiry=document.getElementById('f-ins-expiry')?.value||'';
+    obj.notes=document.getElementById('f-ins-notes')?.value?.trim()||'';
+  }else{
+    obj.target=Number(document.getElementById('f-gtarget')?.value||0);
+    obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
+    obj.timePeriod=document.getElementById('f-gtime')?.value||'';
+  }
+  const ex=data.goals.find(g=>g.type===type);
+  if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
+  save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+}
 
 function sheetInvestment(inv){
   const typeOpts=INV_TYPES.map(t=>`<option value="${t.v}" ${inv.type===t.v?'selected':''}>${t.icon} ${t.l}</option>`).join('');
