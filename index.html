@@ -832,7 +832,7 @@ const INV_TYPES = [
 
 let data = {
   profile:{name:'', avatarColor:'#6366f1'},
-  assets:[], liabilities:[], goals:[], kids:[], investments:[],
+  assets:[], liabilities:[], goals:[], kids:[], investments:[], customGoals:[],
   checklist:[false,false,false,false,false,false]
 };
 let _confirmCb=null;
@@ -1014,13 +1014,39 @@ function renderGoals(){
     </div>`;
   }
 
-  const divider=(label)=>`<div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px">${label==='Protection'?shieldIco:targetIco} ${label}</div>`;
+  const plusIco = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:0.45"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+  const divider=(label,ico)=>`<div style="font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px">${ico||targetIco} ${label}</div>`;
+
+  function customRow(cg){
+    const target=Number(cg.target||0),current=Number(cg.current||0);const p=pct(current,target);
+    let pCls='pill-muted',pTxt='Not Set';
+    if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-amber':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    return`<div class="goal-row" onclick="openSheet('customGoal','${cg.id}')">
+      <div class="goal-icon" style="background:var(--surface2)">${targetIco}</div>
+      <div class="goal-body">
+        <div class="goal-top"><span class="goal-name">${cg.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
+        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#a78bfa;width:${p}%"></div></div>
+        <div class="goal-amounts">
+          <span class="goal-saved">${fmt(current)}</span>
+          <span class="goal-target">${target>0?'of '+fmt(target)+(cg.timePeriod?' · '+cg.timePeriod+'y':''):'Tap to set'}</span>
+          <span class="goal-pct">${p}%</span>
+        </div>
+      </div>
+      <button class="btn-del" style="align-self:center;flex-shrink:0;margin-left:6px" onclick="event.stopPropagation();delCustomGoal('${cg.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>`;
+  }
+
+  const customGoals = data.customGoals||[];
+  const totalCount = GOAL_PRESETS.length + customGoals.length;
+  const cEl=document.getElementById('goals-sec-count');if(cEl)cEl.textContent=totalCount;
 
   el.innerHTML =
-    divider('Protection') +
+    divider('Protection', shieldIco) +
     insGoals.map(insRow).join('') +
-    divider('Savings Goals') +
-    savingsGoals.map(savingsRow).join('');
+    divider('Savings Goals', targetIco) +
+    savingsGoals.map(savingsRow).join('') +
+    (customGoals.length ? customGoals.map(customRow).join('') : '') +
+    `<div class="add-row" style="margin-top:6px" onclick="openSheet('customGoal',null)">Add Custom Goal</div>`;
 }
 
 function renderKids(){
@@ -1156,6 +1182,7 @@ function openSheet(type,arg,arg2){
   else if(type==='child')html=sheetChild(arg||null);
   else if(type==='managePhases')html=sheetManagePhases(arg);
   else if(type==='phase')html=sheetEditPhase(arg,arg2);
+  else if(type==='customGoal')html=sheetCustomGoal(arg||null);
   else if(type==='profile')html=sheetProfile();
   document.getElementById('sheet-content').innerHTML=html;
   document.getElementById('sheet-overlay').classList.add('open');
@@ -1255,6 +1282,56 @@ function saveGoal(){
   const ex=data.goals.find(g=>g.type===type);
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
   save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+}
+
+function sheetCustomGoal(id){
+  const cg = id ? (data.customGoals||[]).find(x=>x.id===id)||{} : {};
+  const isEdit = !!cg.id;
+  const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  const sip = cg.target&&cg.timePeriod ? sipNeeded(Number(cg.target),Number(cg.current||0),Number(cg.timePeriod)) : 0;
+  return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'New'} Custom Goal</div>${closeX}</div>
+  <div class="sheet-body">
+    <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-cg-name" placeholder="e.g. Car Purchase, Business Fund…" value="${cg.name||''}"/></div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cg-target" type="number" placeholder="0" value="${cg.target||''}" oninput="updateCustomSIP()"/></div>
+      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>
+    </div>
+    <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-cg-time" type="number" placeholder="3" value="${cg.timePeriod||''}" oninput="updateCustomSIP()"/></div>
+    <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--amber-bg);border:1px solid rgba(251,191,36,0.25);border-radius:var(--r);margin-top:2px">
+      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--amber);margin-bottom:2px">Monthly SIP Needed</div>
+      <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">Save Goal</button>
+    </div>
+  </div>`}
+
+function updateCustomSIP(){
+  const t=Number(document.getElementById('f-cg-target')?.value||0);
+  const c=Number(document.getElementById('f-cg-current')?.value||0);
+  const y=Number(document.getElementById('f-cg-time')?.value||0);
+  const box=document.getElementById('cg-sip-box');
+  const valEl=document.getElementById('cg-sip-val');
+  if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
+  else{if(box)box.style.display='none';}
+}
+
+function saveCustomGoal(editId){
+  const name=document.getElementById('f-cg-name')?.value?.trim();
+  if(!name){toast('Enter a goal name');return}
+  if(!data.customGoals)data.customGoals=[];
+  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),current:Number(document.getElementById('f-cg-current')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||''};
+  if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
+  else{data.customGoals.push({id:uid(),...obj});}
+  save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+}
+
+function delCustomGoal(id){
+  const cg=(data.customGoals||[]).find(x=>x.id===id);
+  showConfirm('Delete Goal?',`"${cg?.name||'This goal'}" will be removed.`,()=>{
+    data.customGoals=data.customGoals.filter(x=>x.id!==id);save();renderGoals();renderDashboard();toast('Deleted');
+  });
 }
 
 function sheetInvestment(inv){
