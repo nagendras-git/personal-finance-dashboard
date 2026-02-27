@@ -591,11 +591,6 @@ body {
   margin-bottom:7px;
 }
 
-/* ── NET WORTH CHART ── */
-.nw-chart-wrap { padding:14px 16px 10px; border-top:1px solid var(--border2) }
-.nw-chart-title { font-size:0.78rem; font-weight:800; color:var(--text1); letter-spacing:0; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between }
-.nw-chart-svg { width:100%; height:56px; display:block; overflow:visible }
-.nw-chart-empty { font-size:0.72rem; color:var(--text3); text-align:center; padding:12px 0; opacity:0.6 }
 
 /* ── CASH FLOW CARD ── */
 .cf-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; margin-bottom:0 }
@@ -683,10 +678,9 @@ body {
           <div style="font-size:0.65rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;font-weight:500;letter-spacing:0">Assets − Liabilities</div>
         </div>
         <div style="font-family:var(--mono);font-size:2rem;font-weight:700;letter-spacing:-1px;line-height:1" id="dash-networth">₹0</div>
-        <div id="dash-nw-change" style="font-size:0.7rem;margin-top:4px;font-family:var(--mono);font-weight:600;display:none"></div>
       </div>
       <!-- Row 1: Assets · Liabilities · SIP -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border2)">
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border2)">
         <div style="padding:13px 16px;border-right:1px solid var(--border2)">
           <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">Assets</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-assets-val">₹0</div>
@@ -695,10 +689,7 @@ body {
           <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">Liabilities</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="dash-liab-val">₹0</div>
         </div>
-        <div style="padding:13px 16px">
-          <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">SIP / mo</div>
-          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-sip">₹0</div>
-        </div>
+
       </div>
       <!-- Row 2: Invested · P&L -->
       <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border2)">
@@ -710,14 +701,6 @@ body {
           <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">P&amp;L</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700" id="dash-pnl">₹0</div>
         </div>
-      </div>
-      <!-- Net Worth History Chart -->
-      <div class="nw-chart-wrap" id="nw-chart-section">
-        <div class="nw-chart-title">
-          <span>Net Worth History</span>
-          <span id="nw-chart-months" style="font-weight:500;letter-spacing:0;text-transform:none"></span>
-        </div>
-        <div id="nw-chart-container"><div class="nw-chart-empty">Track monthly to build your history</div></div>
       </div>
     </div>
   </div>
@@ -1097,8 +1080,6 @@ function greeting(){const h=new Date().getHours();if(h<12)return'Good morning �
 function save(){
   try{
     localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
-    // Record net worth snapshot once per month
-    saveNetWorthSnapshot();
     // Track saves for backup nudge
     const cnt=(parseInt(localStorage.getItem('wp_save_count'))||0)+1;
     localStorage.setItem('wp_save_count',cnt);
@@ -1120,58 +1101,6 @@ function load(){
     save();
   }
   if(!data.customGoals)data.customGoals=[];
-}
-
-/* ── NET WORTH HISTORY ── */
-const NW_HISTORY_KEY='wp_nw_history';
-function saveNetWorthSnapshot(){
-  const totalAssets=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
-  const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
-  const nw=totalAssets-totalLiab;
-  const hist=getNWHistory();
-  const now=new Date();
-  const monthKey=now.getFullYear()+'-'+(now.getMonth()+1);
-  // Replace existing entry for this month or add new
-  const idx=hist.findIndex(h=>h.m===monthKey);
-  if(idx>=0)hist[idx].v=nw;else hist.push({m:monthKey,v:nw});
-  // Keep last 24 months
-  if(hist.length>24)hist.splice(0,hist.length-24);
-  try{localStorage.setItem(NW_HISTORY_KEY,JSON.stringify(hist))}catch(e){}
-}
-function getNWHistory(){
-  try{const d=localStorage.getItem(NW_HISTORY_KEY);return d?JSON.parse(d):[]}catch(e){return[]}
-}
-function renderNWChart(){
-  const hist=getNWHistory();
-  const container=document.getElementById('nw-chart-container');
-  const monthsLabel=document.getElementById('nw-chart-months');
-  if(!container)return;
-  if(hist.length<2){container.innerHTML='<div class="nw-chart-empty">Track monthly to build your history</div>';if(monthsLabel)monthsLabel.textContent='';return;}
-  if(monthsLabel)monthsLabel.textContent=hist.length+' months';
-  const vals=hist.map(h=>h.v);
-  const minV=Math.min(...vals);const maxV=Math.max(...vals);
-  const range=maxV-minV||1;
-  const W=300;const H=56;const pad=4;
-  const pts=hist.map((h,i)=>{
-    const x=pad+(i/(hist.length-1))*(W-pad*2);
-    const y=H-pad-((h.v-minV)/range)*(H-pad*2);
-    return[x,y];
-  });
-  const isUp=vals[vals.length-1]>=vals[0];
-  const lineColor=isUp?'var(--green)':'var(--red)';
-  const fillColor=isUp?'rgba(74,222,128,0.12)':'rgba(248,113,113,0.08)';
-  const polyline=pts.map(p=>p[0]+','+p[1]).join(' ');
-  const fillPath=`M${pts[0][0]},${H} `+pts.map(p=>`L${p[0]},${p[1]}`).join(' ')+` L${pts[pts.length-1][0]},${H} Z`;
-  // Month labels: first and last
-  const first=hist[0].m.replace(/(\d+)-(\d+)/,(_,y,m)=>{const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mn[parseInt(m)-1]+' '+y.slice(2)});
-  const last=hist[hist.length-1].m.replace(/(\d+)-(\d+)/,(_,y,m)=>{const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mn[parseInt(m)-1]+' '+y.slice(2)});
-  container.innerHTML=`<svg class="nw-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-    <path d="${fillPath}" fill="${fillColor}"/>
-    <polyline points="${polyline}" fill="none" stroke="${lineColor}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-    <circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="3" fill="${lineColor}"/>
-    <text x="${pad}" y="${H-1}" font-size="8" fill="var(--text3)" font-family="'Inter',sans-serif">${first}</text>
-    <text x="${W-pad}" y="${H-1}" font-size="8" fill="var(--text3)" font-family="'Inter',sans-serif" text-anchor="end">${last}</text>
-  </svg>`;
 }
 
 /* ── RETIREMENT READINESS ── */
@@ -1215,23 +1144,6 @@ function dismissBackupBanner(){
   localStorage.setItem('wp_last_export',Date.now());
 }
 
-/* ── SWIPE TO CLOSE SHEETS ── */
-function initSwipeToClose(){
-  ['sheet','qa-sheet'].forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    let startY=0;let startTime=0;
-    el.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;startTime=Date.now();},{passive:true});
-    el.addEventListener('touchend',e=>{
-      const dy=e.changedTouches[0].clientY-startY;
-      const dt=Date.now()-startTime;
-      // Fast flick down OR slow drag >100px → close
-      if(dy>80&&(dy/dt>0.4||dy>140)){
-        if(id==='sheet')closeSheet();else closeQuickAdd();
-      }
-    },{passive:true});
-  });
-}
-
 function renderProfile(){
   const n=data.profile.name||'';const firstName=n.split(' ')[0]||'WealthPilot';
   document.getElementById('header-name-display').textContent=firstName+"'s Finance";
@@ -1268,7 +1180,6 @@ function renderDashboard(){
   const nwColor=netWorth<0?'var(--red)':netWorth>0?'var(--green)':'var(--text2)';
   const set=(id,v,clr)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(clr)el.style.color=clr}};
   set('dash-networth',fmt(netWorth),nwColor);
-  set('dash-sip',fmt(monthlySIP));
   set('dash-assets-val',fmt(totalAssets));
   set('dash-liab-val',fmt(totalLiab));
   set('dash-invested',fmt(totalInvested));
@@ -1277,14 +1188,6 @@ function renderDashboard(){
   updateWealthCard(totalAssets,totalLiab);
 
   // Net worth month-over-month change
-  const hist=getNWHistory();
-  if(hist.length>=2){
-    const prev=hist[hist.length-2].v;
-    const diff=netWorth-prev;const diffPct=prev>0?((diff/Math.abs(prev))*100).toFixed(1):null;
-    const chEl=document.getElementById('dash-nw-change');
-    if(chEl){chEl.style.display='';chEl.textContent=(diff>=0?'▲ +':'▼ ')+fmt(diff)+(diffPct?' ('+diffPct+'%)':'');chEl.style.color=diff>=0?'var(--green)':'var(--red)';}
-  }
-
   // Cash flow card
   const netFlow=monthlySIP-monthlyEMI;
   set('cf-sip',fmt(monthlySIP));
@@ -1293,9 +1196,6 @@ function renderDashboard(){
 
   // Goal health card
   renderGoalHealth();
-
-  // Net worth history chart
-  renderNWChart();
 
   // Asset Category Breakdown
   const catEl=document.getElementById('dash-asset-cats');
@@ -2233,7 +2133,6 @@ function init(){
   document.documentElement.setAttribute('data-theme',theme);
   const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',theme==='light');
   initFontSize();
-  initSwipeToClose();
   if(!localStorage.getItem(STORAGE_KEY)){
     data.assets=[
       {id:uid(),category:'EPF',        name:'Employee PF',          currentValue:850000, invested:700000, sip:0},
@@ -2243,8 +2142,6 @@ function init(){
     data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:300000,current:180000,timePeriod:'1'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
     data.checklist=[true,true,false,true,false,false];data.profile.name='Nagendra';save();
   }
-  // Always snapshot on open so history builds passively
-  saveNetWorthSnapshot();
   renderProfile();renderDashboard();
   // Greeting
   const greetEl=document.querySelector('.hdr-greeting');
