@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
 <title>WealthPilot</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
   --bg:       #0d0d10;
@@ -30,7 +30,7 @@
   --accent:    rgba(255,255,255,0.9);
   --accent2:   rgba(255,255,255,0.06);
 
-  --mono: 'JetBrains Mono', monospace;
+  --mono: 'Inter', sans-serif;
   --nav-h: 60px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --r: 12px;
@@ -47,7 +47,7 @@
   --border:   #dddde8;
   --border2:  #eaeaf2;
   --text1:    #1a1a25;
-  --text2:    #6060780;
+  --text2:    #606078;
   --text3:    #9898b0;
   --accent2:  rgba(0,0,0,0.04);
   --scrim:    rgba(0,0,0,0.45);
@@ -58,7 +58,7 @@
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
 html { height:100%; overflow-x:hidden; font-size:16px }
 body {
-  font-family:'Outfit',-apple-system,sans-serif;
+  font-family:'Inter',-apple-system,sans-serif;
   background:var(--bg); color:var(--text1);
   min-height:100vh; max-width:100vw;
   padding-bottom:calc(var(--nav-h) + var(--safe-b) + 4px);
@@ -92,7 +92,7 @@ body {
 }
 .avatar-btn:active { transform:scale(0.9) }
 .hdr-greeting { font-size:0.74rem; color:var(--text3); font-weight:500; line-height:1 }
-.hdr-name { font-size:1.05rem; font-weight:700; color:var(--text1); letter-spacing:-0.3px; line-height:1.2 }
+.hdr-name { font-size:1.1rem; font-weight:800; color:var(--text1); letter-spacing:-0.3px; line-height:1.2 }
 .hdr-right { display:flex; align-items:center; gap:7px }
 .hdr-icon-btn {
   width:2rem; height:2rem; border-radius:8px;
@@ -116,12 +116,12 @@ body {
 .stat-card.tap { cursor:pointer }
 .stat-card.tap:active { background:var(--surface2) }
 .stat-label {
-  font-size:0.65rem; font-weight:600; color:var(--text3);
-  text-transform:uppercase; letter-spacing:0.08em; margin-bottom:7px;
+  font-size:0.72rem; font-weight:600; color:var(--text3);
+  letter-spacing:0; margin-bottom:7px;
 }
 .stat-val {
   font-family:var(--mono); font-size:0.62rem; font-weight:700;
-  color:var(--text1); letter-spacing:-0.5px; line-height:1;
+  color:var(--text1); letter-spacing:0; line-height:1;
 }
 .stat-val.lg { font-size:1.7rem }
 .stat-sub { font-size:0.84rem; color:var(--text3); margin-top:5px }
@@ -141,7 +141,7 @@ body {
 }
 .sec-hdr:active { background:var(--surface3) }
 .sec-hdr-left { display:flex; align-items:center; gap:8px; min-width:0 }
-.sec-hdr-title { font-size:0.86rem; font-weight:700; color:var(--text1); display:inline-flex; align-items:center; gap:5px }
+.sec-hdr-title { font-size:0.88rem; font-weight:800; color:var(--text1); display:inline-flex; align-items:center; gap:5px }
 .sec-badge {
   font-size:0.7rem; font-weight:600; color:var(--text3);
   background:var(--surface3); border:1px solid var(--border);
@@ -211,8 +211,8 @@ body {
 
 /* ── INVESTMENT CATEGORY ── */
 .inv-cat-label {
-  font-size:0.62rem; font-weight:700; color:var(--text3);
-  text-transform:uppercase; letter-spacing:0.1em;
+  font-size:0.72rem; font-weight:700; color:var(--text3);
+  letter-spacing:0;
   padding:4px 0; margin:12px 0 6px;
 }
 
@@ -286,16 +286,16 @@ body {
 }
 .wealth-val {
   font-family:var(--mono); font-size:2rem; font-weight:700;
-  color:var(--text1); letter-spacing:-1px; margin:6px 0;
+  color:var(--text1); letter-spacing:-0.5px; margin:6px 0;
 }
 .wealth-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid var(--border2) }
-.wealth-item-label { font-size:0.86rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:3px }
+.wealth-item-label { font-size:0.86rem; color:var(--text3); font-weight:600; letter-spacing:0; margin-bottom:3px }
 .wealth-item-val { font-family:var(--mono); font-size:0.88rem; font-weight:700 }
 
 /* ── INV SUMMARY ── */
 .inv-stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:12px }
 .inv-stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:13px }
-.inv-stat-label { font-size:0.62rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:5px }
+.inv-stat-label { font-size:0.72rem; font-weight:600; color:var(--text3); letter-spacing:0; margin-bottom:5px }
 .inv-stat-val { font-family:var(--mono); font-size:0.9rem; font-weight:700; color:var(--text1) }
 
 /* ── PILLS ── */
@@ -308,7 +308,7 @@ body {
 /* ── BUTTONS ── */
 .btn {
   display:inline-flex; align-items:center; justify-content:center; gap:6px;
-  font-family:'Outfit',sans-serif; font-weight:700; border:none; cursor:pointer;
+  font-family:'Inter',sans-serif; font-weight:700; border:none; cursor:pointer;
   transition:transform 150ms var(--spring),opacity 120ms; user-select:none;
 }
 .btn:active { transform:scale(0.94); opacity:0.88 }
@@ -384,7 +384,7 @@ body {
   padding:14px 16px 12px; display:flex; align-items:center; justify-content:space-between;
   background:var(--surface); border-bottom:1px solid var(--border2);
 }
-.sheet-title { font-size:0.84rem; font-weight:700; color:var(--text1) }
+.sheet-title { font-size:0.9rem; font-weight:800; color:var(--text1) }
 .sheet-close {
   width:28px; height:28px; border-radius:50%; background:var(--surface2);
   border:1px solid var(--border); cursor:pointer; display:flex;
@@ -394,14 +394,14 @@ body {
 
 /* ── FORMS — critical mobile fixes ── */
 .fg { margin-bottom:13px }
-.fl { font-size:0.68rem; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:5px; display:block }
+.fl { font-size:0.68rem; font-weight:700; color:var(--text3); letter-spacing:0; margin-bottom:5px; display:block }
 .fi {
   width:100%; max-width:100%;
   /* 1rem (= 16px base) MINIMUM prevents iOS auto-zoom which causes sheet widening */
   font-size:1rem !important;
   padding:10px 12px;
   border:1px solid var(--border); border-radius:var(--r);
-  font-family:'Outfit',sans-serif; font-weight:500;
+  font-family:'Inter',sans-serif; font-weight:500;
   background:var(--surface2); color:var(--text1);
   outline:none; -webkit-appearance:none;
   transition:border-color 150ms,box-shadow 150ms;
@@ -417,7 +417,7 @@ body {
 .form-row2 { display:grid; grid-template-columns:1fr 1fr; gap:9px }
 @media (max-width:340px) { .form-row2 { grid-template-columns:1fr } }
 .form-actions { display:flex; gap:9px; justify-content:flex-end; margin-top:16px; padding-top:14px; border-top:1px solid var(--border2) }
-.form-sec { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text3); margin:15px 0 8px; padding-bottom:5px; border-bottom:1px solid var(--border2) }
+.form-sec { font-size:0.72rem; font-weight:700; letter-spacing:0; color:var(--text3); margin:15px 0 8px; padding-bottom:5px; border-bottom:1px solid var(--border2) }
 
 /* ── GENDER ── */
 .gender-row { display:grid; grid-template-columns:1fr 1fr; gap:7px }
@@ -445,7 +445,7 @@ body {
 
 /* ── SIP CALLOUT ── */
 .sip-callout { background:var(--green-bg); border:1px solid rgba(74,222,128,0.2); border-radius:var(--r); padding:10px 13px; margin-top:9px }
-.sip-label { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--green); margin-bottom:2px }
+.sip-label { font-size:0.72rem; font-weight:700; letter-spacing:0; color:var(--green); margin-bottom:2px }
 .sip-val { font-family:var(--mono); font-size:0.95rem; font-weight:700; color:var(--text1) }
 
 /* ── INV LINK ── */
@@ -500,8 +500,8 @@ body {
 .qa-sheet.open { transform:translateY(0); visibility:visible }
 .qa-handle { width:36px; height:4px; background:var(--border); border-radius:99px; margin:12px auto 0 }
 .qa-title {
-  font-size:0.72rem; font-weight:700; color:var(--text3);
-  text-transform:uppercase; letter-spacing:0.1em;
+  font-size:0.78rem; font-weight:700; color:var(--text3);
+  letter-spacing:0;
   padding:16px 20px 12px;
   border-bottom:1px solid var(--border2);
   display:flex; align-items:center; justify-content:space-between;
@@ -553,9 +553,9 @@ body {
 .confirm-title { font-size:0.84rem; font-weight:700; text-align:center; padding:0 20px 4px; color:var(--text1) }
 .confirm-sub { font-size:0.88rem; color:var(--text2); text-align:center; padding:0 20px 20px; line-height:1.5 }
 .confirm-actions { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--border2) }
-.confirm-cancel { padding:14px; text-align:center; font-size:0.88rem; font-weight:600; color:var(--text2); cursor:pointer; background:none; border:none; border-right:1px solid var(--border2); font-family:'Outfit',sans-serif }
+.confirm-cancel { padding:14px; text-align:center; font-size:0.88rem; font-weight:600; color:var(--text2); cursor:pointer; background:none; border:none; border-right:1px solid var(--border2); font-family:'Inter',sans-serif }
 .confirm-cancel:active { background:var(--surface2) }
-.confirm-delete { padding:14px; text-align:center; font-size:0.88rem; font-weight:700; color:var(--red); cursor:pointer; background:none; border:none; font-family:'Outfit',sans-serif }
+.confirm-delete { padding:14px; text-align:center; font-size:0.88rem; font-weight:700; color:var(--red); cursor:pointer; background:none; border:none; font-family:'Inter',sans-serif }
 .confirm-delete:active { background:var(--red-bg) }
 
 /* ── TOAST ── */
@@ -574,7 +574,7 @@ body {
 .theme-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:14px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); margin-bottom:8px }
 .fs-btn {
   padding:8px 4px; border-radius:var(--r); border:1.5px solid var(--border);
-  background:var(--surface2); color:var(--text2); font-family:'Outfit',sans-serif;
+  background:var(--surface2); color:var(--text2); font-family:'Inter',sans-serif;
   font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 150ms var(--spring);
 }
 .fs-btn:active { transform:scale(0.93) }
@@ -591,7 +591,50 @@ body {
   margin-bottom:7px;
 }
 
-/* ── ASSET CAT ROW ── */
+/* ── NET WORTH CHART ── */
+.nw-chart-wrap { padding:14px 16px 10px; border-top:1px solid var(--border2) }
+.nw-chart-title { font-size:0.78rem; font-weight:800; color:var(--text1); letter-spacing:0; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between }
+.nw-chart-svg { width:100%; height:56px; display:block; overflow:visible }
+.nw-chart-empty { font-size:0.72rem; color:var(--text3); text-align:center; padding:12px 0; opacity:0.6 }
+
+/* ── CASH FLOW CARD ── */
+.cf-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; margin-bottom:0 }
+.cf-row { display:grid; grid-template-columns:1fr 1fr 1fr }
+.cf-cell { padding:11px 14px; border-right:1px solid var(--border2) }
+.cf-cell:last-child { border-right:none }
+.cf-label { font-size:0.72rem; font-weight:700; color:var(--text2); letter-spacing:0; margin-bottom:4px }
+.cf-val { font-family:var(--mono); font-size:0.88rem; font-weight:700 }
+
+/* ── GOAL HEALTH CARD ── */
+.gh-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:13px 16px; margin-bottom:0 }
+.gh-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px }
+.gh-title { font-size:0.78rem; font-weight:800; color:var(--text1); letter-spacing:0 }
+.gh-pct { font-family:var(--mono); font-size:0.88rem; font-weight:700 }
+.gh-track { height:6px; background:var(--surface3); border-radius:99px; overflow:hidden }
+.gh-fill { height:100%; border-radius:99px; transition:width 0.6s var(--ease) }
+.gh-meta { font-size:0.68rem; color:var(--text3); margin-top:5px }
+
+/* ── RETIREMENT READINESS ── */
+.ret-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:13px 16px; margin-bottom:8px }
+.ret-bar-wrap { height:8px; background:var(--surface3); border-radius:99px; overflow:hidden; margin:8px 0 5px }
+.ret-bar { height:100%; border-radius:99px; transition:width 0.6s var(--ease) }
+
+/* ── DEBT PAYOFF BADGE ── */
+.payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.65rem; font-weight:600; color:var(--amber); background:var(--amber-bg); border-radius:99px; padding:2px 7px; margin-top:3px }
+
+/* ── SWIPE INDICATOR ON SHEET HANDLE ── */
+.sheet-handle, .qa-handle { cursor:grab }
+
+/* ── BACKUP NUDGE BANNER ── */
+.backup-banner {
+  position:fixed; top:0; left:0; right:0; z-index:9000;
+  background:var(--amber); color:#000; font-size:0.78rem; font-weight:700;
+  padding:10px 16px; display:flex; align-items:center; justify-content:space-between;
+  transform:translateY(-100%); transition:transform 0.3s var(--ease);
+}
+.backup-banner.show { transform:translateY(0) }
+.backup-banner-close { background:none; border:none; cursor:pointer; font-size:1rem; font-weight:700; color:#000; padding:0 4px }
+
 .acat-row {
   display:flex; align-items:center; gap:10px;
   padding:9px 4px; border-bottom:1px solid var(--border2);
@@ -609,6 +652,12 @@ body {
 </style>
 </head>
 <body>
+
+<!-- BACKUP NUDGE BANNER -->
+<div class="backup-banner" id="backup-banner">
+  <span>💾 Back up your data — tap Export in More → Data Tools</span>
+  <button class="backup-banner-close" onclick="dismissBackupBanner()">✕</button>
+</div>
 
 <!-- ══ HOME ══ -->
 <div id="page-dashboard" class="page active">
@@ -630,52 +679,97 @@ body {
       <!-- Total Wealth -->
       <div style="padding:18px 18px 14px;border-bottom:1px solid var(--border2)">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-          <div style="font-size:0.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Total Wealth</div>
+          <div style="font-size:0.82rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Total Wealth</div>
           <div style="font-size:0.65rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;font-weight:500;letter-spacing:0">Assets − Liabilities</div>
         </div>
-        <div style="font-family:var(--mono);font-size:2rem;font-weight:700;letter-spacing:-1.5px;line-height:1" id="dash-networth">₹0</div>
+        <div style="font-family:var(--mono);font-size:2rem;font-weight:700;letter-spacing:-1px;line-height:1" id="dash-networth">₹0</div>
+        <div id="dash-nw-change" style="font-size:0.7rem;margin-top:4px;font-family:var(--mono);font-weight:600;display:none"></div>
       </div>
       <!-- Row 1: Assets · Liabilities · SIP -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border2)">
         <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Assets</div>
+          <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">Assets</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-assets-val">₹0</div>
         </div>
         <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Liabilities</div>
+          <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">Liabilities</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="dash-liab-val">₹0</div>
         </div>
         <div style="padding:13px 16px">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">SIP / mo</div>
+          <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">SIP / mo</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-sip">₹0</div>
         </div>
       </div>
       <!-- Row 2: Invested · P&L -->
-      <div style="display:grid;grid-template-columns:1fr 1fr">
+      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border2)">
         <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Invested</div>
+          <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">Invested</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-invested">₹0</div>
         </div>
         <div style="padding:13px 16px">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">P&amp;L</div>
+          <div style="font-size:0.7rem;font-weight:600;color:var(--text3);letter-spacing:0;margin-bottom:5px">P&amp;L</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700" id="dash-pnl">₹0</div>
         </div>
       </div>
+      <!-- Net Worth History Chart -->
+      <div class="nw-chart-wrap" id="nw-chart-section">
+        <div class="nw-chart-title">
+          <span>Net Worth History</span>
+          <span id="nw-chart-months" style="font-weight:500;letter-spacing:0;text-transform:none"></span>
+        </div>
+        <div id="nw-chart-container"><div class="nw-chart-empty">Track monthly to build your history</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASH FLOW CARD -->
+  <div class="container" style="padding-top:8px;padding-bottom:4px">
+    <div class="cf-card">
+      <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:0.78rem;font-weight:800;color:var(--text1);letter-spacing:0">Monthly Cash Flow</div>
+        <div style="font-size:0.62rem;color:var(--text3)">SIP outflow vs EMI burden</div>
+      </div>
+      <div class="cf-row">
+        <div class="cf-cell">
+          <div class="cf-label">SIP / mo</div>
+          <div class="cf-val" style="color:var(--green)" id="cf-sip">₹0</div>
+        </div>
+        <div class="cf-cell">
+          <div class="cf-label">EMI / mo</div>
+          <div class="cf-val" style="color:var(--red)" id="cf-emi">₹0</div>
+        </div>
+        <div class="cf-cell">
+          <div class="cf-label">Net Flow</div>
+          <div class="cf-val" id="cf-net">₹0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOAL HEALTH CARD -->
+  <div class="container" style="padding-top:8px;padding-bottom:4px">
+    <div class="gh-card" id="goal-health-card">
+      <div class="gh-top">
+        <div class="gh-title">Goal Health</div>
+        <div class="gh-pct" id="gh-pct">—</div>
+      </div>
+      <div class="gh-track"><div class="gh-fill" id="gh-fill" style="width:0%;background:var(--green)"></div></div>
+      <div class="gh-meta" id="gh-meta">Set up your goals to track progress</div>
     </div>
   </div>
 
   <!-- ASSET CATEGORY BREAKDOWN -->
   <div class="container" style="padding-top:8px" id="dash-asset-breakdown-wrap">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
-      <div style="padding:13px 16px 10px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:0.84rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Portfolio Breakdown</div>
+      <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:0.88rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Portfolio Breakdown</div>
         <div style="font-size:0.62rem;color:var(--text3);font-weight:500" id="dash-cat-count">—</div>
       </div>
       <div id="dash-asset-cats" style="padding:8px 12px 6px"></div>
     </div>
   </div>
 
-  <div style="text-align:center;padding:14px 0 4px;color:var(--text3);font-size:0.62rem;font-weight:600;letter-spacing:0.3px">Data stored on your device only 🔒</div>
+  <div style="text-align:center;padding:14px 0 4px;color:var(--text3);font-size:0.62rem;font-weight:600;letter-spacing:0">Data stored on your device only 🔒</div>
 </div>
 
 <!-- ══ GOALS ══ -->
@@ -685,7 +779,18 @@ body {
     <div class="hdr-left"><div><div class="hdr-greeting">Planning</div><div class="hdr-name">Goals</div></div></div>
     </div>
   </div>
-  <div class="container">
+  <!-- RETIREMENT READINESS -->
+  <div class="container" style="padding-bottom:4px">
+    <div class="ret-card" id="ret-readiness-card" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:0.78rem;font-weight:800;color:var(--text1);letter-spacing:0">Retirement Readiness</div>
+        <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700" id="ret-pct-label">—</div>
+      </div>
+      <div class="ret-bar-wrap"><div class="ret-bar" id="ret-bar" style="width:0%"></div></div>
+      <div style="font-size:0.7rem;color:var(--text3)" id="ret-meta"></div>
+    </div>
+  </div>
+  <div class="container" style="padding-top:0">
     <div class="sec-hdr" onclick="toggleSec('sec-kids')">
       <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
       <div class="sec-hdr-right">
@@ -989,7 +1094,17 @@ function getLiab(v){return LIAB_CATS.find(c=>c.v===v)||LIAB_CATS[LIAB_CATS.lengt
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 /** Time-aware greeting */
 function greeting(){const h=new Date().getHours();if(h<12)return'Good morning ☀️';if(h<17)return'Good afternoon 👋';if(h<21)return'Good evening 🌙';return'Good night 🌙'}
-function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){toast('⚠️ Storage full — export a backup!')}}
+function save(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    // Record net worth snapshot once per month
+    saveNetWorthSnapshot();
+    // Track saves for backup nudge
+    const cnt=(parseInt(localStorage.getItem('wp_save_count'))||0)+1;
+    localStorage.setItem('wp_save_count',cnt);
+    if(cnt>0&&cnt%15===0&&!localStorage.getItem('wp_last_export')){showBackupBanner();}
+  }catch(e){toast('⚠️ Storage full — export a backup!')}
+}
 function load(){
   try{const d=localStorage.getItem(STORAGE_KEY);if(d){data=JSON.parse(d)}}catch(e){}
   // Migration: merge old data.investments into data.assets
@@ -1005,6 +1120,116 @@ function load(){
     save();
   }
   if(!data.customGoals)data.customGoals=[];
+}
+
+/* ── NET WORTH HISTORY ── */
+const NW_HISTORY_KEY='wp_nw_history';
+function saveNetWorthSnapshot(){
+  const totalAssets=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
+  const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
+  const nw=totalAssets-totalLiab;
+  const hist=getNWHistory();
+  const now=new Date();
+  const monthKey=now.getFullYear()+'-'+(now.getMonth()+1);
+  // Replace existing entry for this month or add new
+  const idx=hist.findIndex(h=>h.m===monthKey);
+  if(idx>=0)hist[idx].v=nw;else hist.push({m:monthKey,v:nw});
+  // Keep last 24 months
+  if(hist.length>24)hist.splice(0,hist.length-24);
+  try{localStorage.setItem(NW_HISTORY_KEY,JSON.stringify(hist))}catch(e){}
+}
+function getNWHistory(){
+  try{const d=localStorage.getItem(NW_HISTORY_KEY);return d?JSON.parse(d):[]}catch(e){return[]}
+}
+function renderNWChart(){
+  const hist=getNWHistory();
+  const container=document.getElementById('nw-chart-container');
+  const monthsLabel=document.getElementById('nw-chart-months');
+  if(!container)return;
+  if(hist.length<2){container.innerHTML='<div class="nw-chart-empty">Track monthly to build your history</div>';if(monthsLabel)monthsLabel.textContent='';return;}
+  if(monthsLabel)monthsLabel.textContent=hist.length+' months';
+  const vals=hist.map(h=>h.v);
+  const minV=Math.min(...vals);const maxV=Math.max(...vals);
+  const range=maxV-minV||1;
+  const W=300;const H=56;const pad=4;
+  const pts=hist.map((h,i)=>{
+    const x=pad+(i/(hist.length-1))*(W-pad*2);
+    const y=H-pad-((h.v-minV)/range)*(H-pad*2);
+    return[x,y];
+  });
+  const isUp=vals[vals.length-1]>=vals[0];
+  const lineColor=isUp?'var(--green)':'var(--red)';
+  const fillColor=isUp?'rgba(74,222,128,0.12)':'rgba(248,113,113,0.08)';
+  const polyline=pts.map(p=>p[0]+','+p[1]).join(' ');
+  const fillPath=`M${pts[0][0]},${H} `+pts.map(p=>`L${p[0]},${p[1]}`).join(' ')+` L${pts[pts.length-1][0]},${H} Z`;
+  // Month labels: first and last
+  const first=hist[0].m.replace(/(\d+)-(\d+)/,(_,y,m)=>{const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mn[parseInt(m)-1]+' '+y.slice(2)});
+  const last=hist[hist.length-1].m.replace(/(\d+)-(\d+)/,(_,y,m)=>{const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return mn[parseInt(m)-1]+' '+y.slice(2)});
+  container.innerHTML=`<svg class="nw-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <path d="${fillPath}" fill="${fillColor}"/>
+    <polyline points="${polyline}" fill="none" stroke="${lineColor}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="3" fill="${lineColor}"/>
+    <text x="${pad}" y="${H-1}" font-size="8" fill="var(--text3)" font-family="'Inter',sans-serif">${first}</text>
+    <text x="${W-pad}" y="${H-1}" font-size="8" fill="var(--text3)" font-family="'Inter',sans-serif" text-anchor="end">${last}</text>
+  </svg>`;
+}
+
+/* ── RETIREMENT READINESS ── */
+function renderRetirementReadiness(){
+  const retGoal=data.goals.find(g=>g.type==='retirement');
+  const card=document.getElementById('ret-readiness-card');
+  if(!card)return;
+  if(!retGoal||!retGoal.target){card.style.display='none';return;}
+  card.style.display='';
+  const target=Number(retGoal.target);
+  const linkedIds=retGoal.linkedAssetIds||[];
+  const current=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(retGoal.current||0);
+  const years=Number(retGoal.timePeriod||25);
+  // Project current corpus at 12% for remaining years
+  const projected=current*Math.pow(1.12,years);
+  // Add future value of monthly SIP
+  const monthlySIP=data.assets.reduce((s,a)=>s+Number(a.sip||0),0);
+  const r=0.12/12;const n=years*12;
+  const sipFV=monthlySIP*((Math.pow(1+r,n)-1)/r);
+  const totalProjected=projected+sipFV;
+  const readiness=Math.min(100,Math.round((totalProjected/target)*100));
+  const color=readiness>=80?'var(--green)':readiness>=50?'var(--amber)':'var(--red)';
+  const barEl=document.getElementById('ret-bar');
+  const lblEl=document.getElementById('ret-pct-label');
+  const metaEl=document.getElementById('ret-meta');
+  if(barEl){barEl.style.width=readiness+'%';barEl.style.background=color;}
+  if(lblEl){lblEl.textContent=readiness+'%';lblEl.style.color=color;}
+  if(metaEl){
+    metaEl.textContent=`Projected: ${fmt(totalProjected)} of ${fmt(target)} in ${years}y @ 12% p.a. · Current: ${fmt(current)}`;
+  }
+}
+
+/* ── BACKUP BANNER ── */
+function showBackupBanner(){
+  const b=document.getElementById('backup-banner');
+  if(b)b.classList.add('show');
+}
+function dismissBackupBanner(){
+  const b=document.getElementById('backup-banner');
+  if(b)b.classList.remove('show');
+  localStorage.setItem('wp_last_export',Date.now());
+}
+
+/* ── SWIPE TO CLOSE SHEETS ── */
+function initSwipeToClose(){
+  ['sheet','qa-sheet'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    let startY=0;let startTime=0;
+    el.addEventListener('touchstart',e=>{startY=e.touches[0].clientY;startTime=Date.now();},{passive:true});
+    el.addEventListener('touchend',e=>{
+      const dy=e.changedTouches[0].clientY-startY;
+      const dt=Date.now()-startTime;
+      // Fast flick down OR slow drag >100px → close
+      if(dy>80&&(dy/dt>0.4||dy>140)){
+        if(id==='sheet')closeSheet();else closeQuickAdd();
+      }
+    },{passive:true});
+  });
 }
 
 function renderProfile(){
@@ -1026,7 +1251,7 @@ function navigate(page,btn){
 }
 function renderPage(p){
   if(p==='dashboard')renderDashboard();
-  if(p==='goals'){renderKids();renderGoals()}
+  if(p==='goals'){renderKids();renderGoals();renderRetirementReadiness();}
   if(p==='investments'){renderAssets();renderLiabilities()}
   if(p==='more'){renderChecklist()}
 }
@@ -1036,6 +1261,7 @@ function renderDashboard(){
   const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
   const totalInvested=data.assets.reduce((s,a)=>s+Number(a.invested||0),0);
   const monthlySIP=data.assets.reduce((s,a)=>s+Number(a.sip||0),0);
+  const monthlyEMI=data.liabilities.reduce((s,l)=>s+Number(l.emi||0),0);
   const netWorth=totalAssets-totalLiab;
   const pnl=totalAssets-totalInvested;const isPos=pnl>=0;
   const returnPct=totalInvested>0?((pnl/totalInvested)*100).toFixed(1):null;
@@ -1049,6 +1275,27 @@ function renderDashboard(){
   set('dash-returns',returnPct!==null?(isPos?'+':'')+returnPct+'%':'—',isPos?'var(--green)':'var(--red)');
   set('dash-pnl',(isPos?'+':'')+fmt(pnl),isPos?'var(--green)':'var(--red)');
   updateWealthCard(totalAssets,totalLiab);
+
+  // Net worth month-over-month change
+  const hist=getNWHistory();
+  if(hist.length>=2){
+    const prev=hist[hist.length-2].v;
+    const diff=netWorth-prev;const diffPct=prev>0?((diff/Math.abs(prev))*100).toFixed(1):null;
+    const chEl=document.getElementById('dash-nw-change');
+    if(chEl){chEl.style.display='';chEl.textContent=(diff>=0?'▲ +':'▼ ')+fmt(diff)+(diffPct?' ('+diffPct+'%)':'');chEl.style.color=diff>=0?'var(--green)':'var(--red)';}
+  }
+
+  // Cash flow card
+  const netFlow=monthlySIP-monthlyEMI;
+  set('cf-sip',fmt(monthlySIP));
+  set('cf-emi',fmt(monthlyEMI));
+  set('cf-net',(netFlow>0?'+':'')+fmt(netFlow),netFlow>=0?'var(--green)':'var(--red)');
+
+  // Goal health card
+  renderGoalHealth();
+
+  // Net worth history chart
+  renderNWChart();
 
   // Asset Category Breakdown
   const catEl=document.getElementById('dash-asset-cats');
@@ -1080,6 +1327,36 @@ function renderDashboard(){
         </div>`;
       }).join('');
     }
+  }
+}
+
+function renderGoalHealth(){
+  const allGoals=GOAL_PRESETS.filter(p=>!p.isIns);
+  const customGoals=data.customGoals||[];
+  let totalTarget=0,totalSaved=0,setCount=0;
+  allGoals.forEach(pr=>{
+    const g=data.goals.find(x=>x.type===pr.id)||{};
+    const target=Number(g.target||0);if(!target)return;
+    setCount++;totalTarget+=target;
+    const linkedIds=g.linkedAssetIds||[];
+    totalSaved+=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
+  });
+  customGoals.forEach(cg=>{
+    const target=Number(cg.target||0);if(!target)return;
+    setCount++;totalTarget+=target;
+    const linkedIds=cg.linkedAssetIds||[];
+    totalSaved+=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
+  });
+  const p=totalTarget>0?Math.min(100,Math.round((totalSaved/totalTarget)*100)):0;
+  const fillEl=document.getElementById('gh-fill');
+  const pctEl=document.getElementById('gh-pct');
+  const metaEl=document.getElementById('gh-meta');
+  const color=p>=75?'var(--green)':p>=40?'var(--amber)':'var(--red)';
+  if(fillEl){fillEl.style.width=p+'%';fillEl.style.background=color;}
+  if(pctEl){pctEl.textContent=setCount?p+'%':'—';pctEl.style.color=color;}
+  if(metaEl){
+    if(!setCount)metaEl.textContent='Set up your goals to track progress';
+    else metaEl.textContent=setCount+' goal'+(setCount>1?'s':'')+' · '+fmt(totalSaved)+' saved of '+fmt(totalTarget);
   }
 }
 
@@ -1129,11 +1406,14 @@ function renderLiabilities(){
   if(!data.liabilities.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><div class="empty-text">Debt-free!</div></div>';return}
   el.innerHTML=data.liabilities.map(l=>{
     const info=getLiab(l.category);
+    const payoffMonths=l.emi>0?Math.ceil(Number(l.outstanding)/Number(l.emi)):null;
+    const payoffBadge=payoffMonths?`<div class="payoff-badge">⏱ ~${payoffMonths>12?(payoffMonths/12).toFixed(1)+'y':payoffMonths+'mo'} to clear</div>`:'';
     return`<div class="row-item">
-      <div class="row-icon" style="background:var(--surface2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg></div>
+      <div class="row-icon" style="background:var(--red-bg);color:var(--red)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.85">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${l.name}</div>
         <div class="row-sub">${info.l} · ${l.interestRate||0}% · EMI ${fmt(l.emi)}/mo</div>
+        ${payoffBadge}
       </div>
       <div class="row-right">
         <div class="row-value" style="color:var(--red)">${fmt(l.outstanding)}</div>
@@ -1244,11 +1524,20 @@ function renderGoals(){
   const totalCount = GOAL_PRESETS.length + customGoals.length;
   const cEl=document.getElementById('goals-sec-count');if(cEl)cEl.textContent=totalCount;
 
+  const hasAnyGoalData = GOAL_PRESETS.some(pr=>{const g=data.goals.find(x=>x.type===pr.id);return g&&(g.target||g.premium||g.policyName||g.current);}) || customGoals.length>0;
+
+  const onboardingHint = !hasAnyGoalData ? `<div style="text-align:center;padding:20px 16px;background:var(--surface);border:1px dashed var(--border);border-radius:var(--r-lg);margin-bottom:10px">
+    <div style="font-size:1.4rem;margin-bottom:8px;opacity:0.5">🎯</div>
+    <div style="font-size:0.86rem;font-weight:700;color:var(--text1);margin-bottom:4px">Set your first goal</div>
+    <div style="font-size:0.75rem;color:var(--text3);line-height:1.5">Tap any goal below to set a target amount.<br>We'll calculate the SIP you need to get there.</div>
+  </div>` : '';
+
   const protIco=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`;
   const savIco=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
-  const divider=(label,ico)=>`<div style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px">${ico} ${label}</div>`;
+  const divider=(label,ico)=>`<div style="font-size:0.65rem;font-weight:700;letter-spacing:0;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px">${ico} ${label}</div>`;
 
   el.innerHTML =
+    onboardingHint +
     divider('Protection', protIco) +
     insGoals.map(insRow).join('') +
     divider('Savings Goals', savIco) +
@@ -1447,7 +1736,7 @@ function sheetGoal(pid){
     </div>
     ${savedField}
     <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
-      <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:2px">Monthly SIP Needed</div>
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
       <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
@@ -1539,7 +1828,7 @@ function sheetCustomGoal(id){
     </div>
     ${savedField}
     <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
-      <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:2px">Monthly SIP Needed</div>
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
       <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
@@ -1869,7 +2158,15 @@ function initFontSize(){
   setFontSize(saved, FS_SIZES[saved] || 'M');
 }
 
-function exportData(){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='wealthpilot-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Exported ✓')}
+function exportData(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='wealthpilot-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  localStorage.setItem('wp_last_export',Date.now());
+  localStorage.setItem('wp_save_count','0');
+  dismissBackupBanner();
+  toast('Exported ✓');
+}
 function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
 function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;data={profile:{name:n,avatarColor:c},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checklist:[false,false,false,false,false,false]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
@@ -1936,6 +2233,7 @@ function init(){
   document.documentElement.setAttribute('data-theme',theme);
   const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',theme==='light');
   initFontSize();
+  initSwipeToClose();
   if(!localStorage.getItem(STORAGE_KEY)){
     data.assets=[
       {id:uid(),category:'EPF',        name:'Employee PF',          currentValue:850000, invested:700000, sip:0},
@@ -1945,7 +2243,12 @@ function init(){
     data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:300000,current:180000,timePeriod:'1'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
     data.checklist=[true,true,false,true,false,false];data.profile.name='Nagendra';save();
   }
+  // Always snapshot on open so history builds passively
+  saveNetWorthSnapshot();
   renderProfile();renderDashboard();
+  // Greeting
+  const greetEl=document.querySelector('.hdr-greeting');
+  if(greetEl)greetEl.textContent=greeting();
 }
 init();
 </script>
