@@ -417,7 +417,7 @@ body {
 /* ── GENDER ── */
 .gender-row { display:grid; grid-template-columns:1fr 1fr; gap:7px }
 .gender-opt { padding:9px; border-radius:var(--r); border:1px solid var(--border); text-align:center; cursor:pointer; font-size:0.82rem; font-weight:600; color:var(--text2); background:var(--surface2); transition:all 140ms }
-.gender-opt.sel-boy { border-color:rgba(255,255,255,0.3); background:var(--surface3); color:var(--text1) }
+.gender-opt.sel-boy  { border-color:#60a5fa; background:rgba(96,165,250,0.12); color:#60a5fa }
 .gender-opt.sel-girl { border-color:var(--amber); background:var(--amber-bg); color:var(--amber) }
 .gender-opt:active { transform:scale(0.95) }
 
@@ -429,8 +429,8 @@ body {
 .phase-opt.on .phase-opt-check { background:var(--text1); border-color:var(--text1) }
 
 /* ── SIP CALLOUT ── */
-.sip-callout { background:var(--amber-bg); border:1px solid rgba(251,191,36,0.3); border-radius:var(--r); padding:10px 13px; margin-top:9px }
-.sip-label { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--amber); margin-bottom:2px }
+.sip-callout { background:var(--green-bg); border:1px solid rgba(74,222,128,0.2); border-radius:var(--r); padding:10px 13px; margin-top:9px }
+.sip-label { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--green); margin-bottom:2px }
 .sip-val { font-family:var(--mono); font-size:1.15rem; font-weight:700; color:var(--text1) }
 
 /* ── INV LINK ── */
@@ -533,6 +533,21 @@ body {
   border-radius:var(--r); background:var(--surface); border:1px solid var(--border);
   margin-bottom:7px;
 }
+
+/* ── ASSET CAT ROW ── */
+.acat-row {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 4px; border-bottom:1px solid var(--border2);
+}
+.acat-row:last-child { border-bottom:none }
+.acat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
+.acat-icon { font-size:1rem; flex-shrink:0; width:22px; text-align:center }
+.acat-info { flex:1; min-width:0 }
+.acat-name { font-size:0.78rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.acat-bar-wrap { height:3px; background:var(--surface3); border-radius:99px; overflow:hidden; margin-top:3px }
+.acat-bar { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
+.acat-val { font-family:var(--mono); font-size:0.78rem; font-weight:700; color:var(--text2); flex-shrink:0; text-align:right; min-width:52px }
+.acat-pct { font-size:0.62rem; color:var(--text3); font-weight:600; flex-shrink:0; min-width:32px; text-align:right }
 </style>
 </head>
 <body>
@@ -589,7 +604,19 @@ body {
       </div>
     </div>
   </div>
-  <div style="text-align:center;padding:20px 0 4px;color:var(--text3);font-size:0.62rem;font-weight:600;letter-spacing:0.3px">Data stored on your device only 🔒</div>
+
+  <!-- ASSET CATEGORY BREAKDOWN -->
+  <div style="padding:10px 14px 0" id="dash-asset-breakdown-wrap">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
+      <div style="padding:13px 16px 10px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:0.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Portfolio Breakdown</div>
+        <div style="font-size:0.62rem;color:var(--text3);font-weight:500" id="dash-cat-count">—</div>
+      </div>
+      <div id="dash-asset-cats" style="padding:8px 12px 6px"></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:14px 0 4px;color:var(--text3);font-size:0.62rem;font-weight:600;letter-spacing:0.3px">Data stored on your device only 🔒</div>
 </div>
 
 <!-- ══ GOALS ══ -->
@@ -645,17 +672,7 @@ body {
       </div>
     </div>
 
-    <!-- HOLDINGS -->
-    <div style="margin-top:8px">
-      <div class="sec-hdr" onclick="toggleSec('sec-inv-list')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Holdings</span><span class="sec-badge" id="inv-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-inv-list">▼</span></div>
-      </div>
-      <div class="sec-body closed" id="sec-inv-list">
-        <div id="investments-list"></div>
-        <div class="add-row" onclick="openSheet('investment')">Add Investment</div>
-      </div>
-    </div>
+
   </div>
 </div>
 
@@ -893,6 +910,48 @@ function renderDashboard(){
   set('dash-current',fmt(totalCurrent));
   set('dash-pnl',(isPos?'+':'')+fmt(pnl),isPos?'var(--green)':'var(--red)');
   updateWealthCard(totalAssets,totalCurrent,totalLiab);
+
+  // Asset Category Breakdown
+  const catEl=document.getElementById('dash-asset-cats');
+  const catCntEl=document.getElementById('dash-cat-count');
+  if(catEl){
+    if(!data.assets.length&&!data.investments.length){
+      catEl.innerHTML='<div style="padding:10px 4px 6px;font-size:0.76rem;color:var(--text3);text-align:center">Add assets to see breakdown</div>';
+      if(catCntEl)catCntEl.textContent='No assets';
+    } else {
+      // Build per-category totals from assets
+      const catMap={};
+      data.assets.forEach(a=>{
+        const info=getAsset(a.category);const v=Number(a.currentValue||0);
+        if(!catMap[a.category])catMap[a.category]={info,total:0,count:0};
+        catMap[a.category].total+=v;catMap[a.category].count++;
+      });
+      // Also include MutualFund / investments as a group under their asset cat
+      data.investments.forEach(inv=>{
+        // Map inv types to asset category display
+        const typeToAssetCat={'MutualFund':'MutualFunds','ETF':'ETF','Stock':'Stocks','PPF':'PPF','EPF':'EPF','Gold':'Gold','Other':'Other'};
+        const catKey=typeToAssetCat[inv.type]||'Other';
+        const info=getAsset(catKey);const v=Number(inv.currentValue||0);
+        if(!catMap[catKey])catMap[catKey]={info,total:0,count:0};
+        catMap[catKey].total+=v;catMap[catKey].count++;
+      });
+      const cats=Object.values(catMap).filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
+      const grandTotal=cats.reduce((s,c)=>s+c.total,0)||1;
+      if(catCntEl)catCntEl.textContent=cats.length+' categor'+(cats.length===1?'y':'ies');
+      catEl.innerHTML=cats.map(c=>{
+        const p=Math.round((c.total/grandTotal)*100);
+        return`<div class="acat-row">
+          <div class="acat-icon">${c.info.icon}</div>
+          <div class="acat-info">
+            <div class="acat-name">${c.info.l}</div>
+            <div class="acat-bar-wrap"><div class="acat-bar" style="background:${c.info.color};width:${p}%"></div></div>
+          </div>
+          <div class="acat-val">${fmt(c.total)}</div>
+          <div class="acat-pct">${p}%</div>
+        </div>`;
+      }).join('');
+    }
+  }
 }
 
 function updateWealthCard(assets,inv,liab){
@@ -1191,10 +1250,16 @@ function openSheet(type,arg,arg2){
 function closeSheet(){document.getElementById('sheet-overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open')}
 function closeSheetOnBg(e){if(e.target===document.getElementById('sheet-overlay'))closeSheet()}
 
+function onAssetCatChange(){
+  const sel=document.getElementById('f-cat');
+  if(sel&&sel.value==='MutualFunds'){closeSheet();openSheet('investment',{type:'MutualFund'});}
+}
 function sheetAsset(a){
+  // If adding a new Mutual Fund asset, redirect to investment form
+  if(!a.id && a.category==='MutualFunds'){return sheetInvestment({type:'MutualFund'});}
   return`<div class="sheet-hdr"><div class="sheet-title">${a.id?'Edit':'Add'} Asset</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value="${c.v}" ${a.category===c.v?'selected':''}>${c.icon} ${c.l}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat" onchange="onAssetCatChange()">${ASSET_CATS.map(c=>`<option value="${c.v}" ${(a.category||'EPF')===c.v?'selected':''}>${c.icon} ${c.l}</option>`).join('')}</select></div>
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value="${a.name||''}"/></div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-cur" type="number" placeholder="0" value="${a.currentValue||''}"/></div>
@@ -1245,13 +1310,16 @@ function sheetGoal(pid){
       <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>
     </div>
     <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
-    <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--amber-bg);border:1px solid rgba(251,191,36,0.25);border-radius:var(--r);margin-top:2px">
-      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--amber);margin-bottom:2px">Monthly SIP Needed</div>
+    <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
+      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:2px">Monthly SIP Needed</div>
       <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
+    <div class="form-sec">Link Assets</div>
+    <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save Goal</button></div>
   </div>`}
 
+function toggleGoalAssetLink(assetId){const el=document.getElementById('gal-'+assetId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
 function switchGoalType(){
   const sel=document.getElementById('f-gtype');if(!sel)return;
   closeSheet();openSheet('goal',sel.value);
@@ -1278,6 +1346,7 @@ function saveGoal(){
     obj.target=Number(document.getElementById('f-gtarget')?.value||0);
     obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
     obj.timePeriod=document.getElementById('f-gtime')?.value||'';
+    obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
   }
   const ex=data.goals.find(g=>g.type===type);
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
@@ -1297,16 +1366,19 @@ function sheetCustomGoal(id){
       <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>
     </div>
     <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-cg-time" type="number" placeholder="3" value="${cg.timePeriod||''}" oninput="updateCustomSIP()"/></div>
-    <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--amber-bg);border:1px solid rgba(251,191,36,0.25);border-radius:var(--r);margin-top:2px">
-      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--amber);margin-bottom:2px">Monthly SIP Needed</div>
+    <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
+      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--green);margin-bottom:2px">Monthly SIP Needed</div>
       <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
+    <div class="form-sec">Link Assets</div>
+    <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first</div>';})()} </div>
     <div class="form-actions">
       <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
       <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">Save Goal</button>
     </div>
   </div>`}
 
+function toggleCGAssetLink(assetId){const el=document.getElementById('cgal-'+assetId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
 function updateCustomSIP(){
   const t=Number(document.getElementById('f-cg-target')?.value||0);
   const c=Number(document.getElementById('f-cg-current')?.value||0);
@@ -1321,7 +1393,7 @@ function saveCustomGoal(editId){
   const name=document.getElementById('f-cg-name')?.value?.trim();
   if(!name){toast('Enter a goal name');return}
   if(!data.customGoals)data.customGoals=[];
-  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),current:Number(document.getElementById('f-cg-current')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||''};
+  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),current:Number(document.getElementById('f-cg-current')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||'',linkedAssetIds:Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cgal-','')).filter(Boolean)};
   if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
   else{data.customGoals.push({id:uid(),...obj});}
   save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
@@ -1384,10 +1456,8 @@ function saveManagePhases(kidId){const kid=data.kids.find(k=>k.id===kidId);if(!k
 
 function sheetEditPhase(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';const pd=KID_PHASES.find(p=>p.id===phaseId);if(!pd)return'';
-  const ph=kid.phases.find(p=>p.phaseId===phaseId)||{target:0,current:0,linkedInvestmentIds:[],notes:''};
+  const ph=kid.phases.find(p=>p.phaseId===phaseId)||{target:0,current:0,linkedAssetIds:[],notes:''};
   const yl=yearsUntil(kid.birthYear,pd.ageStart);const sip=ph.target>0&&yl>0?sipNeeded(ph.target,ph.current,yl):0;
-  const linked=ph.linkedInvestmentIds||[];
-  const invHtml=data.investments.length?data.investments.map(inv=>{const on=linked.includes(inv.id);const t=getInvType(inv.type);return`<div class="inv-link-item ${on?'on':''}" id="il-${inv.id}" onclick="toggleInvLink('${inv.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${t.icon} ${inv.name}</div><div style="font-size:0.66rem;color:var(--text3)">${inv.sip>0?fmt(inv.sip)+'/mo':''}</div></div>`}).join(''):`<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add investments first</div>`;
   return`<div class="sheet-hdr"><div class="sheet-title">${pd.icon} ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
@@ -1403,13 +1473,14 @@ function sheetEditPhase(kidId,phaseId){
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
-    <div class="form-sec">Link Investments</div>
-    <div id="inv-link-list">${invHtml}</div>
+    <div class="form-sec">Link Assets</div>
+    <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Save Phase</button></div>
   </div>`}
 function toggleInvLink(invId){const el=document.getElementById('il-'+invId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
+function togglePhaseAssetLink(assetId){const el=document.getElementById('pal-'+assetId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').textContent=on?'✓':''}
 function updateSIPLive(kidId,phaseId){const kid=data.kids.find(k=>k.id===kidId);const pd=KID_PHASES.find(p=>p.id===phaseId);if(!kid||!pd)return;const t=Number(document.getElementById('f-pht')?.value||0);const c=Number(document.getElementById('f-phc')?.value||0);const yl=yearsUntil(kid.birthYear,pd.ageStart);const box=document.getElementById('sip-preview');const valEl=document.getElementById('sip-val');if(t>0&&yl>0){box.style.display='';valEl.textContent=fmt(sipNeeded(t,c,yl))}else{box.style.display='none'}}
-function savePhase(kidId,phaseId){const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;let ph=kid.phases.find(p=>p.phaseId===phaseId);if(!ph){ph={phaseId,enabled:true,target:0,current:0,linkedInvestmentIds:[],notes:''};kid.phases.push(ph)}ph.target=Number(document.getElementById('f-pht').value||0);ph.current=Number(document.getElementById('f-phc').value||0);ph.notes=document.getElementById('f-phn').value.trim();ph.linkedInvestmentIds=Array.from(document.querySelectorAll('#inv-link-list .inv-link-item.on')).map(el=>{const m=(el.getAttribute('onclick')||'').match(/'([^']+)'\)/);return m?m[1]:null}).filter(Boolean);save();closeSheet();renderKids();renderDashboard();toast('Saved ✓')}
+function savePhase(kidId,phaseId){const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;let ph=kid.phases.find(p=>p.phaseId===phaseId);if(!ph){ph={phaseId,enabled:true,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ph)}ph.target=Number(document.getElementById('f-pht').value||0);ph.current=Number(document.getElementById('f-phc').value||0);ph.notes=document.getElementById('f-phn').value.trim();ph.linkedAssetIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('pal-','')).filter(Boolean);save();closeSheet();renderKids();renderDashboard();toast('Saved ✓')}
 
 function sheetProfile(){
   const colors=['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#f97316'];
