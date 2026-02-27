@@ -80,8 +80,9 @@ body {
   backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border2);
   padding:12px 16px 11px;
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:center; justify-content:center;
 }
+.hdr-inner { width:100%; max-width:480px; display:flex; align-items:center; justify-content:space-between; }
 .hdr-left { display:flex; align-items:center; gap:10px }
 .avatar-btn {
   width:36px; height:36px; border-radius:50%;
@@ -90,8 +91,8 @@ body {
   transition:transform 180ms var(--spring); flex-shrink:0;
 }
 .avatar-btn:active { transform:scale(0.9) }
-.hdr-greeting { font-size:0.68rem; color:var(--text3); font-weight:500; line-height:1 }
-.hdr-name { font-size:0.98rem; font-weight:700; color:var(--text1); letter-spacing:-0.3px; line-height:1.2 }
+.hdr-greeting { font-size:0.74rem; color:var(--text3); font-weight:500; line-height:1 }
+.hdr-name { font-size:1.05rem; font-weight:700; color:var(--text1); letter-spacing:-0.3px; line-height:1.2 }
 .hdr-right { display:flex; align-items:center; gap:7px }
 .hdr-icon-btn {
   width:32px; height:32px; border-radius:8px;
@@ -115,15 +116,15 @@ body {
 .stat-card.tap { cursor:pointer }
 .stat-card.tap:active { background:var(--surface2) }
 .stat-label {
-  font-size:0.62rem; font-weight:600; color:var(--text3);
+  font-size:0.68rem; font-weight:600; color:var(--text3);
   text-transform:uppercase; letter-spacing:0.08em; margin-bottom:7px;
 }
 .stat-val {
-  font-family:var(--mono); font-size:1.4rem; font-weight:700;
+  font-family:var(--mono); font-size:1.5rem; font-weight:700;
   color:var(--text1); letter-spacing:-0.5px; line-height:1;
 }
-.stat-val.lg { font-size:1.7rem }
-.stat-sub { font-size:0.68rem; color:var(--text3); margin-top:5px }
+.stat-val.lg { font-size:1.85rem }
+.stat-sub { font-size:0.72rem; color:var(--text3); margin-top:5px }
 .pnl-pill {
   display:inline-flex; align-items:center; gap:4px;
   padding:2px 8px; border-radius:99px; font-size:0.7rem; font-weight:700;
@@ -140,9 +141,9 @@ body {
 }
 .sec-hdr:active { background:var(--surface3) }
 .sec-hdr-left { display:flex; align-items:center; gap:8px; min-width:0 }
-.sec-hdr-title { font-size:0.86rem; font-weight:700; color:var(--text1); display:inline-flex; align-items:center; gap:5px }
+.sec-hdr-title { font-size:0.92rem; font-weight:700; color:var(--text1); display:inline-flex; align-items:center; gap:5px }
 .sec-badge {
-  font-size:0.65rem; font-weight:600; color:var(--text3);
+  font-size:0.7rem; font-weight:600; color:var(--text3);
   background:var(--surface3); border:1px solid var(--border);
   padding:1px 7px; border-radius:99px;
 }
@@ -168,11 +169,11 @@ body {
   font-size:1.1rem; background:var(--surface2);
 }
 .row-body { flex:1; min-width:0 }
-.row-title { font-size:0.88rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-.row-sub { font-size:0.72rem; color:var(--text3); margin-top:2px }
-.row-change { font-size:0.69rem; font-weight:600; margin-top:3px; font-family:var(--mono) }
+.row-title { font-size:0.94rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.row-sub { font-size:0.76rem; color:var(--text3); margin-top:2px }
+.row-change { font-size:0.73rem; font-weight:600; margin-top:3px; font-family:var(--mono) }
 .row-right { text-align:right; flex-shrink:0 }
-.row-value { font-family:var(--mono); font-size:0.92rem; font-weight:700; color:var(--text1) }
+.row-value { font-family:var(--mono); font-size:0.96rem; font-weight:700; color:var(--text1) }
 .row-actions { display:flex; gap:5px; margin-top:6px; justify-content:flex-end }
 
 /* ── GOAL ROW ── */
@@ -188,7 +189,7 @@ body {
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
 .goal-name { font-size:0.88rem; font-weight:600; color:var(--text1) }
 .goal-pct { font-family:var(--mono); font-size:0.8rem; font-weight:700; color:var(--text2); flex-shrink:0 }
-.prog-track { height:4px; background:var(--surface3); border-radius:99px; overflow:hidden }
+.prog-track { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .prog-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .goal-amounts { display:flex; align-items:center; justify-content:space-between; margin-top:5px }
 .goal-saved { font-family:var(--mono); font-size:0.82rem; font-weight:700; color:var(--text1) }
@@ -239,8 +240,8 @@ body {
 .phase-row:active { background:var(--surface2) }
 .phase-ico { font-size:0.9rem; flex-shrink:0; width:20px; text-align:center; opacity:0.8 }
 .phase-info { flex:1; min-width:0 }
-.phase-name { font-size:0.8rem; font-weight:600; color:var(--text1) }
-.phase-age { font-size:0.65rem; color:var(--text3); margin-top:1px }
+.phase-name { font-size:0.85rem; font-weight:600; color:var(--text1) }
+.phase-age { font-size:0.7rem; color:var(--text3); margin-top:1px }
 .phase-prog { width:80px; flex-shrink:0 }
 
 /* ── CHECKLIST ── */
@@ -284,12 +285,12 @@ body {
   border-radius:var(--r-xl); padding:18px; margin-bottom:12px;
 }
 .wealth-val {
-  font-family:var(--mono); font-size:1.8rem; font-weight:700;
+  font-family:var(--mono); font-size:2rem; font-weight:700;
   color:var(--text1); letter-spacing:-1px; margin:6px 0;
 }
 .wealth-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid var(--border2) }
-.wealth-item-label { font-size:0.6rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:3px }
-.wealth-item-val { font-family:var(--mono); font-size:0.88rem; font-weight:700 }
+.wealth-item-label { font-size:0.65rem; color:var(--text3); font-weight:600; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:3px }
+.wealth-item-val { font-family:var(--mono); font-size:0.94rem; font-weight:700 }
 
 /* ── INV SUMMARY ── */
 .inv-stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:12px }
@@ -338,8 +339,12 @@ body {
   border-top:1px solid var(--border);
   height:calc(var(--nav-h) + var(--safe-b));
   padding-bottom:var(--safe-b);
-  display:flex; align-items:flex-start; justify-content:space-around;
+  display:flex; align-items:flex-start; justify-content:center;
   padding-top:7px;
+}
+.tab-bar-inner {
+  width:100%; max-width:480px;
+  display:flex; align-items:flex-start; justify-content:space-around;
 }
 .tab-item {
   flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
@@ -350,7 +355,7 @@ body {
 .tab-icon { height:26px; display:flex; align-items:center; justify-content:center; transition:transform 180ms var(--spring) }
 .tab-icon svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; opacity:0.35; transition:opacity 200ms }
 .tab-item.active .tab-icon svg { opacity:1 }
-.tab-label { font-size:0.62rem; font-weight:700; letter-spacing:0.2px }
+.tab-label { font-size:0.68rem; font-weight:700; letter-spacing:0.2px }
 
 /* ── BOTTOM SHEET ── */
 .sheet-overlay {
@@ -429,11 +434,13 @@ body {
 .phase-opt.on .phase-opt-check { background:var(--text1); border-color:var(--text1) }
 .phase-opt.custom { border-style:dashed }
 .add-custom-phase-row {
-  display:flex; gap:7px; margin-top:6px; padding:10px 12px;
+  display:grid;
+  grid-template-columns: 1fr 68px 60px auto;
+  gap:6px; margin-top:6px; padding:10px 12px;
   background:var(--surface2); border:1.5px dashed var(--border);
   border-radius:var(--r); align-items:center;
 }
-.add-custom-phase-row .fi { font-size:14px !important; padding:7px 10px; flex:1 }
+.add-custom-phase-row .fi { font-size:14px !important; padding:7px 10px; width:100% }
 .add-custom-phase-row .fi-sm { width:64px; flex:none }
 
 /* ── SIP CALLOUT ── */
@@ -574,10 +581,11 @@ body {
 }
 .acat-row:last-child { border-bottom:none }
 .acat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
-.acat-icon { font-size:1rem; flex-shrink:0; width:22px; text-align:center }
+.acat-icon { font-size:1rem; flex-shrink:0; width:22px; height:22px; text-align:center; color:var(--text2) }
+.acat-icon svg { width:16px; height:16px; display:block; margin:auto }
 .acat-info { flex:1; min-width:0 }
 .acat-name { font-size:0.78rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-.acat-bar-wrap { height:3px; background:var(--surface3); border-radius:99px; overflow:hidden; margin-top:3px }
+.acat-bar-wrap { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden; margin-top:4px }
 .acat-bar { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .acat-val { font-family:var(--mono); font-size:0.78rem; font-weight:700; color:var(--text2); flex-shrink:0; text-align:right; min-width:52px }
 .acat-pct { font-size:0.62rem; color:var(--text3); font-weight:600; flex-shrink:0; min-width:32px; text-align:right }
@@ -588,6 +596,7 @@ body {
 <!-- ══ HOME ══ -->
 <div id="page-dashboard" class="page active">
   <div class="top-header">
+    <div class="hdr-inner">
     <div class="hdr-left">
       <button class="avatar-btn" id="avatar-btn-dash" onclick="openSheet('profile')"></button>
       <div>
@@ -595,10 +604,11 @@ body {
         <div class="hdr-name" id="header-name-display">WealthPilot</div>
       </div>
     </div>
+    </div>
   </div>
 
   <!-- UNIFIED SUMMARY CARD -->
-  <div style="padding:12px 14px 0">
+  <div class="container" style="padding-bottom:4px">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
       <!-- Total Wealth -->
       <div style="padding:18px 18px 16px;border-bottom:1px solid var(--border2)">
@@ -639,7 +649,7 @@ body {
   </div>
 
   <!-- ASSET CATEGORY BREAKDOWN -->
-  <div style="padding:10px 14px 0" id="dash-asset-breakdown-wrap">
+  <div class="container" style="padding-top:8px" id="dash-asset-breakdown-wrap">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
       <div style="padding:13px 16px 10px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:0.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Portfolio Breakdown</div>
@@ -655,7 +665,9 @@ body {
 <!-- ══ GOALS ══ -->
 <div id="page-goals" class="page">
   <div class="top-header">
+    <div class="hdr-inner">
     <div class="hdr-left"><div><div class="hdr-greeting">Planning</div><div class="hdr-name">Goals</div></div></div>
+    </div>
   </div>
   <div class="container">
     <div class="sec-hdr" onclick="toggleSec('sec-kids')">
@@ -679,7 +691,9 @@ body {
 <!-- ══ INVESTMENTS ══ -->
 <div id="page-investments" class="page">
   <div class="top-header">
+    <div class="hdr-inner">
     <div class="hdr-left"><div><div class="hdr-greeting">Portfolio</div><div class="hdr-name">Invest</div></div></div>
+    </div>
   </div>
   <div class="container">
     <!-- ASSETS -->
@@ -712,7 +726,9 @@ body {
 <!-- ══ MORE ══ -->
 <div id="page-more" class="page">
   <div class="top-header">
+    <div class="hdr-inner">
     <div class="hdr-left"><div><div class="hdr-greeting">Manage</div><div class="hdr-name">More</div></div></div>
+    </div>
   </div>
   <div class="container">
 
@@ -809,6 +825,7 @@ body {
 
 <!-- TAB BAR -->
 <nav class="tab-bar">
+  <div class="tab-bar-inner">
   <button class="tab-item active" onclick="navigate('dashboard',this)">
     <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
     <div class="tab-label">Home</div>
@@ -825,6 +842,7 @@ body {
     <div class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></div>
     <div class="tab-label">More</div>
   </button>
+  </div>
 </nav>
 
 <div class="sheet-overlay" id="sheet-overlay" onclick="closeSheetOnBg(event)"></div>
@@ -847,23 +865,23 @@ body {
 const STORAGE_KEY = 'wp_v6';
 
 const ASSET_CATS = [
-  {v:'EPF',  l:'EPF / EPFO',   icon:'🏛️', color:'#60a5fa', cat:'safe'},
-  {v:'PPF',  l:'PPF',          icon:'🏦', color:'#818cf8', cat:'safe'},
-  {v:'MutualFunds',l:'Mutual Funds',icon:'📊',color:'#34d399',cat:'growth'},
-  {v:'ETF',  l:'ETF',          icon:'💹', color:'#4ade80', cat:'growth'},
-  {v:'Stocks',l:'Stocks',      icon:'📈', color:'#fb923c', cat:'growth'},
-  {v:'Gold', l:'Gold / Hedge', icon:'🥇', color:'#fbbf24', cat:'hedge'},
-  {v:'RealEstate',l:'Real Estate',icon:'🏠',color:'#f87171',cat:'real'},
-  {v:'FD',   l:'Fixed Deposit',icon:'🔒', color:'#a78bfa', cat:'safe'},
-  {v:'NPS',  l:'NPS',          icon:'📋', color:'#38bdf8', cat:'safe'},
-  {v:'Other',l:'Other',        icon:'💼', color:'#9ca3af', cat:'other'},
+  {v:'EPF',  l:'EPF / EPFO',   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', color:'#60a5fa', cat:'safe'},
+  {v:'PPF',  l:'PPF',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>', color:'#818cf8', cat:'safe'},
+  {v:'MutualFunds',l:'Mutual Funds',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>', color:'#34d399', cat:'growth'},
+  {v:'ETF',  l:'ETF',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>', color:'#4ade80', cat:'growth'},
+  {v:'Stocks',l:'Stocks',      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>', color:'#fb923c', cat:'growth'},
+  {v:'Gold', l:'Gold / Hedge', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', color:'#fbbf24', cat:'hedge'},
+  {v:'RealEstate',l:'Real Estate',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', color:'#f87171', cat:'real'},
+  {v:'FD',   l:'Fixed Deposit',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="11" rx="2"/><path d="M12 16v2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>', color:'#a78bfa', cat:'safe'},
+  {v:'NPS',  l:'NPS',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>', color:'#38bdf8', cat:'safe'},
+  {v:'Other',l:'Other',        icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="16 2 12 6 8 2"/></svg>', color:'#9ca3af', cat:'other'},
 ];
 const LIAB_CATS = [
-  {v:'HomeLoan',    l:'Home Loan',     icon:'🏠', color:'#f87171'},
-  {v:'PersonalLoan',l:'Personal Loan', icon:'👤', color:'#fb923c'},
-  {v:'CarLoan',     l:'Car Loan',      icon:'🚗', color:'#a78bfa'},
-  {v:'CreditCard',  l:'Credit Card',   icon:'💳', color:'#f43f5e'},
-  {v:'Other',       l:'Other',         icon:'📋', color:'#9ca3af'},
+  {v:'HomeLoan',    l:'Home Loan',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', color:'#f87171'},
+  {v:'PersonalLoan',l:'Personal Loan', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>', color:'#fb923c'},
+  {v:'CarLoan',     l:'Car Loan',      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="10" width="20" height="8" rx="2"/><path d="M5 10l2-4h10l2 4"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>', color:'#a78bfa'},
+  {v:'CreditCard',  l:'Credit Card',   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>', color:'#f43f5e'},
+  {v:'Other',       l:'Other',         icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>', color:'#9ca3af'},
 ];
 const GOAL_PRESETS = [
   {id:'emergency', icon:'🛡️', name:'Emergency Fund',   color:'#60a5fa', light:'rgba(96,165,250,0.1)',  isIns:false},
@@ -874,12 +892,13 @@ const GOAL_PRESETS = [
   {id:'retirement',icon:'🌴', name:'Retirement',       color:'#fbbf24', light:'rgba(251,191,36,0.1)',  isIns:false},
 ];
 const KID_PHASES = [
-  {id:'preprimary', label:'Pre-Primary',     icon:'🎒', ageStart:0,  ageEnd:5},
-  {id:'primary',    label:'Primary School',  icon:'📚', ageStart:6,  ageEnd:11},
-  {id:'intermediate',label:'Middle School',  icon:'📖', ageStart:12, ageEnd:14},
-  {id:'graduation', label:'Graduation',      icon:'🎓', ageStart:18, ageEnd:22},
-  {id:'higher',     label:'Higher Studies',  icon:'🏛️',ageStart:22, ageEnd:25},
-  {id:'marriage',   label:'Marriage',        icon:'💍', ageStart:25, ageEnd:30},
+  {id:'playschool',  label:'Play School',    icon:'🧸', ageStart:2.5,ageEnd:5,  color:'#fb923c'},
+  {id:'preprimary',  label:'Pre-Primary',    icon:'🎒', ageStart:2.5,ageEnd:5,  color:'#f59e0b'},
+  {id:'primary',     label:'Primary School', icon:'📚', ageStart:6,  ageEnd:15, color:'#34d399'},
+  {id:'intermediate',label:'Intermediate',   icon:'📖', ageStart:15, ageEnd:17, color:'#38bdf8'},
+  {id:'graduation',  label:'Graduation',     icon:'🎓', ageStart:17, ageEnd:21, color:'#818cf8'},
+  {id:'higher',      label:'Higher Studies', icon:'🏛️',ageStart:21, ageEnd:23, color:'#a78bfa'},
+  {id:'marriage',    label:'Marriage',       icon:'💍', ageStart:25, ageEnd:30, color:'#f472b6'},
 ];
 const CHECKLIST_ITEMS = [
   {label:'Emergency Fund (6 months)',    desc:'3–6 months of expenses saved in liquid form'},
@@ -992,13 +1011,13 @@ function renderDashboard(){
       catEl.innerHTML=cats.map(c=>{
         const p=Math.round((c.total/grandTotal)*100);
         return`<div class="acat-row">
-          <div class="acat-icon">${c.info.icon}</div>
+          <div class="acat-icon" style="color:${c.info.color}">${c.info.icon}</div>
           <div class="acat-info">
             <div class="acat-name">${c.info.l}</div>
             <div class="acat-bar-wrap"><div class="acat-bar" style="background:${c.info.color};width:${p}%"></div></div>
           </div>
           <div class="acat-val">${fmt(c.total)}</div>
-          <div class="acat-pct">${p}%</div>
+          <div class="acat-pct" style="color:${c.info.color}">${p}%</div>
         </div>`;
       }).join('');
     }
@@ -1022,7 +1041,7 @@ function renderAssets(){
   el.innerHTML=data.assets.map(a=>{
     const info=getAsset(a.category);const gain=Number(a.currentValue||0)-Number(a.invested||0);const gp=a.invested>0?((gain/a.invested)*100).toFixed(1):0;const isPos=gain>=0;
     return`<div class="row-item">
-      <div class="row-icon" style="background:${info.color}22;color:${info.color};font-size:1.1rem;display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;flex-shrink:0">${info.icon}</div>
+      <div class="row-icon" style="background:var(--surface2);color:var(--text2);display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;flex-shrink:0"><svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
         <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
@@ -1111,7 +1130,7 @@ function renderGoals(){
     const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(g.current||0);
     const p=pct(current,target);
     let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-amber':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-green':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
     const autoTag=linkedIds.length>0?`<span style="font-size:0.6rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
     return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
       <div class="goal-icon" style="background:var(--surface2)">${targetIco}</div>
@@ -1136,7 +1155,7 @@ function renderGoals(){
     const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(cg.current||0);
     const p=pct(current,target);
     let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-amber':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-green':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
     const autoTag=linkedIds.length>0?`<span style="font-size:0.6rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
     return`<div class="goal-row" onclick="openSheet('customGoal','${cg.id}')">
       <div class="goal-icon" style="background:var(--surface2)">${targetIco}</div>
@@ -1193,8 +1212,8 @@ function renderKids(){
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
         </div>
         <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.78rem;font-weight:700;text-align:right;color:${p>0?'var(--text1)':'var(--text3)'};margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:var(--green);width:${p}%"></div></div>
+          <div style="font-family:var(--mono);font-size:0.78rem;font-weight:700;text-align:right;color:${p>0?pd.color:'var(--text3)'};margin-bottom:3px">${p}%</div>
+          <div class="prog-track"><div class="prog-fill" style="background:${pd.color};width:${p}%"></div></div>
         </div>
       </div>`;
     }).join('');
@@ -1291,7 +1310,7 @@ function sheetAsset(a){
   const cat=a.category||'EPF';
   return`<div class="sheet-hdr"><div class="sheet-title">${a.id?'Edit':'Add'} Asset</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value="${c.v}" ${cat===c.v?'selected':''}>${c.icon} ${c.l}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value="${c.v}" ${cat===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value="${a.name||''}"/></div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-cur" type="number" placeholder="0" value="${a.currentValue||''}"/></div>
@@ -1305,7 +1324,7 @@ function saveAsset(editId){const name=document.getElementById('f-name').value.tr
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-lcat">${LIAB_CATS.map(c=>`<option value="${c.v}" ${l.category===c.v?'selected':''}>${c.icon} ${c.l}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-lcat">${LIAB_CATS.map(c=>`<option value="${c.v}" ${l.category===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-lname" placeholder="e.g. SBI Home Loan" value="${l.name||''}"/></div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Outstanding (₹)</label><input class="fi" id="f-outstanding" type="number" placeholder="0" value="${l.outstanding||''}"/></div>
@@ -1360,7 +1379,7 @@ function sheetGoal(pid){
       <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— saved amount auto-updates</span></div>
-    <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
+    <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save Goal</button></div>
   </div>`}
 
@@ -1452,7 +1471,7 @@ function sheetCustomGoal(id){
       <div style="font-family:var(--mono);font-size:1.05rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— saved amount auto-updates</span></div>
-    <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
+    <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions">
       <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
       <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">Save Goal</button>
@@ -1563,10 +1582,10 @@ function sheetManagePhases(kidId){
     <div class="form-sec">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— e.g. Coaching, Exchange Program</span></div>
     <div class="phase-opts" id="custom-phase-list">${customHtml||'<div style="font-size:0.74rem;color:var(--text3);padding:4px 2px">No custom phases yet.</div>'}</div>
     <div style="display:flex;gap:6px;margin-top:8px;align-items:center">
-      <input class="fi" id="cp-name" placeholder="Phase name" style="flex:1"/>
-      <input class="fi" id="cp-age-start" type="number" min="0" max="35" placeholder="Age from" style="width:82px"/>
-      <input class="fi" id="cp-age-end" type="number" min="0" max="40" placeholder="Age to" style="width:72px"/>
-      <button class="btn btn-primary btn-sm" onclick="addCustomPhaseInSheet('${kidId}')" style="white-space:nowrap;padding:10px 13px">+ Add</button>
+      <input class="fi" id="cp-name" placeholder="Phase name"/>
+      <input class="fi" id="cp-age-start" type="number" min="0" max="35" placeholder="Start"/>
+      <input class="fi" id="cp-age-end" type="number" min="0" max="40" placeholder="End"/>
+      <button class="btn btn-primary btn-sm" onclick="addCustomPhaseInSheet('${kidId}')" style="white-space:nowrap;padding:10px 13px">Add</button>
     </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveManagePhases('${kidId}')">Save</button></div>
   </div>`}
@@ -1644,7 +1663,7 @@ function sheetEditPhase(kidId,phaseId){
     </div>
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;color:var(--text3)">— saved amount auto-updates</span></div>
-    <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${info.icon} ${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
+    <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'✓':''}</div><div style="font-size:0.78rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.66rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.74rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Save Phase</button></div>
   </div>`}
 function sheetEditCustomPhase(kidId,cpId){
