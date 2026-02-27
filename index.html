@@ -611,8 +611,11 @@ body {
   <div class="container" style="padding-bottom:4px">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
       <!-- Total Wealth -->
-      <div style="padding:18px 18px 16px;border-bottom:1px solid var(--border2)">
-        <div style="font-size:0.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:7px">Total Wealth</div>
+      <div style="padding:18px 18px 14px;border-bottom:1px solid var(--border2)">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <div style="font-size:0.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">Total Wealth</div>
+          <div style="font-size:0.58rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;font-weight:500;letter-spacing:0">Assets − Liabilities</div>
+        </div>
         <div style="font-family:var(--mono);font-size:2rem;font-weight:700;letter-spacing:-1.5px;line-height:1" id="dash-networth">₹0</div>
       </div>
       <!-- Row 1: Assets · Liabilities · SIP -->
@@ -630,15 +633,11 @@ body {
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-sip">₹0</div>
         </div>
       </div>
-      <!-- Row 2: Invested · Current · P&L -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
+      <!-- Row 2: Invested · P&L -->
+      <div style="display:grid;grid-template-columns:1fr 1fr">
         <div style="padding:13px 16px;border-right:1px solid var(--border2)">
           <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Invested</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--text1)" id="dash-invested">₹0</div>
-        </div>
-        <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">Returns</div>
-          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700" id="dash-returns">—</div>
         </div>
         <div style="padding:13px 16px">
           <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px">P&amp;L</div>
