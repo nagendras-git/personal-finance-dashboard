@@ -116,9 +116,14 @@ body {
 .stat-card.tap { cursor:pointer }
 .stat-card.tap:active { background:var(--surface2) }
 .stat-label {
-  font-size:0.72rem; font-weight:600; color:var(--text3);
+  font-size:0.72rem; font-weight:700; color:var(--text3);
   letter-spacing:0; margin-bottom:7px;
 }
+[data-theme="light"] .stat-label { color:#555570 }
+[data-theme="light"] .inv-stat-label { color:#555570 }
+[data-theme="light"] .wealth-item-label { color:#555570 }
+[data-theme="light"] .goal-target { color:#555570 }
+[data-theme="light"] .cf-label { color:#555570 }
 .stat-val {
   font-family:var(--mono); font-size:0.62rem; font-weight:700;
   color:var(--text1); letter-spacing:0; line-height:1;
@@ -297,6 +302,14 @@ body {
 [data-theme="light"] .cf-val { color:var(--text1); font-weight:700 }
 [data-theme="light"] .gh-pct { color:var(--text1); font-weight:700 }
 [data-theme="light"] .stat-val { color:var(--text1); font-weight:700 }
+
+/* ── MID-LABEL: dashboard section labels — readable but subordinate ── */
+.lbl {
+  font-size:0.68rem; font-weight:700; letter-spacing:0; margin-bottom:4px;
+  color:#555570;
+}
+[data-theme="light"] .lbl { color:#555570 }
+:root .lbl { color:var(--text3) }
 
 /* ── MORE PAGE ── */
 .more-row {
@@ -762,19 +775,19 @@ body {
       <!-- 2x2 grid: Assets / Liabilities / SIP / EMI -->
       <div style="display:grid;grid-template-columns:1fr 1fr">
         <div style="padding:11px 16px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2)">
-          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">Assets</div>
+          <div class="lbl">Assets</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-assets-val">₹0</div>
         </div>
         <div style="padding:11px 16px;border-bottom:1px solid var(--border2)">
-          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">Liabilities</div>
+          <div class="lbl">Liabilities</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="dash-liab-val">₹0</div>
         </div>
         <div style="padding:11px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">SIP / mo</div>
+          <div class="lbl">SIP / mo</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="cf-sip">₹0</div>
         </div>
         <div style="padding:11px 16px;">
-          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">EMI / mo</div>
+          <div class="lbl">EMI / mo</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="cf-emi">₹0</div>
         </div>
       </div>
@@ -785,7 +798,7 @@ body {
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
       <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:0.88rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Portfolio Breakdown</div>
-        <div style="font-size:0.62rem;color:var(--text3);font-weight:500" id="dash-cat-count">—</div>
+        <div class="lbl" style="margin-bottom:0;font-size:0.72rem" id="dash-cat-count">—</div>
       </div>
       <div id="dash-asset-cats" style="padding:8px 12px 6px"></div>
     </div>
