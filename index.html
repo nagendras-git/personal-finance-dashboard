@@ -10,15 +10,15 @@
 :root {
   --bg:       #0d0d10;
   --surface:  #141417;
-  --surface2: #1c1c21;
-  --surface3: #222228;
-  --border:   #2a2a33;
-  --border2:  #1f1f27;
+  --surface2: #1e1e25;
+  --surface3: #26262f;
+  --border:   #383848;
+  --border2:  #2a2a38;
   --scrim:    rgba(0,0,0,0.72);
 
-  --text1: #f0f0f5;
-  --text2: #a8a8c0;
-  --text3: #9898b0;
+  --text1: #f4f4fa;
+  --text2: #c8c8e0;
+  --text3: #b0b0cc;
 
   --green:     #4ade80;
   --green-bg:  rgba(74,222,128,0.1);
@@ -168,7 +168,8 @@ body {
   display:flex; align-items:center; justify-content:center;
   background:var(--surface2); color:var(--text2);
 }
-.row-icon svg { width:16px; height:16px; opacity:0.7 }
+.row-icon svg { width:16px; height:16px; opacity:0.75 }
+.dark .row-icon svg { opacity:0.9 }
 .row-body { flex:1; min-width:0 }
 .row-title { font-size:0.88rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .row-sub { font-size:0.86rem; color:var(--text3); margin-top:2px }
@@ -186,12 +187,15 @@ body {
 }
 .goal-row:active { background:var(--surface2) }
 .goal-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface2); color:var(--text2) }
+.dark .goal-icon svg { opacity:0.9 }
+.dark .goal-icon svg { opacity:0.9 }
 .goal-body { flex:1; min-width:0 }
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
 .goal-name { font-size:0.86rem; font-weight:600; color:var(--text1) }
 .goal-pct { font-family:var(--mono); font-size:0.82rem; font-weight:700; color:var(--text2); flex-shrink:0 }
 .prog-track { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .prog-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
+.dark .prog-fill { opacity:0.6 !important }
 .goal-amounts { display:flex; align-items:center; justify-content:space-between; margin-top:5px }
 .goal-saved { font-family:var(--mono); font-size:0.88rem; font-weight:700; color:var(--text1) }
 .goal-target { font-size:0.68rem; color:var(--text3) }
@@ -241,6 +245,7 @@ body {
 }
 .phase-row:active { background:var(--surface2) }
 .phase-ico { flex-shrink:0; display:flex; align-items:center; justify-content:center }
+.dark .phase-ico svg { opacity:0.9 }
 .phase-info { flex:1; min-width:0 }
 .phase-name { font-size:0.85rem; font-weight:600; color:var(--text1) }
 .phase-age { font-size:0.75rem; color:var(--text3); margin-top:1px }
@@ -254,7 +259,7 @@ body {
 }
 .check-item:active { background:var(--surface2) }
 .check-box {
-  width:20px; height:20px; border-radius:6px; border:1.5px solid var(--border);
+  width:20px; height:20px; border-radius:6px; border:1.5px solid var(--text3);
   flex-shrink:0; display:flex; align-items:center; justify-content:center;
   margin-top:1px; transition:all 150ms var(--spring);
 }
@@ -275,7 +280,8 @@ body {
   width:38px; height:38px; border-radius:10px; background:var(--surface2);
   display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--text2);
 }
-.more-icon svg { width:16px; height:16px; opacity:0.7 }
+.more-icon svg { width:16px; height:16px; opacity:0.75 }
+.dark .more-icon svg { opacity:0.9 }
 .more-row-body { flex:1 }
 .more-row-title { font-size:0.84rem; font-weight:600; color:var(--text1) }
 .more-row-sub { font-size:0.75rem; color:var(--text3); margin-top:1px }
@@ -326,11 +332,12 @@ body {
 }
 .btn-circle:active { transform:scale(0.88) }
 .btn-del {
-  width:28px; height:28px; border-radius:50%; background:var(--red-bg);
-  border:1px solid rgba(248,113,113,0.2); display:inline-flex; align-items:center;
+  width:28px; height:28px; border-radius:50%; background:var(--surface2);
+  border:1px solid var(--border); display:inline-flex; align-items:center;
   justify-content:center; cursor:pointer; padding:0; transition:transform 150ms var(--spring);
-  color:var(--red); font-size:0.75rem;
+  color:var(--text3); font-size:0.75rem;
 }
+.btn-del:hover { background:var(--red-bg); border-color:rgba(248,113,113,0.2); color:var(--red) }
 .btn-del:active { transform:scale(0.88) }
 
 /* ── TAB BAR ── */
@@ -639,8 +646,9 @@ body {
 }
 .acat-row:last-child { border-bottom:none }
 .acat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
-.acat-icon { flex-shrink:0; width:30px; height:30px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; color:var(--text2); opacity:0.8 }
-.acat-icon svg { width:15px; height:15px; display:block; opacity:0.7 }
+.acat-icon { flex-shrink:0; width:30px; height:30px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; color:var(--text2) }
+.acat-icon svg { width:15px; height:15px; display:block; opacity:0.75 }
+.dark .acat-icon svg { opacity:0.9 }
 .acat-info { flex:1; min-width:0 }
 .acat-name { font-size:0.84rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .acat-bar-wrap { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden; margin-top:4px }
@@ -1645,8 +1653,9 @@ function delKid(id){const k=data.kids.find(x=>x.id===id);showConfirm('Remove Chi
 function getCheckItems(){
   // Migrate old boolean array to new object format on first load
   if(!data.checkItems||!data.checkItems.length){
+    const oldBools=data.checklist||[];
     data.checkItems=CHECKLIST_ITEMS.map((item,i)=>({
-      id:'ci_'+i, label:item.label, desc:item.desc, done:false, custom:false
+      id:'ci_'+i, label:item.label, desc:item.desc, done:!!oldBools[i], custom:false
     }));
     save();
   }
@@ -2044,7 +2053,7 @@ function addCustomPhaseInSheet(kidId){
   if(listEl){
     const div=document.createElement('div');
     div.className='phase-opt on custom';div.id='mpopt-custom-'+cp.id;
-    div.innerHTML=`<div style="font-size:0.88rem">📌</div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    div.innerHTML=`<div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
     // Remove "No custom phases" placeholder if present
     listEl.querySelectorAll('div:not(.phase-opt)').forEach(el=>el.remove());
     listEl.appendChild(div);
