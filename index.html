@@ -20,8 +20,8 @@
   --text2: #c8c8e0;
   --text3: #b0b0cc;
 
-  --green:     #4ade80;
-  --green-bg:  rgba(74,222,128,0.1);
+  --green:     #22c55e;
+  --green-bg:  rgba(34,197,94,0.1);
   --red:       #f87171;
   --red-bg:    rgba(248,113,113,0.1);
   --amber:     #fbbf24;
@@ -29,6 +29,7 @@
 
   --accent:    rgba(255,255,255,0.9);
   --accent2:   rgba(255,255,255,0.06);
+  --blue:      #3B82F6;
 
   --mono: 'Inter', sans-serif;
   --nav-h: 60px;
@@ -155,7 +156,8 @@ body {
 .sec-hdr-right { display:flex; align-items:center; gap:8px; flex-shrink:0 }
 .sec-total { font-family:var(--mono); font-size:0.82rem; font-weight:700; color:var(--text1) }
 [data-theme="light"] .sec-total { color:var(--text1); font-weight:700 }
-.sec-caret { font-size:0.84rem; color:var(--text3); transition:transform 0.25s var(--ease) }
+.sec-caret { color:var(--text3); transition:transform 0.25s var(--ease); display:flex; align-items:center; }
+.sec-caret svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
 .sec-caret.open { transform:rotate(180deg) }
 .sec-body { overflow:hidden; max-height:5000px; transition:max-height 0.32s var(--ease),opacity 0.2s ease; opacity:1 }
 .sec-body.closed { max-height:0; opacity:0; pointer-events:none }
@@ -202,7 +204,7 @@ body {
 [data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
 .prog-track { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .prog-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
-.dark .prog-fill { opacity:0.6 !important }
+.dark .prog-fill { opacity:0.75 !important }
 .goal-amounts { display:flex; align-items:center; justify-content:space-between; margin-top:5px }
 .goal-saved { font-family:var(--mono); font-size:0.88rem; font-weight:700; color:var(--text1) }
 .goal-target { font-size:0.68rem; color:var(--text3) }
@@ -271,9 +273,9 @@ body {
   flex-shrink:0; display:flex; align-items:center; justify-content:center;
   margin-top:1px; transition:all 150ms var(--spring);
 }
-.check-item.done .check-box { background:var(--text1); border-color:var(--text1) }
-:root .check-item.done .check-box { background:var(--green); border-color:var(--green) }
-[data-theme="light"] .check-item.done .check-box { background:var(--text1); border-color:var(--text1) }
+.check-item.done .check-box { background:#3B82F6; border-color:#3B82F6 }
+:root .check-item.done .check-box { background:#3B82F6; border-color:#3B82F6 }
+[data-theme="light"] .check-item.done .check-box { background:#3B82F6; border-color:#3B82F6 }
 .check-label { font-size:0.84rem; font-weight:600; color:var(--text1) }
 .check-desc { font-size:0.75rem; color:var(--text3); margin-top:2px }
 .check-item.done .check-label { color:var(--text3) }
@@ -368,19 +370,19 @@ body {
 .btn-danger { background:var(--red-bg); color:var(--red); padding:10px 15px; border-radius:var(--r); font-size:0.88rem; border:1px solid rgba(248,113,113,0.2) }
 .btn-sm { padding:6px 12px; font-size:0.86rem; border-radius:7px }
 .btn-circle {
-  width:28px; height:28px; border-radius:50%; background:var(--surface2);
-  border:1px solid var(--border); font-size:0.75rem; padding:0;
+  width:28px; height:28px; border-radius:50%; background:rgba(59,130,246,0.1);
+  border:1px solid rgba(59,130,246,0.25); font-size:0.75rem; padding:0;
   display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
-  transition:transform 150ms var(--spring); color:var(--text2);
+  transition:transform 150ms var(--spring); color:#3B82F6;
 }
 .btn-circle:active { transform:scale(0.88) }
 .btn-del {
-  width:28px; height:28px; border-radius:50%; background:var(--surface2);
-  border:1px solid var(--border); display:inline-flex; align-items:center;
+  width:28px; height:28px; border-radius:50%; background:rgba(248,113,113,0.12);
+  border:1.5px solid rgba(248,113,113,0.4); display:inline-flex; align-items:center;
   justify-content:center; cursor:pointer; padding:0; transition:transform 150ms var(--spring);
-  color:var(--text3); font-size:0.75rem;
+  color:var(--red); font-size:0.75rem;
 }
-.btn-del:hover { background:var(--red-bg); border-color:rgba(248,113,113,0.2); color:var(--red) }
+.btn-del:hover { background:rgba(248,113,113,0.22); border-color:rgba(248,113,113,0.6); }
 .btn-del:active { transform:scale(0.88) }
 
 /* ── TAB BAR ── */
@@ -403,10 +405,10 @@ body {
   cursor:pointer; padding:0; background:none; border:none;
   color:var(--text3); transition:color 120ms;
 }
-.tab-item.active { color:var(--text1) }
+.tab-item.active { color:#3B82F6 }
 .tab-icon { height:26px; display:flex; align-items:center; justify-content:center; transition:transform 180ms var(--spring) }
 .tab-icon svg { width:1.35rem; height:1.35rem; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; opacity:0.35; transition:opacity 200ms }
-.tab-item.active .tab-icon svg { opacity:1 }
+.tab-item.active .tab-icon svg { opacity:1; stroke:#3B82F6 }
 .tab-label { font-size:0.68rem; font-weight:700; letter-spacing:0.2px }
 
 /* ── BOTTOM SHEET ── */
@@ -482,8 +484,9 @@ body {
 .phase-opts { display:flex; flex-direction:column; gap:5px }
 .phase-opt { display:flex; align-items:center; gap:9px; padding:9px 12px; border-radius:var(--r); border:1px solid var(--border); background:var(--surface2); cursor:pointer; transition:all 140ms }
 .phase-opt.on { border-color:rgba(255,255,255,0.25); background:var(--surface3) }
-.phase-opt-check { width:17px; height:17px; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:var(--bg); flex-shrink:0; transition:all 150ms var(--spring) }
-.phase-opt.on .phase-opt-check { background:var(--text1); border-color:var(--text1) }
+.phase-opt-check { width:17px; height:17px; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#fff; flex-shrink:0; transition:all 150ms var(--spring) }
+.phase-opt.on .phase-opt-check { background:#3B82F6; border-color:#3B82F6 }
+.phase-opt.on { border-color:rgba(59,130,246,0.3); background:rgba(59,130,246,0.06) }
 .phase-opt.custom { border-style:dashed }
 .add-custom-phase-row {
   display:grid;
@@ -524,13 +527,13 @@ body {
 .fab {
   position:fixed; right:20px; bottom:calc(var(--nav-h) + 16px + var(--safe-b));
   width:52px; height:52px; border-radius:50%;
-  background:var(--text1); color:var(--bg); border:none;
+  background:#3B82F6; color:#ffffff; border:none;
   cursor:pointer; z-index:150;
-  box-shadow:0 4px 24px rgba(0,0,0,0.55);
+  box-shadow:0 4px 24px rgba(59,130,246,0.45);
   display:flex; align-items:center; justify-content:center;
   transition:transform 220ms var(--spring), box-shadow 200ms;
 }
-.fab:active { transform:scale(0.88); box-shadow:0 2px 10px rgba(0,0,0,0.4) }
+.fab:active { transform:scale(0.88); box-shadow:0 2px 10px rgba(59,130,246,0.3) }
 .fab-icon { transition:transform 280ms var(--spring); display:flex; align-items:center; justify-content:center }
 /* FAB stays as + — sheet has its own close button */
 
@@ -631,11 +634,32 @@ body {
   font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 150ms var(--spring);
 }
 .fs-btn:active { transform:scale(0.93) }
-.fs-btn.active { border-color:var(--text1); background:var(--text1); color:var(--bg) }
-.toggle-track { width:44px; height:24px; border-radius:99px; background:var(--surface3); border:1px solid var(--border); cursor:pointer; position:relative; transition:background 200ms }
-.toggle-track.on { background:var(--text1) }
-.toggle-thumb { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:var(--text3); transition:all 200ms var(--spring) }
-.toggle-track.on .toggle-thumb { left:23px; background:var(--bg) }
+.fs-btn.active { border-color:#3B82F6; background:rgba(59,130,246,0.08); color:#3B82F6 }
+.toggle-track { width:42px; height:22px; border-radius:99px; background:var(--surface3); border:1px solid var(--border); cursor:pointer; position:relative; transition:background 200ms }
+.toggle-track.on { background:#3B82F6; border-color:#3B82F6 }
+.toggle-thumb { position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.25); transition:all 200ms var(--spring) }
+.toggle-track.on .toggle-thumb { left:22px; background:#fff }
+
+/* Range slider — blue accent */
+input[type=range] {
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:4px; border-radius:99px;
+  background:var(--surface3); outline:none; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:20px; height:20px; border-radius:50%;
+  background:#3B82F6; cursor:pointer;
+  box-shadow:0 0 0 3px rgba(59,130,246,0.2);
+  transition:box-shadow 150ms;
+}
+input[type=range]::-moz-range-thumb {
+  width:20px; height:20px; border-radius:50%; border:none;
+  background:#3B82F6; cursor:pointer;
+  box-shadow:0 0 0 3px rgba(59,130,246,0.2);
+}
+input[type=range]::-webkit-slider-runnable-track { border-radius:99px }
+input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,130,246,0.25) }
 
 /* ── BREAKDOWN ROWS ── */
 .breakdown-row {
@@ -818,7 +842,7 @@ body {
     <div class="sec-hdr" onclick="toggleSec('sec-kids')">
       <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
       <div class="sec-hdr-right">
-        <span class="sec-caret" id="caret-sec-kids">▼</span>
+        <span class="sec-caret" id="caret-sec-kids"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
       </div>
     </div>
     <div class="sec-body closed" id="sec-kids"><div id="kids-list"></div></div>
@@ -826,7 +850,7 @@ body {
     <div style="margin-top:10px">
       <div class="sec-hdr" onclick="toggleSec('sec-goals')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Financial Goals</span><span class="sec-badge" id="goals-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-goals">▼</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-goals"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-goals"><div id="goals-list"></div></div>
     </div>
@@ -844,7 +868,7 @@ body {
     <!-- ASSETS -->
     <div class="sec-hdr" onclick="toggleSec('sec-assets')">
       <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-assets">▼</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
     </div>
     <div class="sec-body closed" id="sec-assets">
       <div id="assets-list"></div>
@@ -855,7 +879,7 @@ body {
     <div style="margin-top:8px">
       <div class="sec-hdr" onclick="toggleSec('sec-liab')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Liabilities</span><span class="sec-badge" id="liab-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" style="color:var(--red)" id="liab-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-liab">▼</span></div>
+        <div class="sec-hdr-right"><span class="sec-total" style="color:var(--red)" id="liab-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-liab"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-liab">
         <div style="padding:8px 4px;font-size:0.84rem;color:var(--text3)" id="liab-emi-info">Monthly EMI: ₹0</div>
@@ -881,10 +905,10 @@ body {
     <div style="margin-top:10px">
       <div class="sec-hdr" onclick="toggleSec('sec-checklist')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Finance Checklist</span><span class="sec-badge" id="check-sec-count">0/6</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist">▼</span></div>
+        <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-checklist">
-        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:var(--text2);opacity:0.4;width:0%"></div></div></div>
+        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:#3B82F6;opacity:0.75;width:0%"></div></div></div>
         <div id="checklist-items"></div>
       </div>
     </div>
@@ -893,7 +917,7 @@ body {
     <div style="margin-top:10px">
       <div class="sec-hdr" onclick="toggleSec('sec-appearance')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg> Appearance</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-appearance">▼</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-appearance"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-appearance">
         <div class="theme-toggle-row">
@@ -911,7 +935,7 @@ body {
               <div style="font-size:0.88rem;font-weight:600;color:var(--text1)">Text Size</div>
               <div style="font-size:0.7rem;color:var(--text3);margin-top:1px">Adjust app font size</div>
             </div>
-            <div style="font-size:0.72rem;font-weight:700;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:3px 10px" id="font-size-label">Default</div>
+            
           </div>
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px" id="font-size-btns">
             <button onclick="setFontSize(13,'XS')"   class="fs-btn" data-size="13">XS</button>
@@ -937,7 +961,7 @@ body {
     <div style="margin-top:10px">
       <div class="sec-hdr" onclick="toggleSec('sec-profile-more')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile & Name</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-profile-more">▼</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-profile-more"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-profile-more">
         <div style="padding:4px 0 6px" id="profile-more-content">
@@ -950,7 +974,7 @@ body {
     <div style="margin-top:10px;margin-bottom:4px">
       <div class="sec-hdr" onclick="toggleSec('sec-tools')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Data Tools</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-tools">▼</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-tools"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-tools">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
@@ -1388,10 +1412,10 @@ function renderDashboard(){
           <div class="acat-icon">${c.info.icon}</div>
           <div class="acat-info">
             <div class="acat-name">${c.info.l}</div>
-            <div class="acat-bar-wrap"><div class="acat-bar" style="background:var(--text2);opacity:0.35;width:${p}%"></div></div>
+            <div class="acat-bar-wrap"><div class="acat-bar" style="background:#3B82F6;opacity:0.75;width:${p}%"></div></div>
           </div>
           <div class="acat-val">${fmt(c.total)}</div>
-          <div class="acat-pct">${p}%</div>
+          <div class="acat-pct" style="color:${p>0?'#3B82F6':'var(--text3)'}">${p}%</div>
         </div>`;
       }).join('');
     }
@@ -1453,8 +1477,8 @@ function renderAssets(){
       <div class="row-right">
         <div class="row-value">${fmt(a.currentValue)}</div>
         <div class="row-actions">
-          <button class="btn-circle" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))">✎</button>
-          <button class="btn-del" onclick="delAsset('${a.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          <button class="btn-circle" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="btn-del" onclick="delAsset('${a.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
       </div>
     </div>`;
@@ -1485,8 +1509,8 @@ function renderLiabilities(){
       <div class="row-right">
         <div class="row-value" style="color:var(--red)">${fmt(l.outstanding)}</div>
         <div class="row-actions">
-          <button class="btn-circle" onclick="openSheet('liability',data.liabilities.find(x=>x.id==='${l.id}'))">✎</button>
-          <button class="btn-del" onclick="delLiab('${l.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          <button class="btn-circle" onclick="openSheet('liability',data.liabilities.find(x=>x.id==='${l.id}'))"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="btn-del" onclick="delLiab('${l.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
       </div>
     </div>`;
@@ -1551,11 +1575,11 @@ function renderGoals(){
       ${goalIconBox(pr)}
       <div class="goal-body">
         <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:var(--text2);opacity:0.4;width:${p}%"></div></div>
+        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#3B82F6;opacity:0.75;width:${p}%"></div></div>
         <div class="goal-amounts">
           <span class="goal-saved">${fmt(current)}${autoTag}</span>
           <span class="goal-target">${target>0?'of '+fmt(target)+(g.timePeriod?' · '+g.timePeriod+'y':''):'Tap to set'}</span>
-          <span class="goal-pct">${p}%</span>
+          <span class="goal-pct" style="color:${p>0?'#3B82F6':'var(--text3)'}">${p}%</span>
         </div>
       </div>
     </div>`;
@@ -1576,14 +1600,14 @@ function renderGoals(){
       <div class="goal-icon" style="background:rgba(167,139,250,0.12);color:#a78bfa"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
       <div class="goal-body">
         <div class="goal-top"><span class="goal-name">${cg.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:var(--text2);opacity:0.4;width:${p}%"></div></div>
+        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#3B82F6;opacity:0.75;width:${p}%"></div></div>
         <div class="goal-amounts">
           <span class="goal-saved">${fmt(current)}${autoTag}</span>
           <span class="goal-target">${target>0?'of '+fmt(target)+(cg.timePeriod?' · '+cg.timePeriod+'y':''):'Tap to set'}</span>
-          <span class="goal-pct">${p}%</span>
+          <span class="goal-pct" style="color:${p>0?'#3B82F6':'var(--text3)'}">${p}%</span>
         </div>
       </div>
-      <button class="btn-del" style="align-self:center;flex-shrink:0;margin-left:6px" onclick="event.stopPropagation();delCustomGoal('${cg.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="btn-del" style="align-self:center;flex-shrink:0;margin-left:6px" onclick="event.stopPropagation();delCustomGoal('${cg.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>`;
   }
 
@@ -1640,8 +1664,8 @@ function renderKids(){
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
         </div>
         <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:var(--text1);margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:var(--text2);opacity:0.5;width:${p}%"></div></div>
+          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:${p>0?'#3B82F6':'var(--text3)'};margin-bottom:3px">${p}%</div>
+          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;opacity:0.75;width:${p}%"></div></div>
         </div>
       </div>`;
     }).join('');
@@ -1657,8 +1681,8 @@ function renderKids(){
           <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
         </div>
         <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:var(--text1);margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:var(--text2);opacity:0.5;width:${p}%"></div></div>
+          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:${p>0?'#3B82F6':'var(--text3)'};margin-bottom:3px">${p}%</div>
+          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;opacity:0.75;width:${p}%"></div></div>
         </div>
       </div>`;
     }).join('');
@@ -1671,9 +1695,9 @@ function renderKids(){
           <div class="child-meta" style="display:none"></div>
         </div>
         <div style="display:flex;gap:5px">
-          <button class="btn-circle" onclick="event.stopPropagation();openSheet('managePhases','${k.id}')">⚙</button>
-          <button class="btn-circle" onclick="event.stopPropagation();openSheet('child',data.kids.find(x=>x.id==='${k.id}'))">✎</button>
-          <button class="btn-del" onclick="event.stopPropagation();delKid('${k.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          <button class="btn-circle" onclick="event.stopPropagation();openSheet('managePhases','${k.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+          <button class="btn-circle" onclick="event.stopPropagation();openSheet('child',data.kids.find(x=>x.id==='${k.id}'))"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="btn-del" onclick="event.stopPropagation();delKid('${k.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
       </div>
       <div class="child-phases">${phaseRows}</div>
@@ -1687,9 +1711,9 @@ function renderKids(){
     return`<div class="mini-goal" onclick="navigate('goals',document.querySelectorAll('.tab-item')[1])">
       <span class="mini-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></span>
       <div class="mini-body"><span class="mini-name">${k.name} · Age ${age(k.birthYear)}</span>
-        <div class="mini-prog"><div class="mini-fill" style="background:var(--text2);opacity:0.4;width:${kp}%"></div></div>
+        <div class="mini-prog"><div class="mini-fill" style="background:#3B82F6;opacity:0.75;width:${kp}%"></div></div>
       </div>
-      <div class="mini-pct">${kp}%</div>
+      <div class="mini-pct" style="color:${kp>0?'#3B82F6':'var(--text3)'}">${kp}%</div>
     </div>`;
   }).join('');
 }
@@ -1716,14 +1740,14 @@ function renderChecklist(){
   const bar=document.getElementById('checklist-bar');if(bar)bar.style.width=p+'%';
   const el=document.getElementById('checklist-items');if(!el)return;
   const checkSVG='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-  const delSVG='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  const delSVG='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   el.innerHTML=items.map((item)=>`
     <div class="check-item ${item.done?'done':''}" onclick="toggleCheckItem('${item.id}')">
       <div class="check-box">${item.done?checkSVG:''}</div>
       <div style="flex:1">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="check-label">${item.label}</div>
-          ${item.done?'<span style="font-size:0.6rem;font-weight:700;letter-spacing:0.3px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px">Done</span>':''}
+          ${item.done?'<span style="font-size:0.6rem;font-weight:700;letter-spacing:0.3px;color:#3B82F6;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);border-radius:99px;padding:1px 7px">Done</span>':''}
         </div>
         ${item.desc?`<div class="check-desc">${item.desc}</div>`:''}
       </div>
@@ -1794,7 +1818,7 @@ function onAssetCatChange(){}  // kept for safety, no redirect needed anymore
 function sheetAsset(a){
   const sipHint={MutualFunds:'Monthly SIP amount',EPF:'Monthly contribution',PPF:'Monthly contribution',Gold:'Monthly buy',ETF:'Monthly SIP',Stocks:'Monthly buy',FD:'',NPS:'Monthly contribution',RealEstate:'',Other:''};
   const cat=a.category||'EPF';
-  return`<div class="sheet-hdr"><div class="sheet-title">${a.id?'Edit':'Add'} Asset</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title">${a.id?'Edit':'Add'} Asset</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value="${c.v}" ${cat===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value="${a.name||''}"/></div>
@@ -1808,7 +1832,7 @@ function sheetAsset(a){
 function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast('Saved ✓')}
 
 function sheetLiability(l){
-  return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-lcat">${LIAB_CATS.map(c=>`<option value="${c.v}" ${l.category===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-lname" placeholder="e.g. SBI Home Loan" value="${l.name||''}"/></div>
@@ -1827,7 +1851,7 @@ function saveLiab(editId){const name=document.getElementById('f-lname').value.tr
 function sheetGoal(pid){
   const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
   const g=data.goals.find(x=>x.type===pr.id)||{};
-  const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
   const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
 
   if(pr.isIns){
@@ -1936,7 +1960,7 @@ function saveGoal(){
 function sheetCustomGoal(id){
   const cg = id ? (data.customGoals||[]).find(x=>x.id===id)||{} : {};
   const isEdit = !!cg.id;
-  const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
   const linkedIds=cg.linkedAssetIds||[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
   const sip = cg.target&&cg.timePeriod ? sipNeeded(Number(cg.target),autoCurrent,Number(cg.timePeriod)) : 0;
@@ -2022,7 +2046,7 @@ function delCustomGoal(id){
 function sheetChild(kid){
   const isEdit=!!kid;const gender=kid?kid.gender:'boy';
   const phasesHtml=KID_PHASES.map(ph=>{const ex=kid?kid.phases.find(p=>p.phaseId===ph.id):null;const on=ex?ex.enabled:true;return`<div class="phase-opt ${on?'on':''}" id="popt-${ph.id}" onclick="togglePhaseOpt('${ph.id}')"><div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ph.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${ph.label}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div><div class="phase-opt-check">${on?'✓':''}</div></div>`}).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'Add'} Child</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'Add'} Child</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Child's Name</label><input class="fi" id="f-kname" placeholder="e.g. Arjun" value="${kid?kid.name:''}"/></div>
     <div class="form-row2">
@@ -2060,11 +2084,11 @@ function sheetManagePhases(kidId){
       <div style="font-size:0.88rem">📌</div>
       <div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div>
       <button class="btn-del" aria-label="Delete custom phase" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>`;
   }).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">⚙ ${esc(kid.name)}'s Phases</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title">⚙ ${esc(kid.name)}'s Phases</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="form-sec" style="margin-top:0">Standard Phases</div>
     <div class="phase-opts">${stdHtml}</div>
@@ -2098,7 +2122,7 @@ function addCustomPhaseInSheet(kidId){
   if(listEl){
     const div=document.createElement('div');
     div.className='phase-opt on custom';div.id='mpopt-custom-'+cp.id;
-    div.innerHTML=`<div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    div.innerHTML=`<div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
     // Remove "No custom phases" placeholder if present
     listEl.querySelectorAll('div:not(.phase-opt)').forEach(el=>el.remove());
     listEl.appendChild(div);
@@ -2139,7 +2163,7 @@ function sheetEditPhase(kidId,phaseId){
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
     :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
-  return`<div class="sheet-hdr"><div class="sheet-title">${pd.icon} ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title">${pd.icon} ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
       <div style="font-size:1.4rem">${kid.gender==='girl'?'👧':'👦'}</div>
@@ -2165,7 +2189,7 @@ function sheetEditCustomPhase(kidId,cpId){
   const cp=kid.customPhases.find(p=>p.id===cpId);if(!cp)return'';
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
   const sip=cp.target>0&&yl>0?sipNeeded(cp.target,Number(cp.current||0),yl):0;
-  return`<div class="sheet-hdr"><div class="sheet-title">📌 ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title">📌 ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
       <div style="font-size:1.4rem">${kid.gender==='girl'?'👧':'👦'}</div>
@@ -2248,7 +2272,7 @@ function savePhase(kidId,phaseId){
 function sheetProfile(){
   const colors=['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#f97316'];
   const dots=colors.map(c=>`<div class="color-dot ${data.profile.avatarColor===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">👤 Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title">👤 Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Nagendra" value="${data.profile.name||''}"/></div>
     <div class="form-sec">Avatar Color</div>
@@ -2277,8 +2301,7 @@ const FS_SLIDER = {13:0, 14:1, 16:2, 18:3, 20:4};
 function setFontSize(px, label){
   document.documentElement.style.fontSize = px + 'px';
   localStorage.setItem('wp_fontsize', px);
-  const lbl = document.getElementById('font-size-label');
-  if(lbl) lbl.textContent = label;
+  // font-size-label removed
   const bar = document.getElementById('font-size-bar');
   if(bar) bar.value = FS_SLIDER[px] ?? 2;
   document.querySelectorAll('.fs-btn').forEach(b => {
