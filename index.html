@@ -6,8 +6,10 @@
 <title>Goal Tracker</title>
 <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEEUlEQVR4nO3dPW7cRhzG4ZFggJWNFAJcp8pRUuYmPoxv4jJHSZU7pGOXQsZaWu27H/ya4fB5+uUSOz/9SRYjPn3+/FtZ0zAMqx7/yMZxXPX4n9Y4qCC28fZ3XiOUJePQREWnH3/BSpaJQxbteF2LRRKZG4cs2rRIItPjkEX7ZiYyJQ5Z7MvkRJ6nfRO7M2HhHotDGbv26PLde1mRRR8eusTcNTmU0Zk7F/R2HMro0j3LeiMOZXTs5uJei0MZ3bu+xA8/ynIcMQ5j4yCuLPTlOJRxKGm5L8ShjAO6uOjuOYjO4zA2Duvj0pscRO/iMDYO7iwAk4PoVxzGBuV9BiYH0c84jA1OTjGYHETiIPpUXFOa9+XHn3M+/t9ffz/6kWEYxnE0OVo3s4w5xNG0imUUcbSsbhmllGc3HG2qXsYwDKv8fw5mSmVMuLWcw2WlOdVnxok42tJOGUUcTTkrY+OLyEfiaEVrZRRxNKLBMoo4WtBmGUUc1TVbRhFHXS2XUcRRUeNlFHHU0n4ZRRxV7KKMIo7t7aWMIo6N7aiMIo4t7auMIo7N7K6MIo5t7LGMIo4N7LSMUsrTy8vX2ufQs/2WUUyOVe26jCKO9ey9jCKOlXRQRhHHSt7WsNMyijjW89rEfssonla4wuQgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEHkH8Yt749v/07+7D/ff1/wTGYyORY2p4z5H1+WOJa0yNK204c4FrPgojbShziIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYPoQJuautlrtJmjTI6e9hpt5hBxdLbXaDP9x9HfXqPN9B8Hk4mDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHUf1NTfYaNavy5LDXqGU147DXqHHV4rDXqH1uSInEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA6ianEsuKvg+qH6+6LN1Jwci/wE9xykvy/aRuXLyswf4v6P9/dFG3h6efla+xxolBtSoudxHGufAy0ax9HkIBIHkTiInkspbjs485qEyUEkDqKfcbiycHKKweQg+hWH4UF5n4HJQfQuDsPj4M4CMDmIzuMwPA7r49KbHEQX4jA8Dujiol+eHPo4lLTc8bKij4O4stDuOYiuxWF4dO/6Et+YHPro2M3FvX1Z0UeX7lnWu+459NGZOxf03td4vR5uGIbpZ0QDHvo7f+xpxQjZtUeX7+FHWX3s1ISFm/J2SJeYfZn89zz91aESad/MMT/3vbISadMiV/9lXjoskXYseFO45BupT6elku2t8aCwyuvK356oUNaz9pPj/7VYLXh1mjDXAAAAAElFTkSuQmCC">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Goal Tracker">
+<meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7fa" media="(prefers-color-scheme: light)">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
@@ -58,11 +60,11 @@
   --accent2:  rgba(0,0,0,0.04);
   --scrim:    rgba(0,0,0,0.45);
 }
-[data-theme="light"] .top-header { background: rgba(247,247,250,0.95) }
+[data-theme="light"] .top-header { background: rgba(247,247,250,0.98); box-shadow: 0 1px 0 rgba(0,0,0,0.08) }
 [data-theme="light"] .tab-bar { background: rgba(247,247,250,0.97) }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
-html { height:100%; overflow-x:hidden; font-size:16px }
+html { height:100%; overflow-x:hidden; font-size:16px; background:var(--bg) }
 body {
   font-family:'Inter',-apple-system,sans-serif;
   background:var(--bg); color:var(--text1);
