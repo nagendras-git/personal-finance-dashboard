@@ -149,7 +149,7 @@ body {
 }
 .sec-hdr-right { display:flex; align-items:center; gap:8px; flex-shrink:0 }
 .sec-total { font-family:var(--mono); font-size:0.82rem; font-weight:700; color:var(--text1) }
-[data-theme="light"] .sec-total { color:var(--text2) }
+[data-theme="light"] .sec-total { color:var(--text1); font-weight:700 }
 .sec-caret { font-size:0.84rem; color:var(--text3); transition:transform 0.25s var(--ease) }
 .sec-caret.open { transform:rotate(180deg) }
 .sec-body { overflow:hidden; max-height:5000px; transition:max-height 0.32s var(--ease),opacity 0.2s ease; opacity:1 }
@@ -194,7 +194,7 @@ body {
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
 .goal-name { font-size:0.86rem; font-weight:600; color:var(--text1) }
 .goal-pct { font-family:var(--mono); font-size:0.82rem; font-weight:700; color:var(--text1); flex-shrink:0 }
-[data-theme="light"] .goal-pct { color:var(--text2) }
+[data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
 .prog-track { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .prog-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .dark .prog-fill { opacity:0.6 !important }
@@ -215,7 +215,7 @@ body {
 .mini-prog { height:3px; background:var(--surface3); border-radius:99px; overflow:hidden; margin-top:5px }
 .mini-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .mini-pct { font-family:var(--mono); font-size:0.86rem; font-weight:700; flex-shrink:0; color:var(--text1) }
-[data-theme="light"] .mini-pct { color:var(--text2) }
+[data-theme="light"] .mini-pct { color:var(--text1); font-weight:700 }
 
 /* ── INVESTMENT CATEGORY ── */
 .inv-cat-label {
@@ -283,6 +283,20 @@ body {
 :root .sec-total { color:var(--text1) }
 [data-theme="light"] .row-value { color:var(--text1) }
 [data-theme="light"] .wealth-item-val { color:var(--text1) }
+
+/* ── LIGHT MODE: all financial values dark & bold ── */
+[data-theme="light"] .acat-val { color:var(--text1); font-weight:700 }
+[data-theme="light"] .acat-pct { color:var(--text1); font-weight:700 }
+[data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
+[data-theme="light"] .mini-pct { color:var(--text1); font-weight:700 }
+[data-theme="light"] .sec-total { color:var(--text1); font-weight:700 }
+[data-theme="light"] .row-value { color:var(--text1); font-weight:700 }
+[data-theme="light"] .goal-saved { color:var(--text1); font-weight:700 }
+[data-theme="light"] .inv-stat-val { color:var(--text1); font-weight:700 }
+[data-theme="light"] .wealth-item-val { color:var(--text1); font-weight:700 }
+[data-theme="light"] .cf-val { color:var(--text1); font-weight:700 }
+[data-theme="light"] .gh-pct { color:var(--text1); font-weight:700 }
+[data-theme="light"] .stat-val { color:var(--text1); font-weight:700 }
 
 /* ── MORE PAGE ── */
 .more-row {
@@ -671,8 +685,8 @@ body {
 .acat-bar { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .acat-val { font-family:var(--mono); font-size:0.82rem; font-weight:700; color:var(--text1); flex-shrink:0; text-align:right; min-width:52px }
 .acat-pct { font-size:0.75rem; color:var(--text1); font-weight:600; flex-shrink:0; min-width:32px; text-align:right }
-[data-theme="light"] .acat-val { color:var(--text2) }
-[data-theme="light"] .acat-pct { color:var(--text3) }
+[data-theme="light"] .acat-val { color:var(--text1); font-weight:700 }
+[data-theme="light"] .acat-pct { color:var(--text1); font-weight:700 }
 /* ── CUSTOM DATE PICKER ── */
 .cal-wrap { position:relative }
 .cal-display {
