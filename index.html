@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
-<title>WealthPilot</title>
+<title>Goal Tracker</title>
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEEUlEQVR4nO3dPW7cRhzG4ZFggJWNFAJcp8pRUuYmPoxv4jJHSZU7pGOXQsZaWu27H/ya4fB5+uUSOz/9SRYjPn3+/FtZ0zAMqx7/yMZxXPX4n9Y4qCC28fZ3XiOUJePQREWnH3/BSpaJQxbteF2LRRKZG4cs2rRIItPjkEX7ZiYyJQ5Z7MvkRJ6nfRO7M2HhHotDGbv26PLde1mRRR8eusTcNTmU0Zk7F/R2HMro0j3LeiMOZXTs5uJei0MZ3bu+xA8/ynIcMQ5j4yCuLPTlOJRxKGm5L8ShjAO6uOjuOYjO4zA2Duvj0pscRO/iMDYO7iwAk4PoVxzGBuV9BiYH0c84jA1OTjGYHETiIPpUXFOa9+XHn3M+/t9ffz/6kWEYxnE0OVo3s4w5xNG0imUUcbSsbhmllGc3HG2qXsYwDKv8fw5mSmVMuLWcw2WlOdVnxok42tJOGUUcTTkrY+OLyEfiaEVrZRRxNKLBMoo4WtBmGUUc1TVbRhFHXS2XUcRRUeNlFHHU0n4ZRRxV7KKMIo7t7aWMIo6N7aiMIo4t7auMIo7N7K6MIo5t7LGMIo4N7LSMUsrTy8vX2ufQs/2WUUyOVe26jCKO9ey9jCKOlXRQRhHHSt7WsNMyijjW89rEfssonla4wuQgEgeROIjEQSQOInEQiYNIHETiIBIHkTiIxEHkH8Yt749v/07+7D/ff1/wTGYyORY2p4z5H1+WOJa0yNK204c4FrPgojbShziIxEEkDiJxEImDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYPoQJuautlrtJmjTI6e9hpt5hBxdLbXaDP9x9HfXqPN9B8Hk4mDSBxE4iASB5E4iMRBJA4icRCJg0gcROIgEgeROIjEQSQOInEQiYNIHETiIBIHUf1NTfYaNavy5LDXqGU147DXqHHV4rDXqH1uSInEQSQOInEQiYNIHETiIBIHkTiIxEEkDiJxEImDSBxE4iASB5E4iMRBJA6ianEsuKvg+qH6+6LN1Jwci/wE9xykvy/aRuXLyswf4v6P9/dFG3h6efla+xxolBtSoudxHGufAy0ax9HkIBIHkTiInkspbjs485qEyUEkDqKfcbiycHKKweQg+hWH4UF5n4HJQfQuDsPj4M4CMDmIzuMwPA7r49KbHEQX4jA8Dujiol+eHPo4lLTc8bKij4O4stDuOYiuxWF4dO/6Et+YHPro2M3FvX1Z0UeX7lnWu+459NGZOxf03td4vR5uGIbpZ0QDHvo7f+xpxQjZtUeX7+FHWX3s1ISFm/J2SJeYfZn89zz91aESad/MMT/3vbISadMiV/9lXjoskXYseFO45BupT6elku2t8aCwyuvK356oUNaz9pPj/7VYLXh1mjDXAAAAAElFTkSuQmCC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Goal Tracker">
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
@@ -780,7 +784,7 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
       <button class="avatar-btn" id="avatar-btn-dash" onclick="openSheet('profile')"></button>
       <div>
         <div class="hdr-greeting">Good day 👋</div>
-        <div class="hdr-name" id="header-name-display">WealthPilot</div>
+        <div class="hdr-name" id="header-name-display">Goal Tracker</div>
       </div>
     </div>
     </div>
@@ -1345,7 +1349,7 @@ function dismissBackupBanner(){
 }
 
 function renderProfile(){
-  const n=data.profile.name||'';const firstName=n.split(' ')[0]||'WealthPilot';
+  const n=data.profile.name||'';const firstName=n.split(' ')[0]||'Goal Tracker';
   document.getElementById('header-name-display').textContent=firstName+"'s Finance";
   document.querySelectorAll('.avatar-btn').forEach(b=>{
     b.textContent=(n.charAt(0)||'W').toUpperCase();
@@ -2275,7 +2279,7 @@ function sheetProfile(){
   const dots=colors.map(c=>`<div class="color-dot ${data.profile.avatarColor===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
   return`<div class="sheet-hdr"><div class="sheet-title">👤 Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Nagendra" value="${data.profile.name||''}"/></div>
+    <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Ravi" value="${data.profile.name||''}"/></div>
     <div class="form-sec">Avatar Color</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 14px">${dots}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Save</button></div>
@@ -2317,7 +2321,7 @@ function initFontSize(){
 function exportData(){
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='wealthpilot-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  a.download='goaltracker-'+new Date().toISOString().slice(0,10)+'.json';a.click();
   localStorage.setItem('wp_last_export',Date.now());
   localStorage.setItem('wp_save_count','0');
   dismissBackupBanner();
@@ -2396,7 +2400,7 @@ function init(){
     ];
     data.liabilities=[{id:uid(),category:'HomeLoan',name:'SBI Home Loan',outstanding:3200000,interestRate:8.5,emi:28500}];
     data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:300000,current:180000,timePeriod:'1'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
-    data.profile.name='Nagendra';save();
+    data.profile.name='';save();
   }
   renderProfile();renderDashboard();
   // Greeting
