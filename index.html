@@ -1119,18 +1119,22 @@ function toggleCal(id) {
   }
   popup.style.display = 'block';
   renderCal();
-  // Close on outside tap
-  setTimeout(() => document.addEventListener('click', _calOutside, {once:true}), 10);
-}
-function _calOutside(e) {
-  const wrap = document.getElementById('cal-wrap-' + _cal.id);
-  if (wrap && !wrap.contains(e.target)) {
-    const popup = document.getElementById('cal-popup-' + _cal.id);
-    if (popup) popup.style.display = 'none';
-  } else if (!e.target.closest('.cal-popup')) {
-    // re-attach if click was inside
-    setTimeout(() => document.addEventListener('click', _calOutside, {once:true}), 10);
-  }
+  // Close on outside tap — use capture phase & check via ID not node ref
+  setTimeout(() => {
+    function _calOutsideHandler(e) {
+      const wrap = document.getElementById('cal-wrap-' + _cal.id);
+      // if wrap no longer exists (sheet closed) just remove listener
+      if (!wrap) { document.removeEventListener('click', _calOutsideHandler, true); return; }
+      if (wrap.contains(e.target)) return; // click inside — do nothing
+      // click outside — close
+      const p = document.getElementById('cal-popup-' + _cal.id);
+      if (p) p.style.display = 'none';
+      document.removeEventListener('click', _calOutsideHandler, true);
+    }
+    // Store so it can be removed if needed
+    _cal._outsideHandler = _calOutsideHandler;
+    document.addEventListener('click', _calOutsideHandler, true);
+  }, 10);
 }
 function renderCal() {
   const popup = document.getElementById('cal-popup-' + _cal.id);
@@ -1172,7 +1176,7 @@ function renderCalYears() {
   if (!popup) return;
   const curY = new Date().getFullYear();
   let yearsHtml = '';
-  for (let y = curY + 10; y >= curY - 5; y--) {
+  for (let y = curY + 30; y >= curY - 5; y--) {
     yearsHtml += `<div class="cal-year-item${y===_cal.year?' sel':''}" onclick="calPickYear(${y})">${y}</div>`;
   }
   popup.innerHTML = `
@@ -1637,7 +1641,7 @@ function renderKids(){
         <div class="child-avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
         <div style="flex:1">
           <div class="child-name">${k.name}</div>
-          <div class="child-meta">Age ${age(k.birthYear)} · ${ep.length} phases · ${fmt(ks)} saved · ${kp}%</div>
+          <div class="child-meta" style="display:none"></div>
         </div>
         <div style="display:flex;gap:5px">
           <button class="btn-circle" onclick="event.stopPropagation();openSheet('managePhases','${k.id}')">⚙</button>
