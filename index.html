@@ -164,10 +164,11 @@ body {
 .row-item.tap { cursor:pointer }
 .row-item:active { background:var(--surface2) }
 .row-icon {
-  width:2.5rem; height:2.5rem; border-radius:10px; flex-shrink:0;
+  width:38px; height:38px; border-radius:10px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  font-size:1.1rem; background:var(--surface2);
+  background:var(--surface2); color:var(--text2);
 }
+.row-icon svg { width:16px; height:16px; opacity:0.7 }
 .row-body { flex:1; min-width:0 }
 .row-title { font-size:0.88rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .row-sub { font-size:0.86rem; color:var(--text3); margin-top:2px }
@@ -184,7 +185,7 @@ body {
   margin-bottom:7px; transition:background 120ms;
 }
 .goal-row:active { background:var(--surface2) }
-.goal-icon { width:2.5rem; height:2.5rem; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0 }
+.goal-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface2); color:var(--text2) }
 .goal-body { flex:1; min-width:0 }
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
 .goal-name { font-size:0.86rem; font-weight:600; color:var(--text1) }
@@ -227,10 +228,11 @@ body {
 }
 .child-hdr:active { background:var(--surface2) }
 .child-avatar {
-  width:2.5rem; height:2.5rem; border-radius:10px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:1.45rem;
-  background:var(--surface2);
+  width:34px; height:34px; border-radius:9px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--surface2); color:var(--text2);
 }
+.child-avatar svg { width:15px; height:15px; opacity:0.7 }
 .child-name { font-size:0.88rem; font-weight:700; color:var(--text1) }
 .child-meta { font-size:0.75rem; color:var(--text3); margin-top:2px }
 .phase-row {
@@ -238,7 +240,7 @@ body {
   cursor:pointer; border-top:1px solid var(--border2); transition:background 120ms;
 }
 .phase-row:active { background:var(--surface2) }
-.phase-ico { font-size:0.88rem; flex-shrink:0; width:20px; text-align:center; opacity:0.8 }
+.phase-ico { flex-shrink:0; display:flex; align-items:center; justify-content:center }
 .phase-info { flex:1; min-width:0 }
 .phase-name { font-size:0.85rem; font-weight:600; color:var(--text1) }
 .phase-age { font-size:0.75rem; color:var(--text3); margin-top:1px }
@@ -256,10 +258,10 @@ body {
   flex-shrink:0; display:flex; align-items:center; justify-content:center;
   margin-top:1px; transition:all 150ms var(--spring);
 }
-.check-item.done .check-box { background:var(--green); border-color:var(--green) }
+.check-item.done .check-box { background:var(--text1); border-color:var(--text1) }
 .check-label { font-size:0.84rem; font-weight:600; color:var(--text1) }
 .check-desc { font-size:0.75rem; color:var(--text3); margin-top:2px }
-.check-item.done .check-label { color:var(--text3); text-decoration:line-through }
+.check-item.done .check-label { color:var(--text3) }
 
 /* ── MORE PAGE ── */
 .more-row {
@@ -300,8 +302,8 @@ body {
 
 /* ── PILLS ── */
 .pill { display:inline-flex; align-items:center; padding:2px 8px; border-radius:99px; font-size:0.63rem; font-weight:600 }
-.pill-green { background:var(--green-bg); color:var(--green) }
-.pill-red { background:var(--red-bg); color:var(--red) }
+.pill-green { background:var(--surface2); color:var(--text2) }
+.pill-red { background:var(--surface2); color:var(--text2) }
 .pill-amber { background:var(--amber-bg); color:var(--amber) }
 .pill-muted { background:var(--surface2); color:var(--text3); border:1px solid var(--border) }
 
@@ -528,10 +530,11 @@ body {
 }
 .qa-action:active { transform:scale(0.95); background:var(--surface3) }
 .qa-action-icon {
-  width:2.75rem; height:2.75rem; border-radius:12px;
+  width:42px; height:42px; border-radius:12px;
   display:flex; align-items:center; justify-content:center;
-  font-size:1.45rem;
+  background:var(--surface2); color:var(--text2);
 }
+.qa-action-icon svg { width:20px; height:20px; opacity:0.7 }
 .qa-action-label { font-size:0.88rem; font-weight:700; color:var(--text1); line-height:1.2 }
 .qa-action-sub { font-size:0.86rem; color:var(--text3); line-height:1.3; margin-top:1px }
 
@@ -615,7 +618,7 @@ body {
 .ret-bar { height:100%; border-radius:99px; transition:width 0.6s var(--ease) }
 
 /* ── DEBT PAYOFF BADGE ── */
-.payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.65rem; font-weight:600; color:var(--amber); background:var(--amber-bg); border-radius:99px; padding:2px 7px; margin-top:3px }
+.payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.65rem; font-weight:600; color:var(--text3); background:var(--surface2); border:1px solid var(--border); border-radius:99px; padding:2px 7px; margin-top:3px }
 
 /* ── SWIPE INDICATOR ON SHEET HANDLE ── */
 .sheet-handle, .qa-handle { cursor:grab }
@@ -636,8 +639,8 @@ body {
 }
 .acat-row:last-child { border-bottom:none }
 .acat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
-.acat-icon { font-size:0.86rem; flex-shrink:0; width:22px; height:22px; text-align:center; color:var(--text2) }
-.acat-icon svg { width:16px; height:16px; display:block; margin:auto }
+.acat-icon { flex-shrink:0; width:30px; height:30px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; color:var(--text2); opacity:0.8 }
+.acat-icon svg { width:15px; height:15px; display:block; opacity:0.7 }
 .acat-info { flex:1; min-width:0 }
 .acat-name { font-size:0.84rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .acat-bar-wrap { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden; margin-top:4px }
@@ -655,30 +658,31 @@ body {
 }
 .cal-display.empty { color:var(--text3) }
 .cal-popup {
-  position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:600;
+  margin-top:6px;
+  width:252px;
   background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg);
-  box-shadow:0 8px 32px rgba(0,0,0,0.4); overflow:hidden;
+  overflow:hidden;
   animation:calIn 0.15s var(--ease) both;
 }
-@keyframes calIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
-.cal-nav { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--border2) }
-.cal-nav-btn { width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text2); transition:background 120ms }
+@keyframes calIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+.cal-nav { display:flex; align-items:center; justify-content:space-between; padding:7px 8px; border-bottom:1px solid var(--border2) }
+.cal-nav-btn { width:24px; height:24px; border-radius:6px; border:1px solid var(--border); background:var(--surface2); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--text2); transition:background 120ms; font-size:0.78rem; flex-shrink:0 }
 .cal-nav-btn:active { background:var(--surface3) }
-.cal-month-label { font-size:0.86rem; font-weight:700; color:var(--text1); cursor:pointer; padding:4px 8px; border-radius:6px; transition:background 120ms }
+.cal-month-label { font-size:0.8rem; font-weight:700; color:var(--text1); cursor:pointer; padding:3px 6px; border-radius:6px; transition:background 120ms }
 .cal-month-label:active { background:var(--surface2) }
-.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; padding:8px }
-.cal-dow { font-size:0.62rem; font-weight:700; color:var(--text3); text-align:center; padding:4px 0 }
-.cal-day { aspect-ratio:1; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:500; cursor:pointer; color:var(--text1); transition:background 100ms }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:0; padding:4px 5px }
+.cal-dow { font-size:0.56rem; font-weight:700; color:var(--text3); text-align:center; padding:3px 0 2px }
+.cal-day { width:32px; height:26px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:500; cursor:pointer; color:var(--text1); transition:background 100ms }
 .cal-day:not(.empty-day):hover { background:var(--surface2) }
 .cal-day.today { color:var(--green); font-weight:700 }
 .cal-day.sel { background:var(--text1) !important; color:var(--bg); font-weight:700 }
 .cal-day.other-month { color:var(--text3) }
 .cal-day.empty-day { cursor:default }
-.cal-year-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; padding:10px; max-height:200px; overflow-y:auto }
-.cal-year-item { padding:7px 4px; border-radius:8px; text-align:center; font-size:0.8rem; font-weight:600; cursor:pointer; color:var(--text2); transition:background 100ms }
+.cal-year-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:3px; padding:7px; max-height:150px; overflow-y:auto }
+.cal-year-item { padding:5px 2px; border-radius:6px; text-align:center; font-size:0.74rem; font-weight:600; cursor:pointer; color:var(--text2); transition:background 100ms }
 .cal-year-item:hover { background:var(--surface2); color:var(--text1) }
 .cal-year-item.sel { background:var(--text1); color:var(--bg) }
-.cal-clear { padding:8px; border-top:1px solid var(--border2); text-align:center; font-size:0.78rem; color:var(--text3); cursor:pointer }
+.cal-clear { padding:5px; border-top:1px solid var(--border2); text-align:center; font-size:0.72rem; color:var(--text3); cursor:pointer }
 .cal-clear:hover { color:var(--red) }
 </style>
 </head>
@@ -708,51 +712,36 @@ body {
   <div class="container" style="padding-bottom:4px">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
       <!-- Total Wealth -->
-      <div style="padding:13px 16px 10px;border-bottom:1px solid var(--border2)">
+      <div style="padding:13px 16px 11px;border-bottom:1px solid var(--border2)">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
           <div style="font-size:0.82rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Total Wealth</div>
           <div style="font-size:0.65rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;font-weight:500;letter-spacing:0">Assets − Liabilities</div>
         </div>
         <div style="font-family:var(--mono);font-size:1.55rem;font-weight:700;letter-spacing:-0.5px;line-height:1" id="dash-networth">₹0</div>
       </div>
-      <!-- Row 1: Assets · Liabilities · SIP -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border2)">
-        <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.7rem;font-weight:600;color:var(--text2);letter-spacing:0;margin-bottom:5px">Assets</div>
+      <!-- 2x2 grid: Assets / Liabilities / SIP / EMI -->
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:11px 16px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2)">
+          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">Assets</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-assets-val">₹0</div>
         </div>
-        <div style="padding:13px 16px;border-right:1px solid var(--border2)">
-          <div style="font-size:0.7rem;font-weight:600;color:var(--text2);letter-spacing:0;margin-bottom:5px">Liabilities</div>
+        <div style="padding:11px 16px;border-bottom:1px solid var(--border2)">
+          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">Liabilities</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="dash-liab-val">₹0</div>
         </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- CASH FLOW CARD -->
-  <div class="container" style="padding-top:8px;padding-bottom:4px">
-    <div class="cf-card">
-      <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border2)">
-        <div style="font-size:0.78rem;font-weight:800;color:var(--text1);letter-spacing:0">Monthly Cash Flow</div>
-        <div style="font-size:0.62rem;color:var(--text2);margin-top:1px">SIP outflow vs EMI burden</div>
-      </div>
-      <div class="cf-row">
-        <div class="cf-cell">
-          <div class="cf-label">SIP / mo</div>
-          <div class="cf-val" style="color:var(--green)" id="cf-sip">₹0</div>
-          <div style="font-size:0.62rem;color:var(--text3);margin-top:3px">Monthly investments</div>
+        <div style="padding:11px 16px;border-right:1px solid var(--border2)">
+          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">SIP / mo</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="cf-sip">₹0</div>
         </div>
-        <div class="cf-cell">
-          <div class="cf-label">EMI / mo</div>
-          <div class="cf-val" style="color:var(--red)" id="cf-emi">₹0</div>
-          <div style="font-size:0.62rem;color:var(--text3);margin-top:3px">Loan repayments</div>
+        <div style="padding:11px 16px;">
+          <div style="font-size:0.68rem;font-weight:600;color:var(--text3);margin-bottom:4px">EMI / mo</div>
+          <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="cf-emi">₹0</div>
         </div>
       </div>
     </div>
   </div>
   <!-- ASSET CATEGORY BREAKDOWN -->
-  <div class="container" style="padding-top:8px" id="dash-asset-breakdown-wrap">
+  <div class="container" style="padding-top:8px;padding-bottom:4px" id="dash-asset-breakdown-wrap">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
       <div style="padding:10px 14px 8px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:0.88rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Portfolio Breakdown</div>
@@ -842,7 +831,7 @@ body {
         <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist">▼</span></div>
       </div>
       <div class="sec-body closed" id="sec-checklist">
-        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:var(--green);width:0%"></div></div></div>
+        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:var(--text2);opacity:0.4;width:0%"></div></div></div>
         <div id="checklist-items"></div>
       </div>
     </div>
@@ -894,7 +883,7 @@ body {
     <!-- PROFILE -->
     <div style="margin-top:10px">
       <div class="sec-hdr" onclick="toggleSec('sec-profile-more')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">👤 Profile & Name</span></div>
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile & Name</span></div>
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-profile-more">▼</span></div>
       </div>
       <div class="sec-body closed" id="sec-profile-more">
@@ -936,20 +925,20 @@ body {
     </button>
   </div>
   <div class="qa-grid">
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('asset')" style="border-color:rgba(96,165,250,0.25)">
-      <div class="qa-action-icon" style="background:rgba(96,165,250,0.12)">🏦</div>
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('asset')" style="border-color:var(--border)">
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></div>
       <div><div class="qa-action-label">Add Asset</div><div class="qa-action-sub">EPF, MF, Gold, FD…</div></div>
     </div>
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('liability')" style="border-color:rgba(248,113,113,0.25)">
-      <div class="qa-action-icon" style="background:rgba(248,113,113,0.12)">💳</div>
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('liability')" style="border-color:var(--border)">
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
       <div><div class="qa-action-label">Add Liability</div><div class="qa-action-sub">Loan, EMI, Credit card…</div></div>
     </div>
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:rgba(74,222,128,0.25)">
-      <div class="qa-action-icon" style="background:rgba(74,222,128,0.12)">🎯</div>
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:var(--border)">
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
       <div><div class="qa-action-label">Update Goal</div><div class="qa-action-sub">Emergency, Retirement…</div></div>
     </div>
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('child',null)" style="border-color:rgba(251,191,36,0.25)">
-      <div class="qa-action-icon" style="background:rgba(251,191,36,0.12)">👶</div>
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('child',null)" style="border-color:var(--border)">
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
       <div><div class="qa-action-label">Add Child</div><div class="qa-action-sub">Education planning…</div></div>
     </div>
   </div>
@@ -1039,12 +1028,12 @@ const GOAL_PRESETS = [
    color:'#fbbf24', light:'rgba(251,191,36,0.1)', isIns:false},
 ];
 const KID_PHASES = [
-  {id:'playschool',  label:'Play School',    icon:'🧸', ageStart:2.5,ageEnd:5,  color:'#fb923c'},
-  {id:'primary',     label:'Primary School', icon:'📚', ageStart:6,  ageEnd:15, color:'#34d399'},
-  {id:'intermediate',label:'Intermediate',   icon:'📖', ageStart:15, ageEnd:17, color:'#38bdf8'},
-  {id:'graduation',  label:'Graduation',     icon:'🎓', ageStart:17, ageEnd:21, color:'#818cf8'},
-  {id:'higher',      label:'Higher Studies', icon:'🏛️',ageStart:21, ageEnd:23, color:'#a78bfa'},
-  {id:'marriage',    label:'Marriage',       icon:'💍', ageStart:25, ageEnd:30, color:'#f472b6'},
+  {id:'playschool',  label:'Play School',    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><line x1="16" y1="11" x2="22" y2="11"/><line x1="19" y1="8" x2="19" y2="14"/></svg>', ageStart:2.5,ageEnd:5,  color:'#fb923c'},
+  {id:'primary',     label:'Primary School', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>', ageStart:6,  ageEnd:15, color:'#34d399'},
+  {id:'intermediate',label:'Intermediate',   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg>', ageStart:15, ageEnd:17, color:'#38bdf8'},
+  {id:'graduation',  label:'Graduation',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 12 15 2 8.5 12 2"/><path d="M7 11.5v5c0 2 2 3.5 5 3.5s5-1.5 5-3.5v-5"/><line x1="22" y1="8.5" x2="22" y2="14"/></svg>', ageStart:17, ageEnd:21, color:'#818cf8'},
+  {id:'higher',      label:'Higher Studies', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>', ageStart:21, ageEnd:23, color:'#a78bfa'},
+  {id:'marriage',    label:'Marriage',       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>', ageStart:25, ageEnd:30, color:'#f472b6'},
 ];
 const CHECKLIST_ITEMS = [
   {label:'Emergency Fund (6 months)',    desc:'3–6 months of expenses saved in liquid form'},
@@ -1057,7 +1046,7 @@ const CHECKLIST_ITEMS = [
 let data = {
   profile:{name:'', avatarColor:'#6366f1'},
   assets:[], liabilities:[], goals:[], kids:[], customGoals:[],
-  checklist:[false,false,false,false,false,false]
+  checkItems:[]
 };
 let _confirmCb=null;
 
@@ -1097,9 +1086,9 @@ function toggleCal(id) {
   const popup = document.getElementById('cal-popup-'+id);
   if (!popup) return;
   const isOpen = popup.style.display !== 'none';
-  // Close any open cal first
+  // Close all open calendars first
   document.querySelectorAll('.cal-popup').forEach(p => p.style.display='none');
-  if (isOpen) return;
+  if (isOpen) return; // was open → now closed, done
   _cal.id = id;
   _cal.viewMode = 'days';
   // Parse existing value
@@ -1119,22 +1108,6 @@ function toggleCal(id) {
   }
   popup.style.display = 'block';
   renderCal();
-  // Close on outside tap — use capture phase & check via ID not node ref
-  setTimeout(() => {
-    function _calOutsideHandler(e) {
-      const wrap = document.getElementById('cal-wrap-' + _cal.id);
-      // if wrap no longer exists (sheet closed) just remove listener
-      if (!wrap) { document.removeEventListener('click', _calOutsideHandler, true); return; }
-      if (wrap.contains(e.target)) return; // click inside — do nothing
-      // click outside — close
-      const p = document.getElementById('cal-popup-' + _cal.id);
-      if (p) p.style.display = 'none';
-      document.removeEventListener('click', _calOutsideHandler, true);
-    }
-    // Store so it can be removed if needed
-    _cal._outsideHandler = _calOutsideHandler;
-    document.addEventListener('click', _calOutsideHandler, true);
-  }, 10);
 }
 function renderCal() {
   const popup = document.getElementById('cal-popup-' + _cal.id);
@@ -1206,21 +1179,22 @@ function calPickDay(d) {
   const mm = String(_cal.month+1).padStart(2,'0');
   const yyyy = _cal.year;
   const formatted = `${dd}-${mm}-${yyyy}`;
+  const calSVG = '<svg class="cal-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
   // Update hidden input and display
   const hidden = document.getElementById('f-ins-' + _cal.id);
   if (hidden) hidden.value = formatted;
   const display = document.getElementById('f-ins-' + _cal.id + '-display');
-  if (display) { display.textContent = ''; display.classList.remove('empty');
-    display.innerHTML = formatted + ' <svg class="cal-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'; }
+  if (display) { display.classList.remove('empty'); display.innerHTML = formatted + ' ' + calSVG; }
   const popup = document.getElementById('cal-popup-' + _cal.id);
   if (popup) popup.style.display = 'none';
 }
 function calClear() {
   _cal.selected = null;
+  const calSVG = '<svg class="cal-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
   const hidden = document.getElementById('f-ins-' + _cal.id);
   if (hidden) hidden.value = '';
   const display = document.getElementById('f-ins-' + _cal.id + '-display');
-  if (display) { display.classList.add('empty'); display.innerHTML = 'Select date <svg class="cal-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'; }
+  if (display) { display.classList.add('empty'); display.innerHTML = 'Select date ' + calSVG; }
   const popup = document.getElementById('cal-popup-' + _cal.id);
   if (popup) popup.style.display = 'none';
 }
@@ -1274,8 +1248,8 @@ function renderRetirementReadiness(){
   const barEl=document.getElementById('ret-bar');
   const lblEl=document.getElementById('ret-pct-label');
   const metaEl=document.getElementById('ret-meta');
-  if(barEl){barEl.style.width=readiness+'%';barEl.style.background=color;}
-  if(lblEl){lblEl.textContent=readiness+'%';lblEl.style.color=color;}
+  if(barEl){barEl.style.width=readiness+'%';barEl.style.background='var(--text2)';barEl.style.opacity='0.4';}
+  if(lblEl){lblEl.textContent=readiness+'%';lblEl.style.color='var(--text2)';}
   if(metaEl){
     metaEl.textContent=`Projected: ${fmt(totalProjected)} of ${fmt(target)} in ${years}y @ 12% p.a. · Current: ${fmt(current)}`;
   }
@@ -1358,13 +1332,13 @@ function renderDashboard(){
       catEl.innerHTML=cats.map(c=>{
         const p=Math.round((c.total/grandTotal)*100);
         return`<div class="acat-row">
-          <div class="acat-icon" style="color:${c.info.color}">${c.info.icon}</div>
+          <div class="acat-icon">${c.info.icon}</div>
           <div class="acat-info">
             <div class="acat-name">${c.info.l}</div>
-            <div class="acat-bar-wrap"><div class="acat-bar" style="background:${c.info.color};width:${p}%"></div></div>
+            <div class="acat-bar-wrap"><div class="acat-bar" style="background:var(--text2);opacity:0.35;width:${p}%"></div></div>
           </div>
           <div class="acat-val">${fmt(c.total)}</div>
-          <div class="acat-pct" style="color:${c.info.color}">${p}%</div>
+          <div class="acat-pct" style="color:var(--text2)">${p}%</div>
         </div>`;
       }).join('');
     }
@@ -1393,8 +1367,8 @@ function renderGoalHealth(){
   const pctEl=document.getElementById('gh-pct');
   const metaEl=document.getElementById('gh-meta');
   const color=p>=75?'var(--green)':p>=40?'var(--amber)':'var(--red)';
-  if(fillEl){fillEl.style.width=p+'%';fillEl.style.background=color;}
-  if(pctEl){pctEl.textContent=setCount?p+'%':'—';pctEl.style.color=color;}
+  if(fillEl){fillEl.style.width=p+'%';fillEl.style.background='var(--text2)';fillEl.style.opacity='0.4';}
+  if(pctEl){pctEl.textContent=setCount?p+'%':'—';pctEl.style.color='var(--text2)';}
   if(metaEl){
     if(!setCount)metaEl.textContent='Set up your goals to track progress';
     else metaEl.textContent=setCount+' goal'+(setCount>1?'s':'')+' · '+fmt(totalSaved)+' saved of '+fmt(totalTarget);
@@ -1418,7 +1392,7 @@ function renderAssets(){
   el.innerHTML=data.assets.map(a=>{
     const info=getAsset(a.category);
     return`<div class="row-item">
-      <div class="row-icon" style="background:var(--surface2);color:var(--text2);display:flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;border-radius:10px;flex-shrink:0"><svg style="width:1.1rem;height:1.1rem;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
+      <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
         <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
@@ -1449,10 +1423,10 @@ function renderLiabilities(){
     const payoffMonths=l.emi>0?Math.ceil(Number(l.outstanding)/Number(l.emi)):null;
     const payoffBadge=payoffMonths?`<div class="payoff-badge">⏱ ~${payoffMonths>12?(payoffMonths/12).toFixed(1)+'y':payoffMonths+'mo'} to clear</div>`:'';
     return`<div class="row-item">
-      <div class="row-icon" style="background:var(--red-bg);color:var(--red)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.85">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
+      <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${l.name}</div>
-        <div class="row-sub">${info.l} · ${l.interestRate||0}% · EMI ${fmt(l.emi)}/mo</div>
+        <div class="row-sub">${info.l} · ${l.interestRate||0}% · EMI ${fmt(l.emi)}/mo${l.endDate?' · Ends '+l.endDate:''}</div>
         ${payoffBadge}
       </div>
       <div class="row-right">
@@ -1480,8 +1454,8 @@ function renderGoals(){
 
   // Helper: render a goal icon box with accent tint + unique SVG
   function goalIconBox(pr){
-    return `<div class="goal-icon" style="background:${pr.light};color:${pr.color}">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    return `<div class="goal-icon" style="background:var(--surface2);color:var(--text2)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7">
         ${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}
       </svg>
     </div>`;
@@ -1518,13 +1492,13 @@ function renderGoals(){
     const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(g.current||0);
     const p=pct(current,target);
     let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-green':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    if(target>0){pCls='pill-muted';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
     const autoTag=linkedIds.length>0?`<span style="font-size:0.84rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
     return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
       ${goalIconBox(pr)}
       <div class="goal-body">
         <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:${pr.color};width:${p}%"></div></div>
+        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:var(--text2);opacity:0.4;width:${p}%"></div></div>
         <div class="goal-amounts">
           <span class="goal-saved">${fmt(current)}${autoTag}</span>
           <span class="goal-target">${target>0?'of '+fmt(target)+(g.timePeriod?' · '+g.timePeriod+'y':''):'Tap to set'}</span>
@@ -1543,13 +1517,13 @@ function renderGoals(){
     const p=pct(current,target);
     const customIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
     let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-green':p>=50?'pill-green':'pill-red';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    if(target>0){pCls='pill-muted';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
     const autoTag=linkedIds.length>0?`<span style="font-size:0.84rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
     return`<div class="goal-row" onclick="openSheet('customGoal','${cg.id}')">
       <div class="goal-icon" style="background:rgba(167,139,250,0.12);color:#a78bfa"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
       <div class="goal-body">
         <div class="goal-top"><span class="goal-name">${cg.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#a78bfa;width:${p}%"></div></div>
+        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:var(--text2);opacity:0.4;width:${p}%"></div></div>
         <div class="goal-amounts">
           <span class="goal-saved">${fmt(current)}${autoTag}</span>
           <span class="goal-target">${target>0?'of '+fmt(target)+(cg.timePeriod?' · '+cg.timePeriod+'y':''):'Tap to set'}</span>
@@ -1607,14 +1581,14 @@ function renderKids(){
       const p=pct(phaseCurrent,ph.target||0);
       const yl=yearsUntil(k.birthYear,pd.ageStart);
       return`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
-        <span class="phase-ico" style="font-size:0.88rem">${pd.icon}</span>
+        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
         </div>
         <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:${p>0?pd.color:'var(--text3)'};margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:${pd.color};width:${p}%"></div></div>
+          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:${p>0?'var(--text1)':'var(--text3)'};margin-bottom:3px">${p}%</div>
+          <div class="prog-track"><div class="prog-fill" style="background:var(--text2);opacity:0.5;width:${p}%"></div></div>
         </div>
       </div>`;
     }).join('');
@@ -1624,21 +1598,21 @@ function renderKids(){
       const p=pct(current,target);
       const yl=yearsUntil(k.birthYear,cp.ageStart);
       return`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
-        <span class="phase-ico" style="font-size:0.88rem">📌</span>
+        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
         <div class="phase-info">
           <div class="phase-name">${esc(cp.label)}</div>
           <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
         </div>
         <div class="phase-prog">
           <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:${p>0?'var(--text1)':'var(--text3)'};margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:#a78bfa;width:${p}%"></div></div>
+          <div class="prog-track"><div class="prog-fill" style="background:var(--text2);opacity:0.5;width:${p}%"></div></div>
         </div>
       </div>`;
     }).join('');
     const phaseRows=stdPhaseRows+customPhaseRows;
     return`<div class="child-card">
       <div class="child-hdr" onclick="this.parentElement.querySelector('.child-phases').classList.toggle('closed')">
-        <div class="child-avatar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
+        <div class="child-avatar" style="background:var(--surface2);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
         <div style="flex:1">
           <div class="child-name">${k.name}</div>
           <div class="child-meta" style="display:none"></div>
@@ -1660,30 +1634,87 @@ function renderKids(){
     return`<div class="mini-goal" onclick="navigate('goals',document.querySelectorAll('.tab-item')[1])">
       <span class="mini-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></span>
       <div class="mini-body"><span class="mini-name">${k.name} · Age ${age(k.birthYear)}</span>
-        <div class="mini-prog"><div class="mini-fill" style="background:#38bdf8;width:${kp}%"></div></div>
+        <div class="mini-prog"><div class="mini-fill" style="background:var(--text2);opacity:0.4;width:${kp}%"></div></div>
       </div>
-      <div class="mini-pct" style="color:#38bdf8">${kp}%</div>
+      <div class="mini-pct" style="color:var(--text2)">${kp}%</div>
     </div>`;
   }).join('');
 }
 function delKid(id){const k=data.kids.find(x=>x.id===id);showConfirm('Remove Child?',`"${k?.name||'This child'}" and all phases will be removed.`,()=>{data.kids=data.kids.filter(k=>k.id!==id);save();renderKids();renderDashboard();toast('Removed')})}
 
+function getCheckItems(){
+  // Migrate old boolean array to new object format on first load
+  if(!data.checkItems||!data.checkItems.length){
+    data.checkItems=CHECKLIST_ITEMS.map((item,i)=>({
+      id:'ci_'+i, label:item.label, desc:item.desc, done:false, custom:false
+    }));
+    save();
+  }
+  return data.checkItems;
+}
 function renderChecklist(){
-  const done=data.checklist.filter(Boolean).length;const total=CHECKLIST_ITEMS.length;const p=Math.round((done/total)*100);
+  const items=getCheckItems();
+  const done=items.filter(x=>x.done).length;
+  const total=items.length;
+  const p=total>0?Math.round((done/total)*100):0;
   const cl=document.getElementById('checklist-pct-text');if(cl)cl.textContent=p+'%';
   const cnt=document.getElementById('check-sec-count');if(cnt)cnt.textContent=done+'/'+total;
   const bar=document.getElementById('checklist-bar');if(bar)bar.style.width=p+'%';
   const el=document.getElementById('checklist-items');if(!el)return;
-  el.innerHTML=CHECKLIST_ITEMS.map((item,i)=>`
-    <div class="check-item ${data.checklist[i]?'done':''}" onclick="toggleCheck(${i})">
-      <div class="check-box">${data.checklist[i]?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-      <div>
-        <div class="check-label">${item.label}</div>
-        <div class="check-desc">${item.desc}</div>
+  const checkSVG='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const delSVG='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  el.innerHTML=items.map((item)=>`
+    <div class="check-item ${item.done?'done':''}" onclick="toggleCheckItem('${item.id}')">
+      <div class="check-box">${item.done?checkSVG:''}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="check-label">${item.label}</div>
+          ${item.done?'<span style="font-size:0.6rem;font-weight:700;letter-spacing:0.3px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px">Done</span>':''}
+        </div>
+        ${item.desc?`<div class="check-desc">${item.desc}</div>`:''}
       </div>
-    </div>`).join('');
+      <button class="btn-del" style="margin-left:6px;flex-shrink:0" onclick="event.stopPropagation();delCheckItem('${item.id}')">${delSVG}</button>
+    </div>`).join('')+`
+  <div style="margin-top:8px" id="checklist-add-area">
+    <div class="add-row" style="margin:0" onclick="showAddCheckItem()">Add item</div>
+    <div id="checklist-add-form" style="display:none;margin-top:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;gap:8px;display:none;flex-direction:column">
+      <input class="fi" id="ci-label-input" placeholder="Item label e.g. Buy Gold SGB" style="margin:0"/>
+      <input class="fi" id="ci-desc-input" placeholder="Description (optional)" style="margin:0"/>
+      <div style="display:flex;gap:8px;margin-top:2px">
+        <button class="btn btn-ghost" style="flex:1;padding:8px" onclick="hideAddCheckItem()">Cancel</button>
+        <button class="btn btn-primary" style="flex:1;padding:8px" onclick="addCheckItem()">Add</button>
+      </div>
+    </div>
+  </div>`;
 }
-function toggleCheck(i){data.checklist[i]=!data.checklist[i];save();renderChecklist();renderDashboard()}
+function toggleCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);if(item){item.done=!item.done;save();renderChecklist();renderDashboard();}}
+function delCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);showConfirm('Remove item?',`"${item?.label||'This item'}" will be removed.`,()=>{data.checkItems=items.filter(x=>x.id!==id);save();renderChecklist();renderDashboard();toast('Removed')});}
+function showAddCheckItem(){
+  const form=document.getElementById('checklist-add-form');
+  const addRow=document.querySelector('#checklist-add-area .add-row');
+  if(form){form.style.display='flex';}
+  if(addRow)addRow.style.display='none';
+  setTimeout(()=>document.getElementById('ci-label-input')?.focus(),50);
+}
+function hideAddCheckItem(){
+  const form=document.getElementById('checklist-add-form');
+  const addRow=document.querySelector('#checklist-add-area .add-row');
+  if(form){form.style.display='none';}
+  if(addRow)addRow.style.display='';
+  const l=document.getElementById('ci-label-input');if(l)l.value='';
+  const d=document.getElementById('ci-desc-input');if(d)d.value='';
+}
+function addCheckItem(){
+  const label=document.getElementById('ci-label-input')?.value.trim();
+  if(!label){toast('Enter a label');return;}
+  const desc=document.getElementById('ci-desc-input')?.value.trim()||'';
+  const items=getCheckItems();
+  items.push({id:'ci_'+uid(),label,desc,done:false,custom:true});
+  data.checkItems=items;save();
+  renderChecklist();renderDashboard();
+  toast('Item added ✓');
+}
+function toggleCheck(i){} // legacy stub
 
 /* ── SHEETS ── */
 function openSheet(type,arg,arg2){
@@ -1731,10 +1762,13 @@ function sheetLiability(l){
       <div class="fg"><label class="fl">Outstanding (₹)</label><input class="fi" id="f-outstanding" type="number" placeholder="0" value="${l.outstanding||''}"/></div>
       <div class="fg"><label class="fl">Interest Rate (%)</label><input class="fi" id="f-rate" type="number" step="0.1" placeholder="8.5" value="${l.interestRate||''}"/></div>
     </div>
-    <div class="fg"><label class="fl">Monthly EMI (₹)</label><input class="fi" id="f-emi" type="number" placeholder="0" value="${l.emi||''}"/></div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Monthly EMI (₹)</label><input class="fi" id="f-emi" type="number" placeholder="0" value="${l.emi||''}"/></div>
+      <div class="fg"><label class="fl">Loan End Date</label>${calPickerHTML('lend', l.endDate||'')}</div>
+    </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveLiab('${l.id||''}')">Save</button></div>
   </div>`}
-function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value)};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast('Saved ✓')}
+function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||''};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast('Saved ✓')}
 
 function sheetGoal(pid){
   const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
@@ -1933,7 +1967,7 @@ function delCustomGoal(id){
 
 function sheetChild(kid){
   const isEdit=!!kid;const gender=kid?kid.gender:'boy';
-  const phasesHtml=KID_PHASES.map(ph=>{const ex=kid?kid.phases.find(p=>p.phaseId===ph.id):null;const on=ex?ex.enabled:true;return`<div class="phase-opt ${on?'on':''}" id="popt-${ph.id}" onclick="togglePhaseOpt('${ph.id}')"><div style="font-size:0.88rem">${ph.icon}</div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${ph.label}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div><div class="phase-opt-check">${on?'✓':''}</div></div>`}).join('');
+  const phasesHtml=KID_PHASES.map(ph=>{const ex=kid?kid.phases.find(p=>p.phaseId===ph.id):null;const on=ex?ex.enabled:true;return`<div class="phase-opt ${on?'on':''}" id="popt-${ph.id}" onclick="togglePhaseOpt('${ph.id}')"><div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ph.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${ph.label}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div><div class="phase-opt-check">${on?'✓':''}</div></div>`}).join('');
   return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'Add'} Child</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Child's Name</label><input class="fi" id="f-kname" placeholder="e.g. Arjun" value="${kid?kid.name:''}"/></div>
@@ -1962,7 +1996,7 @@ function sheetManagePhases(kidId){
   const stdHtml=KID_PHASES.map(ph=>{
     const ex=kid.phases.find(p=>p.phaseId===ph.id)||{};const on=ex.enabled||false;
     return`<div class="phase-opt ${on?'on':''}" id="mpopt-${ph.id}" onclick="toggleMPhaseOpt('${ph.id}')">
-      <div style="font-size:0.88rem">${ph.icon}</div>
+      <div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ph.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${ph.label}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div>
       <div class="phase-opt-check">${on?'✓':''}</div>
     </div>`;
@@ -2212,7 +2246,7 @@ function exportData(){
   toast('Exported ✓');
 }
 function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
-function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;data={profile:{name:n,avatarColor:c},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checklist:[false,false,false,false,false,false]};save();renderDashboard();renderProfile();toast('Data reset')})}
+function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;data={profile:{name:n,avatarColor:c},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
   if(!confirm('Load sample data? This will overwrite current data.'))return;
@@ -2245,7 +2279,7 @@ function loadSampleData(){
     {phaseId:'marriage',   enabled:true, target:2000000,current:0,     linkedAssetIds:[],notes:''},
     {phaseId:'intermediate',enabled:false,target:0,     current:0,     linkedAssetIds:[],notes:''},
   ]}];
-  data.checklist=[true,true,true,true,false,false];
+  // checkItems migrated on load
   if(data.investments)delete data.investments;
   save();renderDashboard();renderKids();renderGoals();renderProfile();toast('Sample data loaded ✓');
 }
@@ -2284,7 +2318,7 @@ function init(){
     ];
     data.liabilities=[{id:uid(),category:'HomeLoan',name:'SBI Home Loan',outstanding:3200000,interestRate:8.5,emi:28500}];
     data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:300000,current:180000,timePeriod:'1'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
-    data.checklist=[true,true,false,true,false,false];data.profile.name='Nagendra';save();
+    data.profile.name='Nagendra';save();
   }
   renderProfile();renderDashboard();
   // Greeting
