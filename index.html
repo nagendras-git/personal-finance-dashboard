@@ -506,7 +506,7 @@ body {
   display:grid;
   grid-template-columns: 1fr 68px 60px auto;
   gap:6px; margin-top:6px; padding:10px 12px;
-  background:var(--surface2); border:1.5px dashed var(--border);
+  background:var(--surface2); border:1.5px solid var(--border);
   border-radius:var(--r); align-items:center;
 }
 .add-custom-phase-row .fi { font-size:1rem !important; padding:7px 10px; width:100% }
@@ -526,11 +526,11 @@ body {
 /* ── ADD ROW ── */
 .add-row {
   display:flex; align-items:center; justify-content:center; padding:13px;
-  border:1.5px dashed rgba(59,130,246,0.3); border-radius:var(--r-lg);
-  cursor:pointer; color:#3B82F6; font-size:0.86rem; font-weight:700;
-  gap:6px; transition:all 120ms; margin-top:6px; background:rgba(59,130,246,0.03);
+  border:1.5px solid rgba(59,130,246,0.35); border-radius:var(--r-lg);
+  cursor:pointer; color:#3B82F6; font-size:0.86rem; font-weight:600;
+  gap:6px; transition:all 120ms; margin-top:6px; background:rgba(59,130,246,0.04);
 }
-.add-row:active { background:rgba(59,130,246,0.08); border-color:rgba(59,130,246,0.5) }
+.add-row:active { background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.6) }
 
 /* ── EMPTY ── */
 .empty { text-align:center; padding:28px 16px; color:var(--text3) }
@@ -1679,7 +1679,7 @@ function renderGoals(){
 
   const hasAnyGoalData = GOAL_PRESETS.some(pr=>{const g=data.goals.find(x=>x.type===pr.id);return g&&(g.target||g.premium||g.policyName||g.current);}) || customGoals.length>0;
 
-  const onboardingHint = !hasAnyGoalData ? `<div style="text-align:center;padding:20px 16px;background:var(--surface);border:1px dashed var(--border);border-radius:var(--r-lg);margin-bottom:10px">
+  const onboardingHint = !hasAnyGoalData ? `<div style="text-align:center;padding:20px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:10px">
     <div style="font-size:1.4rem;margin-bottom:8px;opacity:0.5">🎯</div>
     <div style="font-size:0.86rem;font-weight:700;color:var(--text1);margin-bottom:4px">Set your first goal</div>
     <div style="font-size:0.75rem;color:var(--text3);line-height:1.5">Tap any goal below to set a target amount.<br>We'll calculate the SIP you need to get there.</div>
