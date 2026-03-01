@@ -126,8 +126,8 @@ body {
 .stat-card.tap { cursor:pointer }
 .stat-card.tap:active { background:var(--surface2) }
 .stat-label {
-  font-size:0.72rem; font-weight:700; color:var(--text3);
-  letter-spacing:0; margin-bottom:7px;
+  font-size:0.65rem; font-weight:600; color:var(--text3);
+  letter-spacing:0.5px; margin-bottom:7px; text-transform:uppercase;
 }
 [data-theme="light"] .stat-label { color:#555570 }
 [data-theme="light"] .inv-stat-label { color:#555570 }
@@ -321,8 +321,8 @@ body {
 
 /* ── MID-LABEL: dashboard section labels — readable but subordinate ── */
 .lbl {
-  font-size:0.70rem; font-weight:700; letter-spacing:0; margin-bottom:4px;
-  color:#555570;
+  font-size:0.65rem; font-weight:600; letter-spacing:0.5px; margin-bottom:4px;
+  color:#555570; text-transform:uppercase;
 }
 [data-theme="light"] .lbl { color:#555570 }
 :root .lbl { color:var(--text3) }
@@ -361,7 +361,7 @@ body {
 /* ── INV SUMMARY ── */
 .inv-stats { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:12px }
 .inv-stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:13px }
-.inv-stat-label { font-size:0.72rem; font-weight:600; color:var(--text3); letter-spacing:0; margin-bottom:5px }
+.inv-stat-label { font-size:0.65rem; font-weight:600; color:var(--text3); letter-spacing:0.5px; margin-bottom:5px; text-transform:uppercase }
 .inv-stat-val { font-family:var(--mono); font-size:0.9rem; font-weight:700; color:var(--text1) }
 
 /* ── PILLS ── */
@@ -666,7 +666,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 .cf-row { display:grid; grid-template-columns:1fr 1fr }
 .cf-cell { padding:11px 14px; border-right:1px solid var(--border2) }
 .cf-cell:last-child { border-right:none }
-.cf-label { font-size:0.72rem; font-weight:700; color:var(--text2); letter-spacing:0; margin-bottom:4px }
+.cf-label { font-size:0.65rem; font-weight:600; color:var(--text2); letter-spacing:0.5px; margin-bottom:4px; text-transform:uppercase }
 .cf-val { font-family:var(--mono); font-size:0.88rem; font-weight:700 }
 
 /* ── GOAL HEALTH CARD ── */
@@ -799,7 +799,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div style="padding:18px 18px 14px;border-bottom:1px solid var(--border2)">
         <div style="font-size:0.72rem;font-weight:700;color:var(--text3);letter-spacing:0;margin-bottom:6px;text-transform:uppercase">Net Wealth</div>
         <div style="font-size:2.4rem;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:2px" id="dash-networth">₹0</div>
-        <div id="dash-nw-pill" style="font-size:0.7rem;color:var(--text3);font-weight:500;margin-top:5px">Assets minus Liabilities</div>
+        <div id="dash-nw-pill" style="font-size:0.7rem;color:var(--text3);font-weight:500;margin-top:5px">Total assets − liabilities</div>
       </div>
       <!-- 2x2 grid: Assets / Liabilities / SIP / EMI -->
       <div style="display:grid;grid-template-columns:1fr 1fr">
