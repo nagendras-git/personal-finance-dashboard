@@ -48,20 +48,20 @@
   --spring: cubic-bezier(0.34,1.56,0.64,1);
 }
 [data-theme="light"] {
-  --bg:       #f7f7fa;
+  --bg:       #f2f2f7;
   --surface:  #ffffff;
   --surface2: #f0f0f5;
-  --surface3: #e8e8f0;
-  --border:   #dddde8;
-  --border2:  #eaeaf2;
+  --surface3: #e5e5eb;
+  --border:   #d8d8e0;
+  --border2:  #eaeaf0;
   --text1:    #1a1a25;
   --text2:    #606078;
   --text3:    #9898b0;
   --accent2:  rgba(0,0,0,0.04);
   --scrim:    rgba(0,0,0,0.45);
 }
-[data-theme="light"] .top-header { background: rgba(247,247,250,0.98); box-shadow: 0 1px 0 rgba(0,0,0,0.08) }
-[data-theme="light"] .tab-bar { background: rgba(247,247,250,0.97) }
+[data-theme="light"] .top-header { background: rgba(242,242,247,0.98); box-shadow: 0 1px 0 rgba(0,0,0,0.08) }
+[data-theme="light"] .tab-bar { background: rgba(242,242,247,0.97) }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
 html { height:100%; overflow-x:hidden; font-size:16px; background:var(--bg) }
@@ -102,6 +102,8 @@ body {
 .hdr-greeting { font-size:0.74rem; color:var(--text3); font-weight:500; line-height:1 }
 .hdr-name { font-size:1.1rem; font-weight:800; color:var(--text1); letter-spacing:-0.3px; line-height:1.2 }
 .hdr-right { display:flex; align-items:center; gap:7px }
+.hdr-add-btn{width:34px;height:34px;border-radius:50%;background:#3B82F6;border:none;color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(59,130,246,.4);transition:all 120ms var(--spring);flex-shrink:0}
+.hdr-add-btn:active{transform:scale(.88);opacity:.85}
 .hdr-icon-btn {
   width:2rem; height:2rem; border-radius:8px;
   background:var(--surface2); border:1px solid var(--border);
@@ -145,24 +147,24 @@ body {
 }
 
 /* ── SECTION HEADER ── */
-.sec-hdr {
+.sec-hdr-card {
   display:flex; align-items:center; justify-content:space-between;
   padding:11px 14px; cursor:pointer; user-select:none;
-  background:var(--surface2); border:1px solid var(--border);
-  border-radius:var(--r); margin-bottom:8px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); margin-bottom:8px;
   transition:background 120ms;
 }
-.sec-hdr:active { background:var(--surface3) }
+.sec-hdr-card:active { background:var(--surface2) }
 .sec-hdr-left { display:flex; align-items:center; gap:8px; min-width:0 }
-.sec-hdr-title { font-size:0.88rem; font-weight:800; color:var(--text1); display:inline-flex; align-items:center; gap:5px }
+.sec-hdr-title { font-size:0.88rem; font-weight:800; color:var(--text1); display:inline-flex; align-items:center; gap:7px }
+.sec-hdr-title svg { opacity:0.5; flex-shrink:0 }
 .sec-badge {
   font-size:0.7rem; font-weight:600; color:#3B82F6;
   background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2);
   padding:1px 7px; border-radius:99px;
 }
 .sec-hdr-right { display:flex; align-items:center; gap:8px; flex-shrink:0 }
-.sec-total { font-family:var(--mono); font-size:0.82rem; font-weight:700; color:var(--text1) }
-[data-theme="light"] .sec-total { color:var(--text1); font-weight:700 }
+.sec-total { font-size:0.82rem; font-weight:700; color:var(--text1) }
 .sec-caret { color:var(--text3); transition:transform 0.25s var(--ease); display:flex; align-items:center; }
 .sec-caret svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
 .sec-caret.open { transform:rotate(180deg) }
@@ -539,19 +541,7 @@ body {
 .empty-icon { font-size:1.4rem; margin-bottom:8px; opacity:0.4 }
 .empty-text { font-size:0.84rem; line-height:1.5 }
 
-/* ── FAB ── */
-.fab {
-  position:fixed; right:20px; bottom:calc(var(--nav-h) + 16px + var(--safe-b));
-  width:52px; height:52px; border-radius:50%;
-  background:#3B82F6; color:#ffffff; border:none;
-  cursor:pointer; z-index:150;
-  box-shadow:0 4px 24px rgba(59,130,246,0.45);
-  display:flex; align-items:center; justify-content:center;
-  transition:transform 220ms var(--spring), box-shadow 200ms;
-}
-.fab:active { transform:scale(0.88); box-shadow:0 2px 10px rgba(59,130,246,0.3) }
-.fab-icon { transition:transform 280ms var(--spring); display:flex; align-items:center; justify-content:center }
-/* FAB stays as + — sheet has its own close button */
+/* FAB moved to header top-right */
 
 /* ── QUICK ADD SHEET ── */
 .qa-overlay {
@@ -645,37 +635,27 @@ body {
 /* ── APPEARANCE ── */
 .theme-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--border2); }
 .fs-btn {
-  padding:8px 4px; border-radius:var(--r); border:1.5px solid var(--border);
+  padding:8px 4px; border-radius:var(--r); border:1px solid var(--border);
   background:var(--surface2); color:var(--text2); font-family:'Inter',sans-serif;
   font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 150ms var(--spring);
 }
 .fs-btn:active { transform:scale(0.93) }
-.fs-btn.active { border-color:#3B82F6; background:rgba(59,130,246,0.08); color:#3B82F6 }
+.fs-btn.active { background:#3B82F6; color:#fff; border-color:#3B82F6 }
 .toggle-track { width:42px; height:22px; border-radius:99px; background:var(--surface3); border:1px solid var(--border); cursor:pointer; position:relative; transition:background 200ms }
 .toggle-track.on { background:#3B82F6; border-color:#3B82F6 }
 .toggle-thumb { position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.25); transition:all 200ms var(--spring) }
 .toggle-track.on .toggle-thumb { left:22px; background:#fff }
 
-/* Range slider — blue accent */
-input[type=range] {
-  -webkit-appearance:none; appearance:none;
-  width:100%; height:4px; border-radius:99px;
-  background:var(--surface3); outline:none; cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance:none; appearance:none;
-  width:20px; height:20px; border-radius:50%;
-  background:#3B82F6; cursor:pointer;
-  box-shadow:0 0 0 3px rgba(59,130,246,0.2);
-  transition:box-shadow 150ms;
-}
-input[type=range]::-moz-range-thumb {
-  width:20px; height:20px; border-radius:50%; border:none;
-  background:#3B82F6; cursor:pointer;
-  box-shadow:0 0 0 3px rgba(59,130,246,0.2);
-}
-input[type=range]::-webkit-slider-runnable-track { border-radius:99px }
-input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,130,246,0.25) }
+/* Range slider — custom track + white thumb */
+.range-wrap{position:relative;width:100%;height:22px;display:flex;align-items:center}
+.range-track{position:absolute;left:0;right:0;height:4px;background:var(--surface3);border-radius:99px;top:50%;transform:translateY(-50%)}
+.range-fill{position:absolute;left:0;height:100%;background:#3B82F6;border-radius:99px;transition:width .1s}
+input[type=range].custom-range{position:relative;width:100%;height:22px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;margin:0;z-index:1;padding:0;outline:none}
+input[type=range].custom-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:none;box-shadow:0 1px 6px rgba(0,0,0,.35);transition:transform .1s;margin-top:-9px}
+input[type=range].custom-range:active::-webkit-slider-thumb{transform:scale(1.15)}
+input[type=range].custom-range::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:none;box-shadow:0 1px 6px rgba(0,0,0,.35)}
+input[type=range].custom-range::-webkit-slider-runnable-track{background:transparent;height:4px}
+input[type=range].custom-range::-moz-range-track{background:transparent;height:4px}
 
 /* ── BREAKDOWN ROWS ── */
 .breakdown-row {
@@ -867,12 +847,17 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 <div id="page-goals" class="page">
   <div class="top-header">
     <div class="hdr-inner">
-    <div class="hdr-left"><div><div class="hdr-greeting">Planning</div><div class="hdr-name">Goals</div></div></div>
+      <div class="hdr-left"><div><div class="hdr-greeting">Planning</div><div class="hdr-name">Goals</div></div></div>
+      <div class="hdr-right">
+        <button class="hdr-add-btn" id="fab-goals" onclick="toggleQuickAdd()" style="display:flex">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
     </div>
   </div>
   <div class="container">
     <div id="kids-section-wrap" style="display:none">
-      <div class="sec-hdr" onclick="toggleSec('sec-kids')">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-kids')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
         <div class="sec-hdr-right">
           <span class="sec-caret" id="caret-sec-kids"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
@@ -882,7 +867,7 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
     </div>
 
     <div id="financial-goals-wrap" style="margin-top:10px">
-      <div class="sec-hdr" onclick="toggleSec('sec-goals')">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-goals')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Financial Goals</span><span class="sec-badge" id="goals-sec-count">0</span></div>
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-goals"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
@@ -895,12 +880,17 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 <div id="page-investments" class="page">
   <div class="top-header">
     <div class="hdr-inner">
-    <div class="hdr-left"><div><div class="hdr-greeting">Portfolio</div><div class="hdr-name">Invest</div></div></div>
+      <div class="hdr-left"><div><div class="hdr-greeting">Portfolio</div><div class="hdr-name">Invest</div></div></div>
+      <div class="hdr-right">
+        <button class="hdr-add-btn" id="fab-invest" onclick="toggleQuickAdd()" style="display:flex">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
     </div>
   </div>
   <div class="container">
     <!-- ASSETS -->
-    <div class="sec-hdr" onclick="toggleSec('sec-assets')">
+    <div class="sec-hdr-card" onclick="toggleSec('sec-assets')">
       <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
       <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
     </div>
@@ -911,7 +901,7 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 
     <!-- LIABILITIES -->
     <div style="margin-top:8px">
-      <div class="sec-hdr" onclick="toggleSec('sec-liab')">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-liab')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Liabilities</span><span class="sec-badge" id="liab-sec-count">0</span></div>
         <div class="sec-hdr-right"><span class="sec-total" style="color:var(--red)" id="liab-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-liab"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
@@ -930,14 +920,14 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 <div id="page-more" class="page">
   <div class="top-header">
     <div class="hdr-inner">
-    <div class="hdr-left"><div><div class="hdr-greeting">Manage</div><div class="hdr-name">More</div></div></div>
+    <div class="hdr-left"><div><div class="hdr-greeting">Manage</div><div class="hdr-name">Settings</div></div></div>
     </div>
   </div>
   <div class="container">
 
     <!-- CHECKLIST -->
     <div>
-      <div class="sec-hdr" onclick="toggleSec('sec-checklist')">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-checklist')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Finance Checklist</span><span class="sec-badge" id="check-sec-count">0/6</span></div>
         <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
@@ -949,7 +939,7 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 
     <!-- APPEARANCE -->
     <div style="margin-top:8px">
-      <div class="sec-hdr" onclick="toggleSec('sec-appearance')">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-appearance')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg> Appearance</span></div>
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-appearance"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
@@ -978,9 +968,11 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
               <button onclick="setFontSize(20,'XL')"   class="fs-btn" data-size="20">XL</button>
             </div>
             <div style="margin-top:10px">
-              <input type="range" id="font-size-bar" min="0" max="4" step="1" value="2"
-                style="width:100%;accent-color:var(--text1);cursor:pointer;height:4px"
-                oninput="const sizes=[13,14,16,18,20];const labels=['XS','S','M','L','XL'];setFontSize(sizes[this.value],labels[this.value])"/>
+              <div class="range-wrap">
+                <div class="range-track"><div class="range-fill" id="range-fill" style="width:50%"></div></div>
+                <input type="range" class="custom-range" id="font-size-bar" min="0" max="4" step="1" value="2"
+                  oninput="const sizes=[13,14,16,18,20];const labels=['XS','S','M','L','XL'];setFontSize(sizes[this.value],labels[this.value]);updateRangeFill(this.value)"/>
+              </div>
             </div>
             <div style="display:flex;justify-content:space-between;margin-top:4px">
               <span style="font-size:0.6rem;color:var(--text3)">Smaller</span>
@@ -993,7 +985,7 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 
     <!-- PROFILE -->
     <div style="margin-top:8px">
-      <div class="sec-hdr" onclick="toggleSec('sec-profile-more')">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-profile-more')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile & Name</span></div>
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-profile-more"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
@@ -1006,7 +998,7 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 
     <!-- DATA TOOLS -->
     <div style="margin-top:8px;margin-bottom:4px">
-      <div class="sec-hdr" onclick="toggleSec('sec-tools')">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-tools')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Data Tools</span></div>
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-tools"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
@@ -1054,10 +1046,6 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
     </div>
   </div>
 </div>
-<button class="fab" id="fab-btn" onclick="toggleQuickAdd()" aria-label="Quick add">
-  <div class="fab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-</button>
-
 <!-- TAB BAR -->
 <nav class="tab-bar">
   <div class="tab-bar-inner">
@@ -1074,8 +1062,8 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
     <div class="tab-label">Invest</div>
   </button>
   <button class="tab-item" onclick="navigate('more',this)">
-    <div class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></div>
-    <div class="tab-label">More</div>
+    <div class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+    <div class="tab-label">Settings</div>
   </button>
   </div>
 </nav>
@@ -2438,12 +2426,15 @@ function toggleDark(){
 
 const FS_SIZES  = {13:'XS', 14:'S', 16:'M', 18:'L', 20:'XL'};
 const FS_SLIDER = {13:0, 14:1, 16:2, 18:3, 20:4};
+function updateRangeFill(idx){
+  const fill=document.getElementById('range-fill');
+  if(fill)fill.style.width=(idx/4*100)+'%';
+}
 function setFontSize(px, label){
   document.documentElement.style.fontSize = px + 'px';
   localStorage.setItem('wp_fontsize', px);
-  // font-size-label removed
   const bar = document.getElementById('font-size-bar');
-  if(bar) bar.value = FS_SLIDER[px] ?? 2;
+  if(bar){bar.value = FS_SLIDER[px] ?? 2; updateRangeFill(FS_SLIDER[px] ?? 2);}
   document.querySelectorAll('.fs-btn').forEach(b => {
     b.classList.toggle('active', Number(b.dataset.size) === px);
   });
@@ -2451,6 +2442,7 @@ function setFontSize(px, label){
 function initFontSize(){
   const saved = parseInt(localStorage.getItem('wp_fontsize')) || 16;
   setFontSize(saved, FS_SIZES[saved] || 'M');
+  requestAnimationFrame(()=>updateRangeFill(FS_SLIDER[saved]??2));
 }
 
 function exportData(){
