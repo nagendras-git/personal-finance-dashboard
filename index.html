@@ -60,8 +60,8 @@
   --accent2:  rgba(0,0,0,0.04);
   --scrim:    rgba(0,0,0,0.45);
 }
-[data-theme="light"] .top-header { background: #ffffff; box-shadow: 0 1px 0 rgba(0,0,0,0.1) }
-[data-theme="light"] .tab-bar { background: #ffffff; border-top: 1px solid rgba(0,0,0,0.1) }
+[data-theme="light"] .top-header { background: var(--bg); box-shadow: none; border-bottom: 1px solid var(--border) }
+[data-theme="light"] .tab-bar { background: var(--bg); border-top: 1px solid var(--border) }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
 html { height:100%; overflow-x:hidden; font-size:16px; background:var(--bg) }
@@ -188,15 +188,15 @@ body {
 .row-icon {
   width:34px; height:34px; border-radius:10px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
-  background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.12); color:#3B82F6;
+  background:var(--surface2); border:1px solid var(--border); color:var(--text2);
 }
 .row-icon svg { width:15px; height:15px; opacity:0.85 }
 .row-body { flex:1; min-width:0 }
-.row-title { font-size:0.88rem; font-weight:700; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.row-title { font-size:0.88rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .row-sub { font-size:0.72rem; color:var(--text3); margin-top:2px }
 .row-change { font-size:0.73rem; font-weight:600; margin-top:2px }
 .row-right { text-align:right; flex-shrink:0; display:flex; align-items:center; gap:8px }
-.row-value { font-size:0.92rem; font-weight:800; color:var(--text1) }
+.row-value { font-size:0.92rem; font-weight:700; color:var(--text1) }
 .row-actions { display:flex; gap:4px; align-items:center }
 
 /* ── GOAL ROW ── */
@@ -208,17 +208,17 @@ body {
 }
 .goal-row:last-of-type { border-bottom:none }
 .goal-row:active { background:var(--surface2) }
-.goal-icon { width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.12); color:#3B82F6 }
+.goal-icon { width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface2); border:1px solid var(--border); color:var(--text2) }
 .goal-icon svg { width:15px; height:15px; opacity:0.85 }
 .goal-body { flex:1; min-width:0 }
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
-.goal-name { font-size:0.88rem; font-weight:700; color:var(--text1) }
+.goal-name { font-size:0.88rem; font-weight:600; color:var(--text1) }
 .goal-pct { font-size:0.84rem; font-weight:800; color:var(--text1); flex-shrink:0 }
 [data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
 .prog-track { height:6px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .prog-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .goal-amounts { display:flex; align-items:center; justify-content:space-between; margin-top:5px }
-.goal-saved { font-size:0.88rem; font-weight:800; color:var(--text1) }
+.goal-saved { font-size:0.88rem; font-weight:700; color:var(--text1) }
 .goal-target { font-size:0.68rem; color:var(--text3) }
 
 /* ── MINI GOAL ── */
@@ -259,7 +259,7 @@ body {
   background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.12); color:#3B82F6;
 }
 .child-avatar svg { width:16px; height:16px; opacity:0.85 }
-.child-name { font-size:0.9rem; font-weight:800; color:var(--text1) }
+.child-name { font-size:0.9rem; font-weight:600; color:var(--text1) }
 .child-meta { font-size:0.75rem; color:var(--text3); margin-top:2px }
 .phase-row {
   display:flex; align-items:center; gap:9px; padding:11px 14px;
@@ -826,7 +826,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
   <div class="container" style="padding-top:8px;padding-bottom:4px" id="dash-asset-breakdown-wrap">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
       <div style="padding:13px 16px 11px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:0.9rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Portfolio Breakdown</div>
+        <div style="font-size:0.9rem;font-weight:600;color:var(--text1);letter-spacing:-0.2px">Portfolio Breakdown</div>
         <div style="font-size:0.72rem;font-weight:600;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:2px 9px" id="dash-cat-count">—</div>
       </div>
       <div id="dash-asset-cats" style="padding:4px 14px 8px"></div>
@@ -963,8 +963,8 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
         <div class="row-list-wrap">
           <div class="theme-toggle-row">
             <div>
-              <div style="font-size:0.86rem;font-weight:600;color:var(--text1)">Light Mode</div>
-              <div style="font-size:0.7rem;color:var(--text3);margin-top:1px">Toggle light/dark theme</div>
+              <div style="font-size:0.86rem;font-weight:600;color:var(--text1)">Dark Mode</div>
+              <div style="font-size:0.7rem;color:var(--text3);margin-top:1px">Override system appearance</div>
             </div>
             <div class="toggle-track" id="theme-toggle" onclick="toggleDark()"><div class="toggle-thumb"></div></div>
           </div>
@@ -1502,9 +1502,9 @@ function renderGoalHealth(){
   const fillEl=document.getElementById('gh-fill');
   const pctEl=document.getElementById('gh-pct');
   const metaEl=document.getElementById('gh-meta');
-  const color=p>=75?'var(--green)':p>=40?'var(--amber)':'var(--red)';
+  const color='var(--blue)';
   if(fillEl){fillEl.style.width=p+'%';fillEl.style.background=color;fillEl.style.opacity='1';}
-  if(pctEl){pctEl.textContent=setCount?p+'%':'—';pctEl.style.color='var(--text2)';}
+  if(pctEl){pctEl.textContent=setCount?p+'%':'—';pctEl.style.color='var(--blue)';}
   if(metaEl){
     if(!setCount)metaEl.textContent='Set up your goals to track progress';
     else metaEl.textContent=setCount+' goal'+(setCount>1?'s':'')+' · '+fmt(totalSaved)+' saved of '+fmt(totalTarget);
@@ -1687,7 +1687,7 @@ function renderGoals(){
 
   const protIco=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`;
   const savIco=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
-  const divider=(label,ico)=>`<div style="font-size:0.65rem;font-weight:700;letter-spacing:0;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px">${ico} ${label}</div>`;
+  const divider=(label,ico)=>`<div style="font-size:0.65rem;font-weight:500;letter-spacing:0.3px;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px;text-transform:uppercase">${ico} ${label}</div>`;
 
   el.innerHTML =
     onboardingHint +
@@ -1729,7 +1729,7 @@ function renderKids(){
       const p=pct(phaseCurrent,ph.target||0);
       const yl=yearsUntil(k.birthYear,pd.ageStart);
       return`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
-        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
+        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
@@ -1746,7 +1746,7 @@ function renderKids(){
       const p=pct(current,target);
       const yl=yearsUntil(k.birthYear,cp.ageStart);
       return`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
-        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
+        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
         <div class="phase-info">
           <div class="phase-name">${esc(cp.label)}</div>
           <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
@@ -1770,7 +1770,7 @@ function renderKids(){
       const p=pct(phaseCurrent,ph.target||0);
       const yl=yearsUntil(k.birthYear,pd.ageStart);
       return {ageStart:pd.ageStart, html:`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
-        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
+        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
@@ -1786,7 +1786,7 @@ function renderKids(){
       const p=pct(current,target);
       const yl=yearsUntil(k.birthYear,cp.ageStart);
       return {ageStart:cp.ageStart, html:`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
-        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
+        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
         <div class="phase-info">
           <div class="phase-name">${esc(cp.label)}</div>
           <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
@@ -2234,7 +2234,7 @@ function addCustomPhaseInSheet(kidId){
   if(listEl){
     const div=document.createElement('div');
     div.className='phase-opt on custom';div.id='mpopt-custom-'+cp.id;
-    div.innerHTML=`<div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    div.innerHTML=`<div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
     // Remove "No custom phases" placeholder if present
     listEl.querySelectorAll('div:not(.phase-opt)').forEach(el=>el.remove());
     listEl.appendChild(div);
@@ -2439,7 +2439,7 @@ function toggleDark(){
   const isLight=document.documentElement.getAttribute('data-theme')==='light';
   document.documentElement.setAttribute('data-theme',isLight?'dark':'light');
   localStorage.setItem('wp_theme',isLight?'dark':'light');
-  const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',!isLight);
+  const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',isLight);
 }
 
 const FS_SIZES  = {13:'XS', 14:'S', 16:'M', 18:'L', 20:'XL'};
@@ -2537,7 +2537,7 @@ function init(){
   load();
   const theme=localStorage.getItem('wp_theme')||'dark';
   document.documentElement.setAttribute('data-theme',theme);
-  const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',theme==='light');
+  const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',theme==='dark');
   initFontSize();
   if(!localStorage.getItem(STORAGE_KEY)){
     data.assets=[
