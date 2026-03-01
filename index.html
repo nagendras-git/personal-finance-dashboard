@@ -50,9 +50,9 @@
 [data-theme="light"] {
   --bg:       #f2f2f7;
   --surface:  #ffffff;
-  --surface2: #f0f0f5;
-  --surface3: #e5e5eb;
-  --border:   #d8d8e0;
+  --surface2: #ffffff;
+  --surface3: #f0f0f5;
+  --border:   #e0e0e8;
   --border2:  #eaeaf0;
   --text1:    #1a1a25;
   --text2:    #606078;
@@ -60,8 +60,8 @@
   --accent2:  rgba(0,0,0,0.04);
   --scrim:    rgba(0,0,0,0.45);
 }
-[data-theme="light"] .top-header { background: rgba(242,242,247,0.98); box-shadow: 0 1px 0 rgba(0,0,0,0.08) }
-[data-theme="light"] .tab-bar { background: rgba(242,242,247,0.97) }
+[data-theme="light"] .top-header { background: #ffffff; box-shadow: 0 1px 0 rgba(0,0,0,0.1) }
+[data-theme="light"] .tab-bar { background: #ffffff; border-top: 1px solid rgba(0,0,0,0.1) }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
 html { height:100%; overflow-x:hidden; font-size:16px; background:var(--bg) }
@@ -99,8 +99,8 @@ body {
   transition:transform 180ms var(--spring); flex-shrink:0;
 }
 .avatar-btn:active { transform:scale(0.9) }
-.hdr-greeting { font-size:0.74rem; color:var(--text3); font-weight:500; line-height:1 }
-.hdr-name { font-size:1.15rem; font-weight:800; color:var(--text1); letter-spacing:-0.4px; line-height:1.2 }
+.hdr-greeting { font-size:0.72rem; color:var(--text3); font-weight:400; line-height:1; letter-spacing:0.1px }
+.hdr-name { font-size:1.18rem; font-weight:800; color:var(--text1); letter-spacing:-0.4px; line-height:1.2 }
 .hdr-right { display:flex; align-items:center; gap:7px }
 .hdr-add-btn{width:34px;height:34px;border-radius:50%;background:#3B82F6;border:none;color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(59,130,246,.4);transition:all 120ms var(--spring);flex-shrink:0}
 .hdr-add-btn:active{transform:scale(.88);opacity:.85}
@@ -149,14 +149,14 @@ body {
 /* ── SECTION HEADER ── */
 .sec-hdr-card {
   display:flex; align-items:center; justify-content:space-between;
-  padding:13px 16px; cursor:pointer; user-select:none;
-  background:var(--surface); border:1px solid var(--border);
+  padding:11px 14px; cursor:pointer; user-select:none;
+  background:var(--surface2); border:1px solid var(--border);
   border-radius:var(--r-lg); margin-bottom:8px;
   transition:background 120ms;
 }
-.sec-hdr-card:active { background:var(--surface2) }
+.sec-hdr-card:active { background:var(--surface3) }
 .sec-hdr-left { display:flex; align-items:center; gap:9px; min-width:0 }
-.sec-hdr-title { font-size:0.9rem; font-weight:800; color:var(--text1); display:inline-flex; align-items:center; gap:8px; letter-spacing:-0.2px }
+.sec-hdr-title { font-size:0.86rem; font-weight:600; color:var(--text1); display:inline-flex; align-items:center; gap:8px; letter-spacing:0 }
 .sec-hdr-title svg { opacity:0.45; flex-shrink:0 }
 .sec-badge {
   font-size:0.68rem; font-weight:700; color:#3B82F6;
@@ -712,14 +712,14 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 }
 .acat-row:last-child { border-bottom:none }
 .acat-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
-.acat-icon { flex-shrink:0; width:34px; height:34px; border-radius:10px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.12); display:flex; align-items:center; justify-content:center; color:#3B82F6 }
-.acat-icon svg { width:15px; height:15px; display:block; opacity:0.85 }
+.acat-icon { flex-shrink:0; width:34px; height:34px; border-radius:10px; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text2) }
+.acat-icon svg { width:15px; height:15px; display:block; opacity:0.6 }
 .acat-info { flex:1; min-width:0 }
 .acat-name { font-size:0.85rem; font-weight:700; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:5px }
 .acat-bar-wrap { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .acat-bar { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .acat-val { font-size:0.84rem; font-weight:700; color:var(--text1); flex-shrink:0; text-align:right; min-width:52px }
-.acat-pct { font-size:0.82rem; color:#3B82F6; font-weight:800; flex-shrink:0; min-width:36px; text-align:right }
+.acat-pct { font-size:0.82rem; color:var(--text2); font-weight:700; flex-shrink:0; min-width:36px; text-align:right }
 [data-theme="light"] .acat-val { color:var(--text1); font-weight:700 }
 [data-theme="light"] .acat-pct { color:#3B82F6; font-weight:800 }
 /* ── CUSTOM DATE PICKER ── */
@@ -940,15 +940,16 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
   </div>
   <div class="container">
 
-    <!-- CHECKLIST -->
+    <!-- PROFILE -->
     <div>
-      <div class="sec-hdr-card" onclick="toggleSec('sec-checklist')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Finance Checklist</span><span class="sec-badge" id="check-sec-count">0/6</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      <div class="sec-hdr-card" onclick="toggleSec('sec-profile-more')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile & Name</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-profile-more"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
-      <div class="sec-body closed" id="sec-checklist">
-        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:#3B82F6;width:0%"></div></div></div>
-        <div id="checklist-items"></div>
+      <div class="sec-body closed" id="sec-profile-more">
+        <div style="padding:4px 0 6px" id="profile-more-content">
+          <div class="add-row" onclick="openSheet('profile')" style="margin-top:0">Edit Profile & Name</div>
+        </div>
       </div>
     </div>
 
@@ -998,16 +999,15 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
     </div>
 
-    <!-- PROFILE -->
+    <!-- CHECKLIST -->
     <div style="margin-top:8px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-profile-more')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile & Name</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-profile-more"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      <div class="sec-hdr-card" onclick="toggleSec('sec-checklist')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Finance Checklist</span><span class="sec-badge" id="check-sec-count">0/6</span></div>
+        <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
-      <div class="sec-body closed" id="sec-profile-more">
-        <div style="padding:4px 0 6px" id="profile-more-content">
-          <div class="add-row" onclick="openSheet('profile')" style="margin-top:0">Edit Profile & Name</div>
-        </div>
+      <div class="sec-body closed" id="sec-checklist">
+        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:#3B82F6;width:0%"></div></div></div>
+        <div id="checklist-items"></div>
       </div>
     </div>
 
@@ -1474,7 +1474,7 @@ function renderDashboard(){
             <div class="acat-bar-wrap"><div class="acat-bar" style="background:#3B82F6;width:${p}%"></div></div>
           </div>
           <div class="acat-val">${fmt(c.total)}</div>
-          <div class="acat-pct" style="color:${p>0?'#3B82F6':'var(--text3)'}">${p}%</div>
+          <div class="acat-pct">${p}%</div>
         </div>`;
       }).join('');
     }
