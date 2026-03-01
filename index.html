@@ -285,7 +285,7 @@ body {
 [data-theme="light"] .check-item.done .check-box { background:#3B82F6; border-color:#3B82F6 }
 .check-label { font-size:0.84rem; font-weight:600; color:var(--text1) }
 .check-desc { font-size:0.75rem; color:var(--text3); margin-top:2px }
-.check-item.done .check-label { color:var(--text3) }
+/* .check-item.done .check-label — keep full color, Done pill is enough */
 
 /* ── DARK MODE: boost key financial values & percentages to full white ── */
 :root .row-value { color:var(--text1) }
@@ -485,7 +485,7 @@ body {
 .gender-row { display:grid; grid-template-columns:1fr 1fr; gap:7px }
 .gender-opt { padding:9px; border-radius:var(--r); border:1px solid var(--border); text-align:center; cursor:pointer; font-size:0.88rem; font-weight:600; color:var(--text2); background:var(--surface2); transition:all 140ms }
 .gender-opt.sel-boy  { border-color:#60a5fa; background:rgba(96,165,250,0.12); color:#60a5fa }
-.gender-opt.sel-girl { border-color:var(--amber); background:var(--amber-bg); color:var(--amber) }
+.gender-opt.sel-girl { border-color:#60a5fa; background:rgba(96,165,250,0.12); color:#60a5fa }
 .gender-opt:active { transform:scale(0.95) }
 
 /* ── PHASE OPTS ── */
@@ -796,10 +796,10 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
   <!-- UNIFIED SUMMARY CARD -->
   <div class="container" style="padding-bottom:4px">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
-      <!-- Total Wealth -->
+      <!-- Net Wealth -->
       <div style="padding:13px 16px 11px;border-bottom:1px solid var(--border2)">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-          <div style="font-size:0.82rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Total Wealth</div>
+          <div style="font-size:0.82rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Net Wealth</div>
           <div style="font-size:0.65rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;font-weight:500;letter-spacing:0">Assets − Liabilities</div>
         </div>
         <div style="font-family:var(--mono);font-size:1.55rem;font-weight:700;letter-spacing:-0.5px;line-height:1" id="dash-networth">₹0</div>
@@ -1653,7 +1653,7 @@ function renderKids(){
     const ep=k.phases.filter(p=>p.enabled);
     // Auto-derive each phase current from linked assets
     const ks=ep.reduce((s,p)=>{const linkedIds=p.linkedAssetIds||[];return s+(linkedIds.length>0?linkedAssetTotal(linkedIds):Number(p.current||0))},0)
-      + (k.customPhases||[]).reduce((s,cp)=>s+Number(cp.current||0),0);
+      + (k.customPhases||[]).reduce((s,cp)=>{const lids=cp.linkedAssetIds||[];return s+(lids.length>0?linkedAssetTotal(lids):Number(cp.current||0))},0);
     const kt=ep.reduce((s,p)=>s+Number(p.target||0),0)
       + (k.customPhases||[]).reduce((s,cp)=>s+Number(cp.target||0),0);
     const kp=pct(ks,kt);
@@ -1679,7 +1679,7 @@ function renderKids(){
     }).join('');
     // Custom phases rows
     const customPhaseRows=(k.customPhases||[]).map(cp=>{
-      const current=Number(cp.current||0);const target=Number(cp.target||0);
+      const lids=cp.linkedAssetIds||[];const current=lids.length>0?linkedAssetTotal(lids):Number(cp.current||0);const target=Number(cp.target||0);
       const p=pct(current,target);
       const yl=yearsUntil(k.birthYear,cp.ageStart);
       return`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
@@ -1694,7 +1694,47 @@ function renderKids(){
         </div>
       </div>`;
     }).join('');
-    const phaseRows=stdPhaseRows+customPhaseRows;
+    // Interleave and sort all phase rows by ageStart
+    const allPhases = [
+      ...KID_PHASES.filter(pd=>k.phases.find(p=>p.phaseId===pd.id&&p.enabled)).map(pd=>({ageStart:pd.ageStart, html:stdPhaseRows.split('</div></div></div>')[KID_PHASES.filter(x=>k.phases.find(p=>p.phaseId===x.id&&p.enabled)).indexOf(pd)]})),
+    ];
+    // Simpler: rebuild sorted combined list
+    const stdPhasesSorted = KID_PHASES.map(pd=>{
+      const ph=k.phases.find(p=>p.phaseId===pd.id&&p.enabled);
+      if(!ph)return null;
+      const linkedIds=ph.linkedAssetIds||[];
+      const phaseCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
+      const p=pct(phaseCurrent,ph.target||0);
+      const yl=yearsUntil(k.birthYear,pd.ageStart);
+      return {ageStart:pd.ageStart, html:`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
+        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
+        <div class="phase-info">
+          <div class="phase-name">${pd.label}</div>
+          <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+        </div>
+        <div class="phase-prog">
+          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:${p>0?'#3B82F6':'var(--text3)'};margin-bottom:3px">${p}%</div>
+          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;opacity:0.75;width:${p}%"></div></div>
+        </div>
+      </div>`};
+    }).filter(Boolean);
+    const customPhasesSorted = (k.customPhases||[]).map(cp=>{
+      const lids=cp.linkedAssetIds||[];const current=lids.length>0?linkedAssetTotal(lids):Number(cp.current||0);const target=Number(cp.target||0);
+      const p=pct(current,target);
+      const yl=yearsUntil(k.birthYear,cp.ageStart);
+      return {ageStart:cp.ageStart, html:`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
+        <div class="phase-ico" style="width:30px;height:30px;border-radius:8px;background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
+        <div class="phase-info">
+          <div class="phase-name">${esc(cp.label)}</div>
+          <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+        </div>
+        <div class="phase-prog">
+          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:${p>0?'#3B82F6':'var(--text3)'};margin-bottom:3px">${p}%</div>
+          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;opacity:0.75;width:${p}%"></div></div>
+        </div>
+      </div>`};
+    });
+    const phaseRows=[...stdPhasesSorted,...customPhasesSorted].sort((a,b)=>a.ageStart-b.ageStart).map(x=>x.html).join('');
     return`<div class="child-card">
       <div class="child-hdr" onclick="this.parentElement.querySelector('.child-phases').classList.toggle('closed')">
         <div class="child-avatar" style="background:var(--surface2);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
@@ -2063,6 +2103,7 @@ function sheetChild(kid){
     </div>
     <div class="form-sec">Life Phases</div>
     <div class="phase-opts">${phasesHtml}</div>
+    ${isEdit?`<div class="form-sec" style="margin-top:10px">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&mdash; manage via gear icon</span></div><div class="phase-opts">${(kid&&kid.customPhases&&kid.customPhases.length)?kid.customPhases.map(cp=>`<div class="phase-opt on custom"><div style="font-size:0.88rem">📌</div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><div class="phase-opt-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>`).join(""):'<div style="font-size:0.62rem;color:var(--text3);padding:4px 2px">No custom phases yet.</div>'}</div>`:""}
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveChild('${kid?kid.id:''}')">${isEdit?'Update':'Add Child'}</button></div>
   </div>`}
 function togglePhaseOpt(id){const el=document.getElementById('popt-'+id);const on=el.classList.toggle('on');el.querySelector('.phase-opt-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':""}
@@ -2171,7 +2212,7 @@ function sheetEditPhase(kidId,phaseId){
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
     :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
-  return`<div class="sheet-hdr"><div class="sheet-title">${pd.icon} ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title"><span style="display:inline-flex;align-items:center;width:16px;height:16px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,"").replace("</svg>","")}</svg></span> ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
       <div style="font-size:1.4rem">${kid.gender==='girl'?'👧':'👦'}</div>
@@ -2196,22 +2237,32 @@ function sheetEditCustomPhase(kidId,cpId){
   if(!kid.customPhases)kid.customPhases=[];
   const cp=kid.customPhases.find(p=>p.id===cpId);if(!cp)return'';
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
-  const sip=cp.target>0&&yl>0?sipNeeded(cp.target,Number(cp.current||0),yl):0;
-  return`<div class="sheet-hdr"><div class="sheet-title">📌 ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  const linkedIds=cp.linkedAssetIds||[];
+  const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cp.current||0);
+  const sip=cp.target>0&&yl>0?sipNeeded(cp.target,autoCurrent,yl):0;
+  const savedField=linkedIds.length>0
+    ?`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; auto from linked assets</span></label>
+       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+         <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
+         <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
+       </div></div>`
+    :`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&#8212; or link assets below</span></label><input class="fi" id="f-cph-current" type="number" min="0" placeholder="0" value="${cp.current||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
+  const assetLinks=data.assets.length?data.assets.map(a=>{const on=linkedIds.includes(a.id);return`<div class="inv-link-item ${on?'on':''}" id="cphal-${a.id}" onclick="toggleCPHAssetLink('${kidId}','${cpId}','${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;color:var(--text3)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';
+  return`<div class="sheet-hdr"><div class="sheet-title">&#128204; ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
-      <div style="font-size:1.4rem">${kid.gender==='girl'?'👧':'👦'}</div>
-      <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
+      <div style="font-size:1.4rem">${kid.gender==='girl'?'&#128103;':'&#128102;'}</div>
+      <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">Age ${cp.ageStart}&#8211;${cp.ageEnd} &middot; ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${cp.target||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cph-current" type="number" min="0" placeholder="0" value="${cp.current||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-    </div>
+    <div class="fg"><label class="fl">Target (&#8377;)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${cp.target||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+    ${savedField}
     <div id="cph-sip-box" style="${sip>0?'':'display:none'}" class="sip-callout">
       <div class="sip-label">Monthly SIP Needed</div>
-      <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'—'}</div>
+      <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
     </div>
-    <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes…" value="${esc(cp.notes||'')}"/></div>
+    <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
+    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&#8212; saved amount auto-updates</span></div>
+    <div id="cph-asset-link-list">${assetLinks}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Save</button></div>
   </div>`
 }
@@ -2219,18 +2270,42 @@ function updateCustomPhaseSIP(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
   const t=Number(document.getElementById('f-cph-target')?.value||0);
-  const c=Number(document.getElementById('f-cph-current')?.value||0);
+  const checkedIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cphal-',''));
+  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-cph-current')?.value||0);
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
   const box=document.getElementById('cph-sip-box');
   const valEl=document.getElementById('cph-sip-val');
   if(t>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,yl));}
   else{if(box)box.style.display='none';}
 }
+function toggleCPHAssetLink(kidId,cpId,assetId){
+  const el=document.getElementById('cphal-'+assetId);if(!el)return;
+  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':"";
+  const checkedIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cphal-',''));
+  const autoTotal=linkedAssetTotal(checkedIds);
+  const manualEl=document.getElementById('f-cph-current');
+  if(manualEl){
+    const wrap=manualEl.closest('.fg');
+    if(wrap&&checkedIds.length>0){
+      wrap.innerHTML=`<label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; auto from linked assets</span></label>
+        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
+          <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
+          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
+        </div>`;
+    }
+  } else {
+    const autoValEl=document.getElementById('cph-auto-val');
+    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
+  }
+  updateCustomPhaseSIP(kidId,cpId);
+}
 function saveCustomPhase(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
   cp.target=Number(document.getElementById('f-cph-target')?.value||0);
-  cp.current=Number(document.getElementById('f-cph-current')?.value||0);
+  cp.linkedAssetIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cphal-','')).filter(Boolean);
+  if(!cp.linkedAssetIds.length) cp.current=Number(document.getElementById('f-cph-current')?.value||0);
+  else delete cp.current;
   cp.notes=document.getElementById('f-cph-notes')?.value?.trim()||'';
   save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
 }
