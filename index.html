@@ -863,15 +863,17 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
     </div>
   </div>
   <div class="container">
-    <div class="sec-hdr" onclick="toggleSec('sec-kids')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
-      <div class="sec-hdr-right">
-        <span class="sec-caret" id="caret-sec-kids"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+    <div id="kids-section-wrap" style="display:none">
+      <div class="sec-hdr" onclick="toggleSec('sec-kids')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
+        <div class="sec-hdr-right">
+          <span class="sec-caret" id="caret-sec-kids"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
       </div>
+      <div class="sec-body closed" id="sec-kids"><div id="kids-list"></div></div>
     </div>
-    <div class="sec-body closed" id="sec-kids"><div id="kids-list"></div></div>
 
-    <div style="margin-top:10px">
+    <div id="financial-goals-wrap" style="margin-top:10px">
       <div class="sec-hdr" onclick="toggleSec('sec-goals')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Financial Goals</span><span class="sec-badge" id="goals-sec-count">0</span></div>
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-goals"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
@@ -1036,7 +1038,7 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
     </div>
     <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:var(--border)">
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <div><div class="qa-action-label">Update Goal</div><div class="qa-action-sub">Emergency, Retirement…</div></div>
+      <div><div class="qa-action-label">Update Preset Goal</div><div class="qa-action-sub">Emergency, Retirement…</div></div>
     </div>
     <div class="qa-action" onclick="closeQuickAdd();openSheet('child',null)" style="border-color:var(--border)">
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
@@ -1685,6 +1687,11 @@ function renderGoals(){
 
 function renderKids(){
   const c=document.getElementById('kids-sec-count');if(c)c.textContent=data.kids.length;
+  // Show/hide Kids Education section based on whether kids exist
+  const kidsWrap=document.getElementById('kids-section-wrap');
+  const goalsWrap=document.getElementById('financial-goals-wrap');
+  if(kidsWrap) kidsWrap.style.display=data.kids.length?'':'none';
+  if(goalsWrap) goalsWrap.style.marginTop=data.kids.length?'8px':'0';
   const el=document.getElementById('kids-list');if(!el)return;
   if(!data.kids.length){el.innerHTML=`<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg><div class="empty-text" style="margin-bottom:12px">No children added yet</div><button class="btn btn-primary btn-sm" onclick="openSheet('child',null)" style="margin:0 auto">Add Child</button></div>`;return}
   el.innerHTML=data.kids.map(k=>{
@@ -2152,7 +2159,7 @@ function saveChild(editId){
   const enabledIds=KID_PHASES.filter(ph=>document.getElementById('popt-'+ph.id)?.classList.contains('on')).map(ph=>ph.id);
   if(editId){const kid=data.kids.find(k=>k.id===editId);if(!kid)return;kid.name=name;kid.birthYear=birthYear;kid.gender=gender;KID_PHASES.forEach(ph=>{let ex=kid.phases.find(p=>p.phaseId===ph.id);if(!ex){ex={phaseId:ph.id,enabled:false,target:0,current:0,linkedInvestmentIds:[],notes:''};kid.phases.push(ex)}ex.enabled=enabledIds.includes(ph.id)})}
   else{const phases=KID_PHASES.map(ph=>({phaseId:ph.id,enabled:enabledIds.includes(ph.id),target:0,current:0,linkedInvestmentIds:[],notes:''}));data.kids.push({id:uid(),name,gender,birthYear,phases})}
-  save();closeSheet();renderKids();renderDashboard();toast(editId?'Updated ✓':'Added ✓');
+  save();closeSheet();renderKids();renderGoals();renderDashboard();toast(editId?'Updated ✓':'Added ✓');
 }
 
 function sheetManagePhases(kidId){
