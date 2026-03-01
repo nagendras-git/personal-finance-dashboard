@@ -706,14 +706,21 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 .sheet-handle, .qa-handle { cursor:grab }
 
 /* ── BACKUP NUDGE BANNER ── */
-.backup-banner {
-  position:fixed; top:0; left:0; right:0; z-index:9000;
-  background:var(--amber); color:#000; font-size:0.78rem; font-weight:700;
-  padding:10px 16px; display:flex; align-items:center; justify-content:space-between;
-  transform:translateY(-100%); transition:transform 0.3s var(--ease);
+/* backup modal */
+.backup-modal-overlay {
+  position:fixed; inset:0; z-index:9000; background:var(--scrim);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition:opacity 0.22s;
 }
-.backup-banner.show { transform:translateY(0) }
-.backup-banner-close { background:none; border:none; cursor:pointer; font-size:1rem; font-weight:700; color:#000; padding:0 4px }
+.backup-modal-overlay.show { opacity:1; pointer-events:all }
+.backup-modal-box {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-xl); width:100%; max-width:300px; overflow:hidden;
+  transform:scale(0.9) translateY(8px);
+  transition:transform 0.28s var(--spring);
+}
+.backup-modal-overlay.show .backup-modal-box { transform:scale(1) translateY(0) }
 
 .acat-row {
   display:flex; align-items:center; gap:10px;
@@ -774,9 +781,18 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
 <body>
 
 <!-- BACKUP NUDGE BANNER -->
-<div class="backup-banner" id="backup-banner">
-  <span>💾 Back up your data — tap Export in More → Data Tools</span>
-  <button class="backup-banner-close" onclick="dismissBackupBanner()">✕</button>
+<div class="backup-modal-overlay" id="backup-modal">
+  <div class="backup-modal-box">
+    <div style="display:flex;align-items:center;justify-content:center;padding:24px 20px 10px">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem">💾</div>
+    </div>
+    <div style="font-size:0.9rem;font-weight:800;text-align:center;padding:0 20px 6px;color:var(--text1)">Back up your data</div>
+    <div style="font-size:0.78rem;color:var(--text2);text-align:center;padding:0 20px 20px;line-height:1.5">You have unsaved changes with no recent backup. Export a JSON file to keep your data safe.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border2)">
+      <button onclick="dismissBackupModal()" style="padding:14px;text-align:center;font-size:0.88rem;font-weight:600;color:var(--text2);cursor:pointer;background:none;border:none;border-right:1px solid var(--border2);font-family:'Inter',sans-serif">Dismiss</button>
+      <button onclick="exportData()" style="padding:14px;text-align:center;font-size:0.88rem;font-weight:700;color:#3B82F6;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif">Back up Now</button>
+    </div>
+  </div>
 </div>
 
 <!-- ══ HOME ══ -->
@@ -800,25 +816,25 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
       <div style="padding:13px 16px 11px;border-bottom:1px solid var(--border2)">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
           <div style="font-size:0.82rem;font-weight:800;color:var(--text1);letter-spacing:-0.2px">Net Wealth</div>
-          <div style="font-size:0.65rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;font-weight:500;letter-spacing:0">Assets − Liabilities</div>
+          <div id="dash-nw-pill" style="font-size:0.65rem;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:1px 7px;font-weight:500;letter-spacing:0">Assets − Liabilities</div>
         </div>
         <div style="font-family:var(--mono);font-size:1.55rem;font-weight:700;letter-spacing:-0.5px;line-height:1" id="dash-networth">₹0</div>
       </div>
       <!-- 2x2 grid: Assets / Liabilities / SIP / EMI -->
       <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:11px 16px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2)">
+        <div id="dash-cell-assets" style="padding:11px 16px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2)">
           <div class="lbl">Assets</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="dash-assets-val">₹0</div>
         </div>
-        <div style="padding:11px 16px;border-bottom:1px solid var(--border2)">
+        <div id="dash-cell-liab" style="padding:11px 16px;border-bottom:1px solid var(--border2)">
           <div class="lbl">Liabilities</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="dash-liab-val">₹0</div>
         </div>
-        <div style="padding:11px 16px;border-right:1px solid var(--border2)">
+        <div id="dash-cell-sip" style="padding:11px 16px;border-right:1px solid var(--border2)">
           <div class="lbl">SIP / mo</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--green)" id="cf-sip">₹0</div>
         </div>
-        <div style="padding:11px 16px;">
+        <div id="dash-cell-emi" style="padding:11px 16px;">
           <div class="lbl">EMI / mo</div>
           <div style="font-family:var(--mono);font-size:0.95rem;font-weight:700;color:var(--red)" id="cf-emi">₹0</div>
         </div>
@@ -1011,19 +1027,19 @@ input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 5px rgba(59,13
   </div>
   <div class="qa-grid">
     <div class="qa-action" onclick="closeQuickAdd();openSheet('asset')" style="border-color:var(--border)">
-      <div class="qa-action-icon" style="background:rgba(59,130,246,0.08);color:#3B82F6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></div>
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></div>
       <div><div class="qa-action-label">Add Asset</div><div class="qa-action-sub">EPF, MF, Gold, FD…</div></div>
     </div>
     <div class="qa-action" onclick="closeQuickAdd();openSheet('liability')" style="border-color:var(--border)">
-      <div class="qa-action-icon" style="background:rgba(59,130,246,0.08);color:#3B82F6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
       <div><div class="qa-action-label">Add Liability</div><div class="qa-action-sub">Loan, EMI, Credit card…</div></div>
     </div>
     <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:var(--border)">
-      <div class="qa-action-icon" style="background:rgba(59,130,246,0.08);color:#3B82F6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
       <div><div class="qa-action-label">Update Goal</div><div class="qa-action-sub">Emergency, Retirement…</div></div>
     </div>
     <div class="qa-action" onclick="closeQuickAdd();openSheet('child',null)" style="border-color:var(--border)">
-      <div class="qa-action-icon" style="background:rgba(59,130,246,0.08);color:#3B82F6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
+      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
       <div><div class="qa-action-label">Add Child</div><div class="qa-action-sub">Education planning…</div></div>
     </div>
   </div>
@@ -1342,11 +1358,12 @@ function renderRetirementReadiness(){
 
 /* ── BACKUP BANNER ── */
 function showBackupBanner(){
-  const b=document.getElementById('backup-banner');
+  const b=document.getElementById('backup-modal');
   if(b)b.classList.add('show');
 }
-function dismissBackupBanner(){
-  const b=document.getElementById('backup-banner');
+function dismissBackupBanner(){ dismissBackupModal(); }
+function dismissBackupModal(){
+  const b=document.getElementById('backup-modal');
   if(b)b.classList.remove('show');
   localStorage.setItem('wp_last_export',Date.now());
 }
@@ -1384,7 +1401,7 @@ function renderDashboard(){
   const netWorth=totalAssets-totalLiab;
   const pnl=totalAssets-totalInvested;const isPos=pnl>=0;
   const returnPct=totalInvested>0?((pnl/totalInvested)*100).toFixed(1):null;
-  const nwColor=netWorth<0?'var(--red)':netWorth>0?'var(--green)':'var(--text2)';
+  const nwColor=netWorth<0?'var(--red)':'var(--green)';
   const set=(id,v,clr)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(clr)el.style.color=clr}};
   set('dash-networth',fmt(netWorth),nwColor);
   set('dash-assets-val',fmt(totalAssets));
@@ -1396,6 +1413,27 @@ function renderDashboard(){
   const netFlow=monthlySIP-monthlyEMI;
   set('cf-sip',fmt(monthlySIP));
   set('cf-emi',fmt(monthlyEMI));
+  // Show/hide liabilities & EMI cells dynamically
+  const hasLiab = data.liabilities.length > 0;
+  const liabCell = document.getElementById('dash-cell-liab');
+  const emiCell  = document.getElementById('dash-cell-emi');
+  const assetsCell = document.getElementById('dash-cell-assets');
+  const sipCell  = document.getElementById('dash-cell-sip');
+  if(liabCell) liabCell.style.display = hasLiab ? '' : 'none';
+  if(emiCell)  emiCell.style.display  = hasLiab ? '' : 'none';
+  // When no liabilities, assets & SIP span full width (remove right border + bottom border on assets)
+  if(assetsCell) {
+    assetsCell.style.borderRight = hasLiab ? '1px solid var(--border2)' : 'none';
+    assetsCell.style.borderBottom = hasLiab ? '1px solid var(--border2)' : 'none';
+    assetsCell.style.gridColumn = hasLiab ? '' : '1 / -1';
+  }
+  if(sipCell) {
+    sipCell.style.borderRight = hasLiab ? '1px solid var(--border2)' : 'none';
+    sipCell.style.gridColumn  = hasLiab ? '' : '1 / -1';
+  }
+  // Also update the Net Wealth label — hide "Assets − Liabilities" pill when no liabilities
+  const nwPill = document.getElementById('dash-nw-pill');
+  if(nwPill) nwPill.style.display = hasLiab ? '' : 'none';
 
   // Asset Category Breakdown
   const catEl=document.getElementById('dash-asset-cats');
@@ -2409,7 +2447,7 @@ function importData(e){const file=e.target.files[0];if(!file)return;const r=new 
 function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;data={profile:{name:n,avatarColor:c},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
-  if(!confirm('Load sample data? This will overwrite current data.'))return;
+  showConfirm('Load Sample Data?','This will overwrite all current data with demo data.',()=>{
   const now=year();
   data.assets=[
     {id:uid(),category:'EPF',       name:'Employee PF',          currentValue:850000,  invested:700000,  sip:0},
@@ -2442,6 +2480,7 @@ function loadSampleData(){
   // checkItems migrated on load
   if(data.investments)delete data.investments;
   save();renderDashboard();renderKids();renderGoals();renderProfile();toast('Sample data loaded ✓');
+  },'Proceed',false);
 }
 
 function toggleQuickAdd(){
@@ -2457,7 +2496,7 @@ function closeQuickAdd(){
   document.getElementById('qa-sheet').classList.remove('open');
 }
 
-function showConfirm(title,sub,onConfirm){_confirmCb=onConfirm;document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-sub').textContent=sub;document.getElementById('confirm-overlay').classList.add('open');document.getElementById('confirm-ok-btn').onclick=()=>{const cb=_confirmCb;closeConfirm();if(cb)cb()}}
+function showConfirm(title,sub,onConfirm,btnLabel,btnDanger=true){_confirmCb=onConfirm;document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-sub').textContent=sub;const okBtn=document.getElementById('confirm-ok-btn');okBtn.textContent=btnLabel||'Delete';okBtn.style.color=btnDanger?'var(--red)':'#3B82F6';document.getElementById('confirm-overlay').classList.add('open');okBtn.onclick=()=>{const cb=_confirmCb;closeConfirm();if(cb)cb()}}
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null}
 document.getElementById('confirm-overlay').addEventListener('click',function(e){if(e.target===this)closeConfirm()});
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
