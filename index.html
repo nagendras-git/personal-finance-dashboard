@@ -73,6 +73,13 @@ body {
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
+body.scroll-locked {
+  overflow:hidden;
+  position:fixed;
+  width:100%;
+  touch-action:none;
+  -webkit-overflow-scrolling:auto;
+}
 ::-webkit-scrollbar { width:0; height:0 }
 
 /* ── PAGES ── */
@@ -942,14 +949,9 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 
     <!-- PROFILE -->
     <div>
-      <div class="sec-hdr-card" onclick="toggleSec('sec-profile-more')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile & Name</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-profile-more"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
-      </div>
-      <div class="sec-body closed" id="sec-profile-more">
-        <div style="padding:4px 0 6px" id="profile-more-content">
-          <div class="add-row" onclick="openSheet('profile')" style="margin-top:0">Edit Profile & Name</div>
-        </div>
+      <div class="sec-hdr-card" onclick="openSheet('profile')" style="cursor:pointer">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile</span></div>
+        <div class="sec-hdr-right"><button class="btn-circle" onclick="event.stopPropagation();openSheet('profile')" style="border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.08)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
       </div>
     </div>
 
@@ -1163,6 +1165,10 @@ let data = {
   checkItems:[]
 };
 let _confirmCb=null;
+let _scrollLockPos=0;
+let _scrollLockCount=0;
+function lockScroll(){if(_scrollLockCount===0){_scrollLockPos=window.scrollY;document.body.classList.add('scroll-locked');document.body.style.top=(-_scrollLockPos)+'px'}_scrollLockCount++}
+function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scrollLockCount===0){document.body.classList.remove('scroll-locked');document.body.style.top='';window.scrollTo(0,_scrollLockPos)}}
 
 /* ── UTILS ── */
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
@@ -1373,11 +1379,13 @@ function renderRetirementReadiness(){
 function showBackupBanner(){
   const b=document.getElementById('backup-modal');
   if(b)b.classList.add('show');
+  lockScroll();
 }
 function dismissBackupBanner(){ dismissBackupModal(); }
 function dismissBackupModal(){
   const b=document.getElementById('backup-modal');
   if(b)b.classList.remove('show');
+  unlockScroll();
   localStorage.setItem('wp_last_export',Date.now());
 }
 
@@ -1921,8 +1929,9 @@ function openSheet(type,arg,arg2){
   document.getElementById('sheet-content').innerHTML=html;
   document.getElementById('sheet-overlay').classList.add('open');
   document.getElementById('sheet').classList.add('open');
+  lockScroll();
 }
-function closeSheet(){document.getElementById('sheet-overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open')}
+function closeSheet(){document.getElementById('sheet-overlay').classList.remove('open');document.getElementById('sheet').classList.remove('open');unlockScroll()}
 function closeSheetOnBg(e){if(e.target===document.getElementById('sheet-overlay'))closeSheet()}
 
 function onAssetCatChange(){}  // kept for safety, no redirect needed anymore
@@ -2519,14 +2528,17 @@ function toggleQuickAdd(){
 function openQuickAdd(){
   document.getElementById('qa-overlay').classList.add('open');
   document.getElementById('qa-sheet').classList.add('open');
+  lockScroll();
 }
 function closeQuickAdd(){
+  const wasOpen=document.getElementById('qa-sheet').classList.contains('open');
   document.getElementById('qa-overlay').classList.remove('open');
   document.getElementById('qa-sheet').classList.remove('open');
+  if(wasOpen)unlockScroll();
 }
 
-function showConfirm(title,sub,onConfirm,btnLabel,btnDanger=true){_confirmCb=onConfirm;document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-sub').textContent=sub;const okBtn=document.getElementById('confirm-ok-btn');okBtn.textContent=btnLabel||'Delete';okBtn.style.color=btnDanger?'var(--red)':'#3B82F6';document.getElementById('confirm-overlay').classList.add('open');okBtn.onclick=()=>{const cb=_confirmCb;closeConfirm();if(cb)cb()}}
-function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null}
+function showConfirm(title,sub,onConfirm,btnLabel,btnDanger=true){_confirmCb=onConfirm;document.getElementById('confirm-title').textContent=title;document.getElementById('confirm-sub').textContent=sub;const okBtn=document.getElementById('confirm-ok-btn');okBtn.textContent=btnLabel||'Delete';okBtn.style.color=btnDanger?'var(--red)':'#3B82F6';document.getElementById('confirm-overlay').classList.add('open');lockScroll();okBtn.onclick=()=>{const cb=_confirmCb;closeConfirm();if(cb)cb()}}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');unlockScroll();_confirmCb=null}
 document.getElementById('confirm-overlay').addEventListener('click',function(e){if(e.target===this)closeConfirm()});
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
 
