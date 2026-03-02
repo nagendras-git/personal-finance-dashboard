@@ -726,9 +726,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 .acat-bar-wrap { height:5px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .acat-bar { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .acat-val { font-size:0.84rem; font-weight:700; color:var(--text1); flex-shrink:0; text-align:right; min-width:52px }
-.acat-pct { font-size:0.82rem; color:var(--text2); font-weight:700; flex-shrink:0; min-width:36px; text-align:right }
-[data-theme="light"] .acat-val { color:var(--text1); font-weight:700 }
-[data-theme="light"] .acat-pct { color:#3B82F6; font-weight:800 }
+.acat-pct { font-size:0.82rem; color:#3B82F6; font-weight:700; flex-shrink:0; min-width:36px; text-align:right }
 /* ── CUSTOM DATE PICKER ── */
 .cal-wrap { position:relative }
 .cal-display {
@@ -1854,7 +1852,7 @@ function renderChecklist(){
   const done=items.filter(x=>x.done).length;
   const total=items.length;
   const p=total>0?Math.round((done/total)*100):0;
-  const cl=document.getElementById('checklist-pct-text');if(cl)cl.textContent=p+'%';
+  const cl=document.getElementById('checklist-pct-text');if(cl){cl.textContent=p+'%';cl.style.color='#3B82F6';}
   const cnt=document.getElementById('check-sec-count');if(cnt)cnt.textContent=done+'/'+total;
   const bar=document.getElementById('checklist-bar');if(bar)bar.style.width=p+'%';
   const el=document.getElementById('checklist-items');if(!el)return;
