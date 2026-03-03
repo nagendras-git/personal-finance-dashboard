@@ -328,7 +328,7 @@ body.scroll-locked {
 
 /* ── LIGHT MODE: all financial values dark & bold ── */
 [data-theme="light"] .acat-val { color:var(--text1); font-weight:700 }
-[data-theme="light"] .acat-pct { color:var(--text1); font-weight:700 }
+[data-theme="light"] .acat-pct { color:#3B82F6; font-weight:700 }
 [data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
 [data-theme="light"] .mini-pct { color:var(--text1); font-weight:700 }
 [data-theme="light"] .sec-total { color:var(--text1); font-weight:700 }
@@ -456,6 +456,7 @@ body.scroll-locked {
   position:fixed; bottom:0; left:0; right:0; z-index:501;
   max-width:480px; margin:0 auto;
   background:var(--surface); border-radius:20px 20px 0 0;
+  border:1px solid var(--border); border-bottom:none;
   max-height:min(88dvh,90vh);
   overflow-y:auto; overflow-x:hidden;
   overscroll-behavior:contain;
@@ -473,7 +474,7 @@ body.scroll-locked {
   padding:14px 16px 12px; display:flex; align-items:center; justify-content:space-between;
   background:var(--surface); border-bottom:1px solid var(--border2);
 }
-.sheet-title { font-size:0.9rem; font-weight:800; color:var(--text1) }
+.sheet-title { font-size:0.9rem; font-weight:800; color:var(--text1); display:flex; align-items:center; }
 .sheet-close {
   width:28px; height:28px; border-radius:50%; background:var(--surface2);
   border:1px solid var(--border); cursor:pointer; display:flex;
@@ -577,6 +578,7 @@ body.scroll-locked {
   position:fixed; bottom:0; left:0; right:0; z-index:401;
   max-width:480px; margin:0 auto;
   background:var(--surface); border-radius:24px 24px 0 0;
+  border:1px solid var(--border); border-bottom:none;
   padding-bottom:calc(20px + var(--safe-b));
   transform:translateY(110%); transition:transform 0.32s var(--ease);
   visibility:hidden;
@@ -2512,7 +2514,7 @@ function savePhase(kidId,phaseId){
 function sheetProfile(){
   const colors=['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#f97316'];
   const dots=colors.map(c=>`<div class="color-dot ${data.profile.avatarColor===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">👤 Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0;margin-right:6px"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Ravi" value="${data.profile.name||''}"/></div>
     <div class="form-sec">Avatar Color</div>
