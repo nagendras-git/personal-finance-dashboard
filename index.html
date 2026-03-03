@@ -47,6 +47,20 @@
   --ease: cubic-bezier(0.16,1,0.3,1);
   --spring: cubic-bezier(0.34,1.56,0.64,1);
 }
+[data-theme="soft-dark"] {
+  --bg:       #1a1a1f;
+  --surface:  #222228;
+  --surface2: #2a2a32;
+  --surface3: #313139;
+  --border:   #3a3a46;
+  --border2:  #2f2f3a;
+  --scrim:    rgba(0,0,0,0.65);
+  --text1: #ececf1;
+  --text2: #b8b8c8;
+  --text3: #888898;
+}
+[data-theme="soft-dark"] .top-header { background: rgba(26,26,31,0.96) }
+[data-theme="soft-dark"] .tab-bar { background: rgba(26,26,31,0.97) }
 [data-theme="light"] {
   --bg:       #f2f2f7;
   --surface:  #ffffff;
@@ -529,6 +543,12 @@ body.scroll-locked {
 .inv-link-item.on { border-color:rgba(59,130,246,0.35); background:rgba(59,130,246,0.06) }
 .inv-link-check { width:15px; height:15px; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.52rem; color:#fff; flex-shrink:0; transition:all 150ms var(--spring) }
 .inv-link-item.on .inv-link-check { background:#3B82F6; border-color:#3B82F6 }
+/* ── LIGHT MODE: radio button visibility fixes ── */
+[data-theme="light"] .inv-link-check { border-color:#9898b8; background:#ffffff }
+[data-theme="light"] .inv-link-item:hover .inv-link-check { border-color:#3B82F6; background:rgba(59,130,246,0.05) }
+[data-theme="light"] .inv-link-item.on .inv-link-check { background:#3B82F6; border-color:#3B82F6 }
+[data-theme="light"] .inv-link-item { border-color:#d0d0e0 }
+[data-theme="light"] .inv-link-item.on { border-color:rgba(59,130,246,0.4); background:rgba(59,130,246,0.05) }
 
 /* ── ADD ROW ── */
 .add-row {
@@ -648,6 +668,31 @@ body.scroll-locked {
 .toggle-track.on { background:#3B82F6; border-color:#3B82F6 }
 .toggle-thumb { position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.25); transition:all 200ms var(--spring) }
 .toggle-track.on .toggle-thumb { left:22px; background:#fff }
+/* ── THEME PICKER ── */
+.theme-picker { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:14px; }
+.theme-opt {
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:12px 8px 10px; border-radius:var(--r-lg);
+  border:2px solid var(--border); background:var(--surface2);
+  cursor:pointer; transition:all 150ms var(--spring); user-select:none;
+}
+.theme-opt:active { transform:scale(0.94) }
+.theme-opt.active { border-color:#3B82F6; background:rgba(59,130,246,0.08) }
+.theme-opt-preview {
+  width:44px; height:30px; border-radius:8px; overflow:hidden;
+  border:1px solid rgba(255,255,255,0.1); flex-shrink:0; position:relative;
+}
+.theme-opt-label {
+  font-size:0.72rem; font-weight:700; color:var(--text2); letter-spacing:0;
+  text-align:center; line-height:1;
+}
+.theme-opt.active .theme-opt-label { color:#3B82F6 }
+.theme-opt-check {
+  width:16px; height:16px; border-radius:50%; background:#3B82F6;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity 150ms; flex-shrink:0;
+}
+.theme-opt.active .theme-opt-check { opacity:1 }
 
 /* Range slider — custom track + white thumb */
 .range-wrap{position:relative;width:100%;height:22px;display:flex;align-items:center}
@@ -961,12 +1006,54 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
       <div class="sec-body closed" id="sec-appearance">
         <div class="row-list-wrap">
-          <div class="theme-toggle-row">
-            <div>
-              <div style="font-size:0.86rem;font-weight:600;color:var(--text1)">Dark Mode</div>
-              <div style="font-size:0.7rem;color:var(--text3);margin-top:1px">Override system appearance</div>
+          <!-- THEME PICKER -->
+          <div style="padding:12px 14px 4px;border-bottom:1px solid var(--border2)">
+            <div style="font-size:0.86rem;font-weight:600;color:var(--text1);margin-bottom:1px">Theme</div>
+            <div style="font-size:0.7rem;color:var(--text3)">Choose your background style</div>
+          </div>
+          <div class="theme-picker">
+            <!-- Black -->
+            <div class="theme-opt" id="topt-dark" onclick="setTheme('dark')">
+              <div class="theme-opt-preview">
+                <svg width="44" height="30" viewBox="0 0 44 30" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="44" height="30" fill="#0d0d10"/>
+                  <rect x="4" y="4" width="36" height="8" rx="2" fill="#141417"/>
+                  <rect x="4" y="15" width="16" height="5" rx="1.5" fill="#1e1e25"/>
+                  <rect x="24" y="15" width="16" height="5" rx="1.5" fill="#1e1e25"/>
+                  <rect x="4" y="22" width="36" height="4" rx="1.5" fill="#141417"/>
+                </svg>
+              </div>
+              <div class="theme-opt-label">Black</div>
+              <div class="theme-opt-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
             </div>
-            <div class="toggle-track" id="theme-toggle" onclick="toggleDark()"><div class="toggle-thumb"></div></div>
+            <!-- Soft Dark -->
+            <div class="theme-opt" id="topt-soft-dark" onclick="setTheme('soft-dark')">
+              <div class="theme-opt-preview">
+                <svg width="44" height="30" viewBox="0 0 44 30" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="44" height="30" fill="#1a1a1f"/>
+                  <rect x="4" y="4" width="36" height="8" rx="2" fill="#222228"/>
+                  <rect x="4" y="15" width="16" height="5" rx="1.5" fill="#2a2a32"/>
+                  <rect x="24" y="15" width="16" height="5" rx="1.5" fill="#2a2a32"/>
+                  <rect x="4" y="22" width="36" height="4" rx="1.5" fill="#222228"/>
+                </svg>
+              </div>
+              <div class="theme-opt-label">Soft Dark</div>
+              <div class="theme-opt-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
+            <!-- Light -->
+            <div class="theme-opt" id="topt-light" onclick="setTheme('light')">
+              <div class="theme-opt-preview">
+                <svg width="44" height="30" viewBox="0 0 44 30" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="44" height="30" fill="#f2f2f7"/>
+                  <rect x="4" y="4" width="36" height="8" rx="2" fill="#ffffff" stroke="#e0e0e8" stroke-width="0.8"/>
+                  <rect x="4" y="15" width="16" height="5" rx="1.5" fill="#ffffff" stroke="#e0e0e8" stroke-width="0.8"/>
+                  <rect x="24" y="15" width="16" height="5" rx="1.5" fill="#ffffff" stroke="#e0e0e8" stroke-width="0.8"/>
+                  <rect x="4" y="22" width="36" height="4" rx="1.5" fill="#ffffff" stroke="#e0e0e8" stroke-width="0.8"/>
+                </svg>
+              </div>
+              <div class="theme-opt-label">Light</div>
+              <div class="theme-opt-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            </div>
           </div>
           <!-- TEXT SIZE CONTROL -->
           <div style="padding:12px 14px">
@@ -2442,11 +2529,19 @@ function toggleSec(id){
   const caret=document.getElementById('caret-'+id);if(caret)caret.classList.toggle('open',!open);
 }
 
+function setTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('wp_theme', theme);
+  // Update picker active state
+  ['dark','soft-dark','light'].forEach(t=>{
+    const el=document.getElementById('topt-'+t);
+    if(el) el.classList.toggle('active', t===theme);
+  });
+}
 function toggleDark(){
-  const isLight=document.documentElement.getAttribute('data-theme')==='light';
-  document.documentElement.setAttribute('data-theme',isLight?'dark':'light');
-  localStorage.setItem('wp_theme',isLight?'dark':'light');
-  const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',isLight);
+  // legacy — kept for safety, delegates to setTheme
+  const cur=document.documentElement.getAttribute('data-theme')||'dark';
+  setTheme(cur==='light'?'dark':'light');
 }
 
 const FS_SIZES  = {13:'XS', 14:'S', 16:'M', 18:'L', 20:'XL'};
@@ -2546,8 +2641,7 @@ const colorDotStyle=document.createElement('style');colorDotStyle.textContent='.
 function init(){
   load();
   const theme=localStorage.getItem('wp_theme')||'dark';
-  document.documentElement.setAttribute('data-theme',theme);
-  const tog=document.getElementById('theme-toggle');if(tog)tog.classList.toggle('on',theme==='dark');
+  setTheme(theme);
   initFontSize();
   if(!localStorage.getItem(STORAGE_KEY)){
     data.assets=[
