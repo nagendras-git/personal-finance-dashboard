@@ -874,15 +874,66 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
     </div>
   </div>
-  <!-- ASSET CATEGORY BREAKDOWN -->
-  <div class="container" style="padding-top:8px;padding-bottom:4px" id="dash-asset-breakdown-wrap">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden">
-      <div style="padding:13px 16px 11px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
-        <div style="font-size:0.9rem;font-weight:600;color:var(--text1);letter-spacing:-0.2px">Portfolio Breakdown</div>
-        <div style="font-size:0.72rem;font-weight:600;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:2px 9px" id="dash-cat-count">—</div>
+  <!-- INCOME SNAPSHOT (collapsible) -->
+  <div class="container" style="padding-top:8px;padding-bottom:0;display:none" id="dash-income-wrap">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-income')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><span style="font-size:0.82rem;opacity:0.5;flex-shrink:0">₹</span> Income Snapshot</span><span class="sec-badge" id="dash-income-badge">₹0/mo</span></div>
+        <div class="sec-hdr-right">
+          <span class="sec-caret" id="caret-sec-income"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
       </div>
-      <div id="dash-asset-cats" style="padding:4px 14px 8px"></div>
-    </div>
+      <div class="sec-body closed" id="sec-income">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:8px">
+          <div style="padding:12px 16px 14px">
+            <!-- Savings Rate Bar -->
+            <div style="margin-bottom:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                <div style="font-size:0.78rem;font-weight:600;color:var(--text1)">Savings Rate</div>
+                <div style="font-size:0.84rem;font-weight:800;color:var(--green)" id="dash-savings-pct">0%</div>
+              </div>
+              <div style="height:6px;background:var(--surface3);border-radius:99px;overflow:hidden">
+                <div id="dash-savings-bar" style="height:100%;border-radius:99px;background:var(--green);width:0%;transition:width 0.5s cubic-bezier(0.16,1,0.3,1)"></div>
+              </div>
+              <div style="font-size:0.68rem;color:var(--text3);margin-top:4px" id="dash-savings-sub">SIP ₹0 of ₹0 income</div>
+            </div>
+            <!-- Breakdown row -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
+                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Invested (SIP)</div>
+                <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--green)" id="dash-inv-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-inv-amt"></div></div>
+              </div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
+                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">EMI</div>
+                <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--red)" id="dash-emi-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-emi-amt"></div></div>
+              </div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
+                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Expenses</div>
+                <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--text2)" id="dash-exp-pct">—</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-exp-amt"></div></div>
+              </div>
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
+                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Free Cash</div>
+                <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--text1)" id="dash-free-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-free-amt"></div></div>
+              </div>
+            </div>
+            <!-- Nudge -->
+            <div id="dash-income-nudge" style="display:none;margin-top:10px;padding:8px 12px;border-radius:var(--r);font-size:0.72rem;font-weight:600;line-height:1.4"></div>
+          </div>
+        </div>
+      </div>
+  </div>
+  <!-- PORTFOLIO BREAKDOWN (collapsible) -->
+  <div class="container" style="padding-top:8px;padding-bottom:4px" id="dash-asset-breakdown-wrap">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-portfolio')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 100 4h4v-4h-4z"/></svg> Portfolio Breakdown</span><span class="sec-badge" id="dash-cat-count">—</span></div>
+        <div class="sec-hdr-right">
+          <span class="sec-caret" id="caret-sec-portfolio"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+      <div class="sec-body closed" id="sec-portfolio">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:8px">
+          <div id="dash-asset-cats" style="padding:4px 14px 8px"></div>
+        </div>
+      </div>
   </div>
 
   <div style="text-align:center;padding:14px 0 4px;color:var(--text3);font-size:0.62rem;font-weight:600;letter-spacing:0">Data stored on your device only 🔒</div>
@@ -1259,7 +1310,8 @@ function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scro
 
 /* ── UTILS ── */
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
-function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=(v/10000000).toFixed(2)+'Cr';else if(v>=100000)s=(v/100000).toFixed(2)+'L';else if(v>=1000)s=(v/1000).toFixed(1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
+function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m)/m).toFixed(d)}
+function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
 function pct(cur,tar){if(!tar||tar<=0)return 0;return Math.min(100,Math.round((cur/tar)*100))}
 function year(){return new Date().getFullYear()}
 function age(bYear){return year()-bYear}
@@ -1572,6 +1624,87 @@ function renderDashboard(){
           <div class="acat-pct">${p}%</div>
         </div>`;
       }).join('');
+    }
+  }
+
+  // Income Snapshot
+  const income = Number(data.profile.monthlyIncome||0);
+  const expenses = Number(data.profile.monthlyExpenses||0);
+  const incomeWrap = document.getElementById('dash-income-wrap');
+  if(incomeWrap){
+    if(income>0){
+      incomeWrap.style.display='';
+      const sipPct = Math.round((monthlySIP/income)*100);
+      const emiPct = Math.round((monthlyEMI/income)*100);
+      const expPct = expenses>0 ? Math.round((expenses/income)*100) : 0;
+      const freeCash = income - monthlySIP - monthlyEMI - expenses;
+      const freePct = Math.max(0, Math.round((freeCash/income)*100));
+      const savingsRate = sipPct;
+
+      const incomeBadge = document.getElementById('dash-income-badge');
+      if(incomeBadge) incomeBadge.textContent = savingsRate+'% invested';
+      set('dash-savings-pct', savingsRate+'%');
+      set('dash-savings-sub', 'SIP '+fmt(monthlySIP)+' of '+fmt(income)+' income');
+      set('dash-inv-pct', sipPct+'%');
+      set('dash-inv-amt', fmt(monthlySIP));
+      set('dash-emi-pct', monthlyEMI>0?emiPct+'%':'—');
+      set('dash-emi-amt', monthlyEMI>0?fmt(monthlyEMI):'');
+      set('dash-exp-pct', expenses>0?expPct+'%':'—');
+      set('dash-exp-amt', expenses>0?fmt(expenses):'');
+      set('dash-free-pct', freePct+'%');
+      set('dash-free-amt', fmt(freeCash));
+
+      const bar = document.getElementById('dash-savings-bar');
+      if(bar) bar.style.width = Math.min(100,savingsRate)+'%';
+
+      // Color the free cash based on health
+      const freeEl = document.getElementById('dash-free-pct');
+      if(freeEl) freeEl.style.color = freeCash<0?'var(--red)':freePct<10?'var(--amber)':'var(--text1)';
+      const freeAmtEl = document.getElementById('dash-free-amt');
+      if(freeAmtEl) freeAmtEl.style.color = freeCash<0?'var(--red)':'var(--text3)';
+
+      // Savings bar color
+      if(bar) bar.style.background = savingsRate>=20?'var(--green)':savingsRate>=10?'var(--amber)':'var(--red)';
+
+      // Nudge message
+      const nudge = document.getElementById('dash-income-nudge');
+      if(nudge){
+        if(freeCash<0){
+          nudge.style.display='';
+          nudge.style.background='var(--red-bg)';
+          nudge.style.color='var(--red)';
+          nudge.style.border='1px solid rgba(248,113,113,0.2)';
+          nudge.textContent='⚠️ Outflows exceed income by '+fmt(Math.abs(freeCash))+'/mo. Review your expenses or EMIs.';
+        } else if(savingsRate>=30){
+          nudge.style.display='';
+          nudge.style.background='var(--green-bg)';
+          nudge.style.color='var(--green)';
+          nudge.style.border='1px solid rgba(34,197,94,0.2)';
+          nudge.textContent='🚀 Excellent! You invest '+savingsRate+'% of your income — well above the 20% benchmark.';
+        } else if(savingsRate>=20){
+          nudge.style.display='';
+          nudge.style.background='var(--green-bg)';
+          nudge.style.color='var(--green)';
+          nudge.style.border='1px solid rgba(34,197,94,0.2)';
+          nudge.textContent='✅ Healthy savings rate at '+savingsRate+'%. You\'re on track!';
+        } else if(savingsRate>=10){
+          nudge.style.display='';
+          nudge.style.background='var(--amber-bg)';
+          nudge.style.color='var(--amber)';
+          nudge.style.border='1px solid rgba(251,191,36,0.2)';
+          nudge.textContent='💡 Investing '+savingsRate+'% — try to reach the 20% benchmark for faster growth.';
+        } else if(monthlySIP>0){
+          nudge.style.display='';
+          nudge.style.background='var(--red-bg)';
+          nudge.style.color='var(--red)';
+          nudge.style.border='1px solid rgba(248,113,113,0.2)';
+          nudge.textContent='⚠️ Only '+savingsRate+'% invested. Even small SIP increases compound significantly over time.';
+        } else {
+          nudge.style.display='none';
+        }
+      }
+    } else {
+      incomeWrap.style.display='none';
     }
   }
 }
@@ -2517,12 +2650,15 @@ function sheetProfile(){
   return`<div class="sheet-hdr"><div class="sheet-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0;margin-right:6px"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Ravi" value="${data.profile.name||''}"/></div>
+    <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value="${data.profile.monthlyIncome||''}"/></div>
+    <div class="fg"><label class="fl">Monthly Expenses (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pexpenses" type="number" placeholder="e.g. 30000 (rent, bills, groceries)" value="${data.profile.monthlyExpenses||''}"/></div>
+    <div style="font-size:0.68rem;color:var(--text3);margin:-2px 0 10px;line-height:1.4">Income & expenses power the dashboard snapshot. Leave blank to skip.</div>
     <div class="form-sec">Avatar Color</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 14px">${dots}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Save</button></div>
   </div>`}
 function selectColor(c){data.profile.avatarColor=c;document.querySelectorAll('.color-dot').forEach(d=>{d.classList.toggle('selected',d.style.background===c)})}
-function saveProfile(){data.profile.name=document.getElementById('f-pname').value.trim();save();closeSheet();renderProfile();toast('Saved ✓')}
+function saveProfile(){data.profile.name=document.getElementById('f-pname').value.trim();data.profile.monthlyIncome=Number(document.getElementById('f-pincome').value||0);data.profile.monthlyExpenses=Number(document.getElementById('f-pexpenses').value||0);save();closeSheet();renderProfile();renderDashboard();toast('Saved ✓')}
 
 /* ── TOGGLES & UI ── */
 function toggleSec(id){
@@ -2577,7 +2713,7 @@ function exportData(){
   toast('Exported ✓');
 }
 function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
-function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;data={profile:{name:n,avatarColor:c},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
+function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
   showConfirm('Load Sample Data?','This will overwrite all current data with demo data.',()=>{
