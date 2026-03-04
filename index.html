@@ -10,6 +10,44 @@
 <meta name="apple-mobile-web-app-title" content="Goal Tracker">
 <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f7f7fa" media="(prefers-color-scheme: light)">
+<script>
+// ── PWA: Fully inline for single-file deployment ──
+(function(){
+  // 1. Get icon from existing apple-touch-icon (already base64 in HTML)
+  const iconHref=document.querySelector('link[rel=apple-touch-icon]')?.href||'';
+
+  // 2. Inline Web App Manifest (Android standalone mode)
+  const manifest=JSON.stringify({
+    name:"Goal Tracker",
+    short_name:"Goal Tracker",
+    start_url:"./",
+    display:"standalone",
+    background_color:"#0d0d10",
+    theme_color:"#0d0d10",
+    orientation:"portrait",
+    icons:[
+      {src:iconHref,sizes:"180x180",type:"image/png"},
+      {src:iconHref,sizes:"512x512",type:"image/png",purpose:"any maskable"}
+    ]
+  });
+  const mBlob=new Blob([manifest],{type:'application/json'});
+  const mLink=document.createElement('link');
+  mLink.rel='manifest';
+  mLink.href=URL.createObjectURL(mBlob);
+  document.head.appendChild(mLink);
+
+  // 3. Inline Service Worker (no separate sw.js file needed)
+  if('serviceWorker' in navigator){
+    const swCode=`
+      self.addEventListener('install',()=>self.skipWaiting());
+      self.addEventListener('activate',e=>e.waitUntil(clients.claim()));
+      self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>caches.match(e.request))));
+    `;
+    const swBlob=new Blob([swCode],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob),{scope:'/'}).catch(()=>{});
+  }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
