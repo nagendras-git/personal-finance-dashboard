@@ -474,7 +474,7 @@ body.scroll-locked {
   padding:14px 16px 12px; display:flex; align-items:center; justify-content:space-between;
   background:var(--surface); border-bottom:1px solid var(--border2);
 }
-.sheet-title { font-size:0.9rem; font-weight:800; color:var(--text1); display:flex; align-items:center; }
+.sheet-title { font-size:0.9rem; font-weight:800; color:var(--text1); display:flex; align-items:center; gap:8px; }
 .sheet-close {
   width:28px; height:28px; border-radius:50%; background:var(--surface2);
   border:1px solid var(--border); cursor:pointer; display:flex;
@@ -518,9 +518,9 @@ body.scroll-locked {
 
 /* ── PHASE OPTS ── */
 .phase-opts { display:flex; flex-direction:column; gap:5px }
-.phase-opt { display:flex; align-items:center; gap:9px; padding:9px 12px; border-radius:var(--r); border:1px solid var(--border); background:var(--surface2); cursor:pointer; transition:all 140ms }
+.phase-opt { display:flex; align-items:center; gap:12px; padding:9px 12px; border-radius:var(--r); border:1px solid var(--border); background:var(--surface2); cursor:pointer; transition:all 140ms }
 .phase-opt.on { border-color:rgba(255,255,255,0.25); background:var(--surface3) }
-.phase-opt-check { width:17px; height:17px; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#fff; flex-shrink:0; transition:all 150ms var(--spring) }
+.phase-opt-check { width:18px; height:18px; border-radius:5px; border:1.5px solid var(--text3); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.55rem; color:#fff; flex-shrink:0; transition:all 150ms var(--spring) }
 .phase-opt.on .phase-opt-check { background:#3B82F6; border-color:#3B82F6 }
 .phase-opt.on { border-color:rgba(59,130,246,0.3); background:rgba(59,130,246,0.06) }
 .phase-opt.custom { border-style:dashed }
@@ -542,10 +542,10 @@ body.scroll-locked {
 /* ── INV LINK ── */
 .inv-link-item { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:var(--r); border:1px solid var(--border); background:var(--surface2); cursor:pointer; margin-bottom:5px; transition:all 140ms }
 .inv-link-item.on { border-color:rgba(59,130,246,0.35); background:rgba(59,130,246,0.06) }
-.inv-link-check { width:15px; height:15px; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.52rem; color:#fff; flex-shrink:0; transition:all 150ms var(--spring) }
+.inv-link-check { width:18px; height:18px; border-radius:5px; border:1.5px solid var(--text3); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:0.52rem; color:#fff; flex-shrink:0; transition:all 150ms var(--spring) }
 .inv-link-item.on .inv-link-check { background:#3B82F6; border-color:#3B82F6 }
 /* ── LIGHT MODE: radio button visibility fixes ── */
-[data-theme="light"] .inv-link-check { border-color:#9898b8; background:#ffffff }
+[data-theme="light"] .inv-link-check { border-color:var(--text3); background:#ffffff }
 [data-theme="light"] .inv-link-item:hover .inv-link-check { border-color:#3B82F6; background:rgba(59,130,246,0.05) }
 [data-theme="light"] .inv-link-item.on .inv-link-check { background:#3B82F6; border-color:#3B82F6 }
 [data-theme="light"] .inv-link-item { border-color:#b8b8cc }
@@ -2647,7 +2647,7 @@ function savePhase(kidId,phaseId){
 function sheetProfile(){
   const colors=['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#f97316'];
   const dots=colors.map(c=>`<div class="color-dot ${data.profile.avatarColor===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0;margin-right:6px"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  return`<div class="sheet-hdr"><div class="sheet-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Ravi" value="${data.profile.name||''}"/></div>
     <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value="${data.profile.monthlyIncome||''}"/></div>
