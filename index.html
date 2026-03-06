@@ -239,7 +239,7 @@ body.scroll-locked {
   display:flex; align-items:center; gap:12px;
   padding:12px 14px; background:transparent;
   border-bottom:1px solid var(--border2);
-  cursor:default; transition:background 120ms;
+  cursor:pointer; transition:background 120ms;
 }
 .row-item:last-child { border-bottom:none }
 .row-item.tap { cursor:pointer }
@@ -1099,7 +1099,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 
     <!-- PROFILE -->
     <div>
-      <div class="sec-hdr-card" onclick="openSheet('profile')" style="cursor:pointer">
+      <div class="sec-hdr-card" onclick="openSheet('profile')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile</span></div>
         <div class="sec-hdr-right"><button class="btn-circle" onclick="event.stopPropagation();openSheet('profile')" style="border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.08)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
       </div>
@@ -1826,7 +1826,7 @@ function renderAssets(){
   if(!data.assets.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg><div class="empty-text">No assets yet</div></div>';return}
   el.innerHTML='<div class="row-list-wrap">'+data.assets.map(a=>{
     const info=getAsset(a.category);
-    return`<div class="row-item">
+    return`<div class="row-item" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))">
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
@@ -1834,15 +1834,12 @@ function renderAssets(){
       </div>
       <div class="row-right">
         <div class="row-value">${fmt(a.currentValue)}</div>
-        <div class="row-actions">
-          <button class="btn-circle" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="btn-del" onclick="delAsset('${a.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-        </div>
       </div>
+      <div class="goal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>`;
   }).join('')+'</div>';
 }
-function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`"${a?.name||'This asset'}" will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();renderAssets();renderDashboard();toast('Deleted')})}
+function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`"${a?.name||'This asset'}" will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();closeSheet();renderAssets();renderDashboard();toast('Deleted')})}
 
 function renderLiabilities(){
   const total=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
@@ -1857,7 +1854,7 @@ function renderLiabilities(){
     const info=getLiab(l.category);
     const payoffMonths=l.emi>0?Math.ceil(Number(l.outstanding)/Number(l.emi)):null;
     const payoffBadge=payoffMonths?`<div class="payoff-badge">⏱ ~${payoffMonths>12?(payoffMonths/12).toFixed(1)+'y':payoffMonths+'mo'} to clear</div>`:'';
-    return`<div class="row-item">
+    return`<div class="row-item" onclick="openSheet('liability',data.liabilities.find(x=>x.id==='${l.id}'))">
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${l.name}</div>
@@ -1866,15 +1863,12 @@ function renderLiabilities(){
       </div>
       <div class="row-right">
         <div class="row-value" style="color:var(--red)">${fmt(l.outstanding)}</div>
-        <div class="row-actions">
-          <button class="btn-circle" onclick="openSheet('liability',data.liabilities.find(x=>x.id==='${l.id}'))"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="btn-del" onclick="delLiab('${l.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-        </div>
       </div>
+      <div class="goal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>`;
   }).join('')+'</div>';
 }
-function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('Delete Liability?',`"${l?.name||'This'}" will be removed.`,()=>{data.liabilities=data.liabilities.filter(l=>l.id!==id);save();renderLiabilities();renderDashboard();toast('Deleted')})}
+function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('Delete Liability?',`"${l?.name||'This'}" will be removed.`,()=>{data.liabilities=data.liabilities.filter(l=>l.id!==id);save();closeSheet();renderLiabilities();renderDashboard();toast('Deleted')})}
 
 function renderGoals(){
   const c=document.getElementById('goals-sec-count');if(c)c.textContent=GOAL_PRESETS.length;
@@ -2261,9 +2255,9 @@ function sheetAsset(a){
       <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
     </div>
     <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">Save</button></div>
+    <div class="form-actions">${a.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delAsset(\''+a.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">${a.id?'Update':'Add'}</button></div>
   </div>`}
-function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast('Saved ✓')}
+function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -2278,9 +2272,9 @@ function sheetLiability(l){
       <div class="fg"><label class="fl">Monthly EMI (₹)</label><input class="fi" id="f-emi" type="number" placeholder="0" value="${l.emi||''}"/></div>
       <div class="fg"><label class="fl">Loan End Date</label>${calPickerHTML('lend', l.endDate||'')}</div>
     </div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveLiab('${l.id||''}')">Save</button></div>
+    <div class="form-actions">${l.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delLiab(\''+l.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveLiab('${l.id||''}')">${l.id?'Update':'Add'}</button></div>
   </div>`}
-function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||''};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast('Saved ✓')}
+function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||''};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetGoal(pid){
   const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
@@ -2315,7 +2309,7 @@ function sheetGoal(pid){
     </div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
     <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save Goal</button></div>
+    <div class="form-actions">${g.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delGoal(\''+pr.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveGoal()">${g.id?'Update':'Save'}</button></div>
   </div>`}
 
 function toggleGoalAssetLink(assetId){
@@ -2358,6 +2352,14 @@ function updateGoalSIP(){
   if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
   else{if(box)box.style.display='none';}
 }
+function delGoal(typeId){
+  const g=data.goals.find(x=>x.type===typeId);
+  const pr=GOAL_PRESETS.find(p=>p.id===typeId);
+  showConfirm('Remove Goal?',`"${pr?.name||'This goal'}" will be removed.`,()=>{
+    data.goals=data.goals.filter(x=>x.type!==typeId);
+    save();closeSheet();renderGoals();renderDashboard();toast('Removed');
+  });
+}
 function saveGoal(){
   const type=document.getElementById('f-gtype')?.value;
   const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
@@ -2392,7 +2394,7 @@ function sheetInsurance(id){
     <div class="fg"><label class="fl">Notes</label><input class="fi" id="f-ins-notes" placeholder="Policy number, riders, sub-limits…" value="${ins.notes||''}"/></div>
     <div class="form-actions">
       ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="deleteInsurance(\''+ins.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
-      <button class="btn btn-primary" onclick="saveInsurance('${ins.id||''}')">${isEdit?'Update':'Add'} Policy</button>
+      <button class="btn btn-primary" onclick="saveInsurance('${ins.id||''}')">${isEdit?'Update':'Add'}</button>
     </div>
   </div>`;
 }
@@ -2452,8 +2454,8 @@ function sheetCustomGoal(id){
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
     <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions">
-      <button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">Save Goal</button>
+      ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delCustomGoal(\''+cg.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
+      <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">${isEdit?'Update':'Add'}</button>
     </div>
   </div>`}
 
@@ -2504,7 +2506,7 @@ function saveCustomGoal(editId){
 function delCustomGoal(id){
   const cg=(data.customGoals||[]).find(x=>x.id===id);
   showConfirm('Delete Goal?',`"${cg?.name||'This goal'}" will be removed.`,()=>{
-    data.customGoals=data.customGoals.filter(x=>x.id!==id);save();renderGoals();renderDashboard();toast('Deleted');
+    data.customGoals=data.customGoals.filter(x=>x.id!==id);save();closeSheet();renderGoals();renderDashboard();toast('Deleted');
   });
 }
 
@@ -2522,7 +2524,7 @@ function sheetChild(kid){
     <div class="form-sec">Life Phases</div>
     <div class="phase-opts">${phasesHtml}</div>
     ${isEdit?`<div class="form-sec" style="margin-top:10px">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&mdash; manage via gear icon</span></div><div class="phase-opts">${(kid&&kid.customPhases&&kid.customPhases.length)?kid.customPhases.map(cp=>`<div class="phase-opt on custom"><div style="font-size:0.88rem">📌</div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><div class="phase-opt-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>`).join(""):'<div style="font-size:0.62rem;color:var(--text3);padding:4px 2px">No custom phases yet.</div>'}</div>`:""}
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveChild('${kid?kid.id:''}')">${isEdit?'Update':'Add Child'}</button></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveChild('${kid?kid.id:''}')">${isEdit?'Update':'Add'}</button></div>
   </div>`}
 function togglePhaseOpt(id){const el=document.getElementById('popt-'+id);const on=el.classList.toggle('on');el.querySelector('.phase-opt-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':""}
 function selGender(g){document.getElementById('gbtn-boy').className='gender-opt'+(g==='boy'?' sel-boy':'');document.getElementById('gbtn-girl').className='gender-opt'+(g==='girl'?' sel-girl':'')}
@@ -2648,7 +2650,7 @@ function sheetEditPhase(kidId,phaseId){
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
     <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Save Phase</button></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Update</button></div>
   </div>`}
 function sheetEditCustomPhase(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';
@@ -2681,7 +2683,7 @@ function sheetEditCustomPhase(kidId,cpId){
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&#8212; saved amount auto-updates</span></div>
     <div id="cph-asset-link-list">${assetLinks}</div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Save</button></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Update</button></div>
   </div>`
 }
 function updateCustomPhaseSIP(kidId,cpId){
@@ -2781,7 +2783,7 @@ function sheetProfile(){
     <div style="font-size:0.68rem;color:var(--text3);margin:-2px 0 10px;line-height:1.4">Income & expenses power the dashboard snapshot. Leave blank to skip.</div>
     <div class="form-sec">Avatar Color</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 14px">${dots}</div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Save</button></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Update</button></div>
   </div>`}
 function selectColor(c){data.profile.avatarColor=c;document.querySelectorAll('.color-dot').forEach(d=>{d.classList.toggle('selected',d.style.background===c)})}
 function saveProfile(){data.profile.name=document.getElementById('f-pname').value.trim();data.profile.monthlyIncome=Number(document.getElementById('f-pincome').value||0);data.profile.monthlyExpenses=Number(document.getElementById('f-pexpenses').value||0);save();closeSheet();renderProfile();renderDashboard();toast('Saved ✓')}
