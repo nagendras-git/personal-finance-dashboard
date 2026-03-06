@@ -1009,9 +1009,17 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div class="sec-body closed" id="sec-kids"><div id="kids-list"></div></div>
     </div>
 
-    <div id="financial-goals-wrap" style="margin-top:10px">
+    <div id="protection-wrap" style="margin-top:10px">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-protection')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> Protection</span><span class="sec-badge" id="protection-sec-count">0</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-protection"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      </div>
+      <div class="sec-body closed" id="sec-protection"><div id="protection-list"></div></div>
+    </div>
+
+    <div id="financial-goals-wrap" style="margin-top:8px">
       <div class="sec-hdr-card" onclick="toggleSec('sec-goals')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Financial Goals</span><span class="sec-badge" id="goals-sec-count">0</span></div>
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Savings</span><span class="sec-badge" id="goals-sec-count">0</span></div>
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-goals"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-goals"><div id="goals-list"></div></div>
@@ -1338,6 +1346,7 @@ const CHECKLIST_ITEMS = [
 let data = {
   profile:{name:'', avatarColor:'#6366f1'},
   assets:[], liabilities:[], goals:[], kids:[], customGoals:[],
+  insurance:[],
   checkItems:[]
 };
 let _confirmCb=null;
@@ -1351,6 +1360,7 @@ function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36
 function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m)/m).toFixed(d)}
 function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
 function pct(cur,tar){if(!tar||tar<=0)return 0;return Math.min(100,Math.round((cur/tar)*100))}
+function fmtDate(d){if(!d)return'';const p=d.split('-');if(p.length!==3)return d;const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const day=parseInt(p[0],10);const mon=months[parseInt(p[1],10)-1]||'';const yr=p[2];return day+' '+mon+', '+yr}
 function year(){return new Date().getFullYear()}
 function age(bYear){return year()-bYear}
 function yearsUntil(bYear,ageTarget){return Math.max(0,(bYear+ageTarget)-year())}
@@ -1520,6 +1530,18 @@ function load(){
     save();
   }
   if(!data.customGoals)data.customGoals=[];
+  if(!data.insurance)data.insurance=[];
+  // Migration: move old single-entry insurance from goals[] to insurance[]
+  if(data.insurance.length===0){
+    const oldIns=data.goals.filter(g=>g.type==='health_ins'||g.type==='term_ins');
+    oldIns.forEach(g=>{
+      if(g.policyName||g.premium||g.expiry){
+        data.insurance.push({id:uid(),type:g.type==='health_ins'?'health':'term',policyName:g.policyName||'',premium:Number(g.premium||0),coverAmount:'',expiry:g.expiry||'',notes:g.notes||''});
+      }
+    });
+    data.goals=data.goals.filter(g=>g.type!=='health_ins'&&g.type!=='term_ins');
+    if(oldIns.length)save();
+  }
 }
 
 /* ── RETIREMENT READINESS ── */
@@ -1867,26 +1889,31 @@ function renderGoals(){
   }
 
   function insRow(pr){
-    const g=data.goals.find(x=>x.type===pr.id)||{};
-    const hasData=g.policyName||g.premium||g.expiry;
-    let pCls=hasData?'pill-green':'pill-muted', pTxt=hasData?'Active':'Not Set';
-    let detailsHtml='';
-    if(hasData){
-      detailsHtml=`<div style="display:flex;flex-direction:column;gap:3px;margin-top:5px">
-        ${g.policyName?`<div style="font-size:0.78rem;color:var(--text2)">Policy <span style="color:var(--text1);font-weight:600">${g.policyName}</span></div>`:''}
-        ${g.premium?`<div style="font-size:0.78rem;color:var(--text2)">Premium <span style="color:var(--text1);font-weight:600">${fmt(g.premium)}/yr</span></div>`:''}
-        ${g.expiry?`<div style="font-size:0.78rem;color:var(--text2)">Expires <span style="color:var(--text1);font-weight:600">${g.expiry}</span></div>`:''}
+    const typeKey=pr.id==='health_ins'?'health':'term';
+    const policies=data.insurance.filter(x=>x.type===typeKey);
+    if(!policies.length){
+      return`<div class="goal-row" onclick="openSheet('insurance',null);document.getElementById('f-ins-type').value='${typeKey}'" style="opacity:0.6">
+        ${goalIconBox(pr)}
+        <div class="goal-body">
+          <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill pill-muted">Not Set</span></div>
+          <div style="font-size:0.75rem;color:var(--text3);margin-top:4px">Tap to add policy</div>
+        </div>
       </div>`;
-    }else{
-      detailsHtml=`<div style="font-size:0.75rem;color:var(--text3);margin-top:4px">Tap to add policy details</div>`;
     }
-    return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
-      ${goalIconBox(pr)}
-      <div class="goal-body">
-        <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        ${detailsHtml}
-      </div>
-    </div>`;
+    return policies.map(ins=>{
+      let detailsHtml=`<div style="display:flex;flex-direction:column;gap:3px;margin-top:5px">
+        ${ins.coverAmount?`<div style="font-size:0.78rem;color:var(--text2)">Cover <span style="color:var(--text1);font-weight:600">${fmt(ins.coverAmount)}</span></div>`:''}
+        ${ins.premium?`<div style="font-size:0.78rem;color:var(--text2)">Premium <span style="color:var(--text1);font-weight:600">${fmt(ins.premium)}/yr</span></div>`:''}
+        ${ins.expiry?`<div style="font-size:0.78rem;color:var(--text2)">Expiry on <span style="color:var(--text1);font-weight:600">${fmtDate(ins.expiry)}</span></div>`:''}
+      </div>`;
+      return`<div class="goal-row" onclick="openSheet('insurance','${ins.id}')">
+        ${goalIconBox(pr)}
+        <div class="goal-body">
+          <div class="goal-top"><span class="goal-name">${ins.policyName||pr.name}</span><span class="pill pill-green">Active</span></div>
+          ${detailsHtml}
+        </div>
+      </div>`;
+    }).join('');
   }
 
   function savingsRow(pr){
@@ -1940,10 +1967,18 @@ function renderGoals(){
   }
 
   const customGoals = data.customGoals||[];
-  const totalCount = GOAL_PRESETS.length + customGoals.length;
-  const cEl=document.getElementById('goals-sec-count');if(cEl)cEl.textContent=totalCount;
+  const insCount = data.insurance.length;
+  const savingsCount = savingsGoals.length + customGoals.length;
 
-  const hasAnyGoalData = GOAL_PRESETS.some(pr=>{const g=data.goals.find(x=>x.type===pr.id);return g&&(g.target||g.premium||g.policyName||g.current);}) || customGoals.length>0;
+  // Protection section badge
+  const protBadge=document.getElementById('protection-sec-count');
+  if(protBadge) protBadge.textContent=insCount>0?insCount+' polic'+(insCount===1?'y':'ies'):'0';
+
+  // Goals section badge
+  const cEl=document.getElementById('goals-sec-count');
+  if(cEl) cEl.textContent=savingsCount;
+
+  const hasAnyGoalData = savingsGoals.some(pr=>{const g=data.goals.find(x=>x.type===pr.id);return g&&(g.target||g.current);}) || customGoals.length>0 || insCount>0;
 
   const onboardingHint = !hasAnyGoalData ? `<div style="text-align:center;padding:20px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:10px">
     <div style="font-size:1.4rem;margin-bottom:8px;opacity:0.5">🎯</div>
@@ -1951,17 +1986,19 @@ function renderGoals(){
     <div style="font-size:0.75rem;color:var(--text3);line-height:1.5">Tap any goal below to set a target amount.<br>We'll calculate the SIP you need to get there.</div>
   </div>` : '';
 
-  const protIco=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`;
-  const savIco=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
-  const divider=(label,ico)=>`<div style="font-size:0.65rem;font-weight:500;letter-spacing:0.3px;color:var(--text3);padding:10px 2px 6px;display:flex;align-items:center;gap:5px;text-transform:uppercase">${ico} ${label}</div>`;
+  // Render Protection list
+  const protEl=document.getElementById('protection-list');
+  if(protEl){
+    protEl.innerHTML =
+      '<div class="row-list-wrap" style="margin-bottom:8px">' +
+      insGoals.map(insRow).join('') +
+      '</div>' +
+      `<div class="add-row" style="margin-bottom:6px" onclick="openSheet('insurance',null)">Add Policy</div>`;
+  }
 
+  // Render Goals list
   el.innerHTML =
     onboardingHint +
-    divider('Protection', protIco) +
-    '<div class="row-list-wrap" style="margin-bottom:8px">' +
-    insGoals.map(insRow).join('') +
-    '</div>' +
-    divider('Savings Goals', savIco) +
     '<div class="row-list-wrap" style="margin-bottom:8px">' +
     savingsGoals.map(savingsRow).join('') +
     (customGoals.length ? customGoals.map(customRow).join('') : '') +
@@ -1974,8 +2011,10 @@ function renderKids(){
   // Show/hide Kids Education section based on whether kids exist
   const kidsWrap=document.getElementById('kids-section-wrap');
   const goalsWrap=document.getElementById('financial-goals-wrap');
+  const protWrap=document.getElementById('protection-wrap');
   if(kidsWrap) kidsWrap.style.display=data.kids.length?'':'none';
   if(goalsWrap) goalsWrap.style.marginTop=data.kids.length?'8px':'0';
+  if(protWrap) protWrap.style.marginTop=data.kids.length?'8px':'10px';
   const el=document.getElementById('kids-list');if(!el)return;
   if(!data.kids.length){el.innerHTML=`<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg><div class="empty-text" style="margin-bottom:12px">No children added yet</div><button class="btn btn-primary btn-sm" onclick="openSheet('child',null)" style="margin:0 auto">Add Child</button></div>`;return}
   el.innerHTML=data.kids.map(k=>{
@@ -2182,6 +2221,7 @@ function openSheet(type,arg,arg2){
   else if(type==='managePhases')html=sheetManagePhases(arg);
   else if(type==='phase')html=sheetEditPhase(arg,arg2);
   else if(type==='customGoal')html=sheetCustomGoal(arg||null);
+  else if(type==='insurance')html=sheetInsurance(arg||null);
   else if(type==='customPhase')html=sheetEditCustomPhase(arg,arg2);
   else if(type==='profile')html=sheetProfile();
   document.getElementById('sheet-content').innerHTML=html;
@@ -2230,19 +2270,7 @@ function sheetGoal(pid){
   const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
   const g=data.goals.find(x=>x.type===pr.id)||{};
   const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-  const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
-
-  if(pr.isIns){
-    return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
-    <div class="sheet-body">
-      ${typeSelect}
-      <div class="fg"><label class="fl">Policy Name</label><input class="fi" id="f-ins-policy" placeholder="e.g. LIC Tech Term, Star Health Family" value="${g.policyName||''}"/></div>
-      <div class="fg"><label class="fl">Annual Premium (₹)</label><input class="fi" id="f-ins-premium" type="number" placeholder="0" value="${g.premium||''}"/></div>
-      <div class="fg"><label class="fl">Policy Expiry Date</label>${calPickerHTML('expiry', g.expiry||'')}</div>
-      <div class="fg"><label class="fl">Notes</label><input class="fi" id="f-ins-notes" placeholder="Coverage amount, policy number…" value="${g.notes||''}"/></div>
-      <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save</button></div>
-    </div>`;
-  }
+  const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.filter(p=>!p.isIns).map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
 
   const linkedIds=g.linkedAssetIds||[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
@@ -2318,21 +2346,65 @@ function saveGoal(){
   const type=document.getElementById('f-gtype')?.value;
   const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
   let obj={type,name:pr.name};
-  if(pr.isIns){
-    obj.policyName=document.getElementById('f-ins-policy')?.value?.trim()||'';
-    obj.premium=Number(document.getElementById('f-ins-premium')?.value||0);
-    obj.expiry=document.getElementById('f-ins-expiry')?.value||'';
-    obj.notes=document.getElementById('f-ins-notes')?.value?.trim()||'';
-  }else{
-    obj.target=Number(document.getElementById('f-gtarget')?.value||0);
-    obj.timePeriod=document.getElementById('f-gtime')?.value||'';
-    obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
-    // Only save manual current if no assets linked
-    if(!obj.linkedAssetIds.length) obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
-  }
+  obj.target=Number(document.getElementById('f-gtarget')?.value||0);
+  obj.timePeriod=document.getElementById('f-gtime')?.value||'';
+  obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
+  // Only save manual current if no assets linked
+  if(!obj.linkedAssetIds.length) obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
   const ex=data.goals.find(g=>g.type===type);
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
   save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+}
+
+/* ── INSURANCE (multi-policy) ── */
+function sheetInsurance(id){
+  const ins=id?data.insurance.find(x=>x.id===id)||{}:{};
+  const isEdit=!!ins.id;
+  const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'Add'} Insurance</div>${closeX}</div>
+  <div class="sheet-body">
+    <div class="fg"><label class="fl">Type</label><select class="fi fi-sel" id="f-ins-type">
+      <option value="health" ${ins.type==='health'?'selected':''}>Health Insurance</option>
+      <option value="term" ${ins.type==='term'?'selected':''}>Term Insurance</option>
+    </select></div>
+    <div class="fg"><label class="fl">Policy Name / Provider</label><input class="fi" id="f-ins-name" placeholder="e.g. Star Health Family Floater" value="${ins.policyName||''}"/></div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Annual Premium (₹)</label><input class="fi" id="f-ins-premium" type="number" placeholder="0" value="${ins.premium||''}"/></div>
+      <div class="fg"><label class="fl">Cover Amount (₹)</label><input class="fi" id="f-ins-cover" type="number" placeholder="e.g. 1000000" value="${ins.coverAmount||''}"/></div>
+    </div>
+    <div class="fg"><label class="fl">Policy Expiry Date</label>${calPickerHTML('insexp', ins.expiry||'')}</div>
+    <div class="fg"><label class="fl">Notes</label><input class="fi" id="f-ins-notes" placeholder="Policy number, riders, sub-limits…" value="${ins.notes||''}"/></div>
+    <div class="form-actions">
+      ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="deleteInsurance(\''+ins.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
+      <button class="btn btn-primary" onclick="saveInsurance('${ins.id||''}')">${isEdit?'Update':'Add'} Policy</button>
+    </div>
+  </div>`;
+}
+function saveInsurance(editId){
+  const type=document.getElementById('f-ins-type')?.value||'health';
+  const policyName=document.getElementById('f-ins-name')?.value?.trim()||'';
+  const premium=Number(document.getElementById('f-ins-premium')?.value||0);
+  const coverAmount=Number(document.getElementById('f-ins-cover')?.value||0);
+  const expiry=document.getElementById('f-ins-insexp')?.value||'';
+  const notes=document.getElementById('f-ins-notes')?.value?.trim()||'';
+  if(!policyName){toast('Enter a policy name',true);return}
+  const obj={type,policyName,premium,coverAmount,expiry,notes};
+  if(editId){
+    const ex=data.insurance.find(x=>x.id===editId);
+    if(ex)Object.assign(ex,obj);
+    toast('Updated ✓');
+  }else{
+    data.insurance.push({id:uid(),...obj});
+    toast('Added ✓');
+  }
+  save();closeSheet();renderGoals();
+}
+function deleteInsurance(id){
+  const ins=data.insurance.find(x=>x.id===id);
+  showConfirm('Remove Policy?',`"${ins?.policyName||'Policy'}" will be removed.`,()=>{
+    data.insurance=data.insurance.filter(x=>x.id!==id);
+    save();closeSheet();renderGoals();toast('Removed');
+  });
 }
 
 function sheetCustomGoal(id){
@@ -2751,7 +2823,7 @@ function exportData(){
   toast('Exported ✓');
 }
 function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
-function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
+function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],insurance:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
   showConfirm('Load Sample Data?','This will overwrite all current data with demo data.',()=>{
@@ -2772,10 +2844,12 @@ function loadSampleData(){
   ];
   data.goals=[
     {id:uid(),type:'emergency', name:'Emergency Fund',  target:300000,  current:180000,timePeriod:'1'},
-    {id:uid(),type:'health_ins',name:'Health Insurance',target:25000,   current:25000, timePeriod:'1'},
-    {id:uid(),type:'term_ins',  name:'Term Insurance',  target:20000,   current:20000, timePeriod:'1'},
     {id:uid(),type:'retirement',name:'Retirement',      target:30000000,current:1470000,timePeriod:'25'},
     {id:uid(),type:'vacation',  name:'Vacation',        target:200000,  current:85000, timePeriod:'2'},
+  ];
+  data.insurance=[
+    {id:uid(),type:'health',policyName:'Star Health Family Floater',premium:25000,coverAmount:1000000,expiry:'15-03-2026',notes:'Family floater - 4 members'},
+    {id:uid(),type:'term',policyName:'LIC Tech Term',premium:12000,coverAmount:10000000,expiry:'01-01-2050',notes:'1Cr cover till age 60'},
   ];
   data.kids=[{id:uid(),name:'Arjun',gender:'boy',birthYear:now-7,phases:[
     {phaseId:'primary',    enabled:true, target:300000, current:80000, linkedAssetIds:[],notes:''},
