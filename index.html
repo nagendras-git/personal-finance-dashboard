@@ -270,6 +270,9 @@ body.scroll-locked {
 .goal-icon { width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface2); border:1px solid var(--border); color:var(--text2) }
 .goal-icon svg { width:15px; height:15px; opacity:0.85 }
 .goal-body { flex:1; min-width:0 }
+.goal-chevron { color:var(--text3); opacity:0.4; flex-shrink:0; display:flex; align-items:center }
+.goal-chevron svg { width:14px; height:14px }
+.ins-type-tag { font-size:0.62rem; font-weight:700; color:var(--text3); letter-spacing:0.3px; text-transform:uppercase; margin-top:1px }
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
 .goal-name { font-size:0.88rem; font-weight:600; color:var(--text1) }
 .goal-pct { font-size:0.84rem; font-weight:800; color:var(--text1); flex-shrink:0 }
@@ -323,6 +326,11 @@ body.scroll-locked {
 .phase-row {
   display:flex; align-items:center; gap:9px; padding:11px 14px;
   cursor:pointer; border-top:1px solid var(--border2); transition:background 120ms;
+  position:relative;
+}
+.phase-row::after {
+  content:'›'; font-size:1.2rem; font-weight:300; color:var(--text3); opacity:0.4;
+  flex-shrink:0; margin-left:4px;
 }
 .phase-row:active { background:var(--surface2) }
 .phase-ico { flex-shrink:0; display:flex; align-items:center; justify-content:center }
@@ -1888,8 +1896,11 @@ function renderGoals(){
     </div>`;
   }
 
+  const chevronSvg=`<div class="goal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>`;
+
   function insRow(pr){
     const typeKey=pr.id==='health_ins'?'health':'term';
+    const typeLabel=pr.id==='health_ins'?'Health':'Term';
     const policies=data.insurance.filter(x=>x.type===typeKey);
     if(!policies.length){
       return`<div class="goal-row" onclick="openSheet('insurance',null);document.getElementById('f-ins-type').value='${typeKey}'" style="opacity:0.6">
@@ -1898,9 +1909,11 @@ function renderGoals(){
           <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill pill-muted">Not Set</span></div>
           <div style="font-size:0.75rem;color:var(--text3);margin-top:4px">Tap to add policy</div>
         </div>
+        ${chevronSvg}
       </div>`;
     }
     return policies.map(ins=>{
+      const insTypeLabel=ins.type==='health'?'Health Insurance':'Term Insurance';
       let detailsHtml=`<div style="display:flex;flex-direction:column;gap:3px;margin-top:5px">
         ${ins.coverAmount?`<div style="font-size:0.78rem;color:var(--text2)">Cover <span style="color:var(--text1);font-weight:600">${fmt(ins.coverAmount)}</span></div>`:''}
         ${ins.premium?`<div style="font-size:0.78rem;color:var(--text2)">Premium <span style="color:var(--text1);font-weight:600">${fmt(ins.premium)}/yr</span></div>`:''}
@@ -1909,9 +1922,11 @@ function renderGoals(){
       return`<div class="goal-row" onclick="openSheet('insurance','${ins.id}')">
         ${goalIconBox(pr)}
         <div class="goal-body">
+          <div class="ins-type-tag">${insTypeLabel}</div>
           <div class="goal-top"><span class="goal-name">${ins.policyName||pr.name}</span><span class="pill pill-green">Active</span></div>
           ${detailsHtml}
         </div>
+        ${chevronSvg}
       </div>`;
     }).join('');
   }
@@ -1937,6 +1952,7 @@ function renderGoals(){
           <span class="goal-pct" style="color:#3B82F6">${p}%</span>
         </div>
       </div>
+      ${chevronSvg}
     </div>`;
   }
 
