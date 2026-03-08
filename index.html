@@ -2441,11 +2441,11 @@ function sheetGoal(pid){
   const adjTarget=yrs>0?Math.round(inflAdj(todayTarget,yrs,infl/100)):todayTarget;
   const sip=adjTarget&&yrs?sipNeeded(adjTarget,autoCurrent,yrs,ret/100):0;
 
-  const savedField=linkedIds.length>0
+  const savedCol=linkedIds.length>0
     ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
-         <span style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
-         <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
+       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
+         <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
+         <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
     :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>`;
 
@@ -2453,19 +2453,18 @@ function sheetGoal(pid){
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target in Today's Value (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Future Cost <span style="font-weight:500;color:var(--blue);font-size:0.65rem">(inflation adjusted)</span></label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue)">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
+      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
       <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-ginfl" type="number" step="0.5" placeholder="7" value="${infl}" oninput="updateGoalSIP()"/></div>
+    </div>
+    <div class="form-row2">
       <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-gret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateGoalSIP()"/></div>
+      ${savedCol}
     </div>
-    <div id="goal-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
-      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:4px">Inflation-Adjusted Target</div>
-      <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1);margin-bottom:3px" id="goal-adj-val">${fmt(adjTarget)}</div>
-      <div style="font-size:0.7rem;color:var(--text3)" id="goal-adj-note">${todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yrs+'y at '+infl+'%':''}</div>
-    </div>
-    ${savedField}
+    <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="goal-adj-note">${yrs>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yrs+'y at '+infl+'%':''}</div>
     <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
       <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7" id="goal-sip-rate">@ ${ret}% p.a.</span></div>
       <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
@@ -2488,9 +2487,9 @@ function toggleGoalAssetLink(assetId){
     const wrap=manualEl.closest('.fg');
     if(wrap&&checkedIds.length>0){
       wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
-          <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
-          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
+        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
+          <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoTotal)}</span>
+          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${checkedIds.length} linked</span>
         </div>`;
     }
   } else {
@@ -2510,17 +2509,14 @@ function updateGoalSIP(){
   const infl=Number(document.getElementById('f-ginfl')?.value||7);
   const ret=Number(document.getElementById('f-gret')?.value||12);
   const adjT=y>0?Math.round(inflAdj(todayT,y,infl/100)):todayT;
-  // Update inflation box
-  const adjBox=document.getElementById('goal-adj-box');
+  // Update inline Future Cost field
   const adjVal=document.getElementById('goal-adj-val');
   const adjNote=document.getElementById('goal-adj-note');
-  if(adjBox){adjBox.style.display=(adjT>todayT&&todayT>0)?'':'none';}
-  if(adjVal)adjVal.textContent=fmt(adjT);
-  if(adjNote)adjNote.textContent=fmt(todayT)+' today → '+fmt(adjT)+' in '+y+'y at '+infl+'%';
+  if(adjVal)adjVal.textContent=adjT>0?fmt(adjT):'—';
+  if(adjNote)adjNote.textContent=(y>0&&adjT>todayT&&todayT>0)?fmt(todayT)+' today → '+fmt(adjT)+' in '+y+'y at '+infl+'%':'';
   // Update SIP rate display
   const rateEl=document.getElementById('goal-sip-rate');
   if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
-  // Use auto total if assets linked, else manual input
   const checkedIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('gal-',''));
   const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-gcurrent')?.value||0);
   const box=document.getElementById('goal-sip-box');
@@ -2812,11 +2808,11 @@ function sheetEditPhase(kidId,phaseId){
   const todayTarget=Number(ph.todayTarget||ph.target||0);
   const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
   const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
-  const savedField=linkedIds.length>0
+  const savedCol=linkedIds.length>0
     ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
-         <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
-         <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
+       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
+         <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
+         <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
     :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title"><span style="display:inline-flex;align-items:center;width:16px;height:16px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,"").replace("</svg>","")}</svg></span> ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -2826,19 +2822,18 @@ function sheetEditPhase(kidId,phaseId){
       <div><div style="font-weight:700;font-size:0.88rem">${kid.name}</div><div style="font-size:0.7rem;color:var(--text3)">${yl>0?yl+' years to this phase':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target in Today's Value (₹)</label><input class="fi" id="f-pht" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2)">${yl>0?yl+' yrs away':yl===0?'Now':'Passed'}</div></div>
+      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Future Cost <span style="font-weight:500;color:var(--blue);font-size:0.65rem">(inflation adjusted)</span></label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue)">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
+      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
       <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-phinfl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+    </div>
+    <div class="form-row2">
       <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-phret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      ${savedCol}
     </div>
-    <div id="ph-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
-      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:4px">Inflation-Adjusted Target</div>
-      <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1);margin-bottom:3px" id="ph-adj-val">${fmt(adjTarget)}</div>
-      <div style="font-size:0.7rem;color:var(--text3)" id="ph-adj-note">${todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
-    </div>
-    ${savedField}
+    <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="ph-adj-note">${yl>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
     <div id="sip-preview" style="${sip>0?'':'display:none'}" class="sip-callout">
       <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="ph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
@@ -2860,11 +2855,11 @@ function sheetEditCustomPhase(kidId,cpId){
   const todayTarget=Number(cp.todayTarget||cp.target||0);
   const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
   const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
-  const savedField=linkedIds.length>0
+  const savedCol=linkedIds.length>0
     ?`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; linked</span></label>
-       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
-         <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
-         <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
+       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
+         <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
+         <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
     :`<div class="fg"><label class="fl">Saved (&#8377;)</label><input class="fi" id="f-cph-current" type="number" min="0" placeholder="0" value="${cp.current||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
   const assetLinks=data.assets.length?data.assets.map(a=>{const on=linkedIds.includes(a.id);return`<div class="inv-link-item ${on?'on':''}" id="cphal-${a.id}" onclick="toggleCPHAssetLink('${kidId}','${cpId}','${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';
@@ -2875,19 +2870,18 @@ function sheetEditCustomPhase(kidId,cpId){
       <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">Age ${cp.ageStart}&#8211;${cp.ageEnd} &middot; ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target in Today's Value (&#8377;)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${todayTarget||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2)">${yl>0?yl+' yrs away':yl===0?'Now':'Passed'}</div></div>
+      <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${todayTarget||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Future Cost <span style="font-weight:500;color:var(--blue);font-size:0.65rem">(inflation adjusted)</span></label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue)">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
+      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
       <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-cph-infl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+    </div>
+    <div class="form-row2">
       <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-cph-ret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      ${savedCol}
     </div>
-    <div id="cph-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
-      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:4px">Inflation-Adjusted Target</div>
-      <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1);margin-bottom:3px" id="cph-adj-val">${fmt(adjTarget)}</div>
-      <div style="font-size:0.7rem;color:var(--text3)" id="cph-adj-note">${todayTarget>0?fmt(todayTarget)+' today &#8594; '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
-    </div>
-    ${savedField}
+    <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="cph-adj-note">${yl>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today &#8594; '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
     <div id="cph-sip-box" style="${sip>0?'':'display:none'}" class="sip-callout">
       <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="cph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
@@ -2908,13 +2902,11 @@ function updateCustomPhaseSIP(kidId,cpId){
   const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-cph-current')?.value||0);
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
   const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
-  // Update inflation-adjusted box
-  const adjBox=document.getElementById('cph-adj-box');
+  // Update inline Future Cost field
   const adjVal=document.getElementById('cph-adj-val');
   const adjNote=document.getElementById('cph-adj-note');
-  if(adjBox){adjBox.style.display=(adjT>todayT&&todayT>0)?'':'none';}
-  if(adjVal)adjVal.textContent=fmt(adjT);
-  if(adjNote)adjNote.textContent=fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%';
+  if(adjVal)adjVal.textContent=adjT>0?fmt(adjT):'—';
+  if(adjNote)adjNote.textContent=(yl>0&&adjT>todayT&&todayT>0)?fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%':'';
   // Update SIP rate label
   const rateEl=document.getElementById('cph-sip-rate');
   if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
@@ -2992,13 +2984,11 @@ function updateSIPLive(kidId,phaseId){
   const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-phc')?.value||0);
   const yl=yearsUntil(kid.birthYear,pd.ageStart);
   const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
-  // Update inflation-adjusted box
-  const adjBox=document.getElementById('ph-adj-box');
+  // Update inline Future Cost field
   const adjVal=document.getElementById('ph-adj-val');
   const adjNote=document.getElementById('ph-adj-note');
-  if(adjBox){adjBox.style.display=(adjT>todayT&&todayT>0)?'':'none';}
-  if(adjVal)adjVal.textContent=fmt(adjT);
-  if(adjNote)adjNote.textContent=fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%';
+  if(adjVal)adjVal.textContent=adjT>0?fmt(adjT):'—';
+  if(adjNote)adjNote.textContent=(yl>0&&adjT>todayT&&todayT>0)?fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%':'';
   // Update SIP rate label
   const rateEl=document.getElementById('ph-sip-rate');
   if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
