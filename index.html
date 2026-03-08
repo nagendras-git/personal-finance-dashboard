@@ -2684,7 +2684,11 @@ function sheetEditPhase(kidId,phaseId){
   const yl=yearsUntil(kid.birthYear,pd.ageStart);
   const linkedIds=ph.linkedAssetIds||[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
-  const sip=ph.target>0&&yl>0?sipNeeded(ph.target,autoCurrent,yl):0;
+  const infl=ph.inflationRate!=null?ph.inflationRate:10;
+  const ret=ph.expectedReturn!=null?ph.expectedReturn:12;
+  const todayTarget=Number(ph.todayTarget||ph.target||0);
+  const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
+  const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
   const savedField=linkedIds.length>0
     ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
@@ -2699,12 +2703,23 @@ function sheetEditPhase(kidId,phaseId){
       <div><div style="font-weight:700;font-size:0.88rem">${kid.name}</div><div style="font-size:0.7rem;color:var(--text3)">${yl>0?yl+' years to this phase':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-pht" type="number" placeholder="0" value="${ph.target||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Target in Today's Value (₹)</label><input class="fi" id="f-pht" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2)">${yl>0?yl+' yrs away':yl===0?'Now':'Passed'}</div></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-phinfl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-phret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+    </div>
+    <div id="ph-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:2px">Inflation-Adjusted Target</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1)" id="ph-adj-val">${fmt(adjTarget)}</span>
+        <span style="font-size:0.7rem;color:var(--text3)" id="ph-adj-note">${todayTarget>0?fmt(todayTarget).replace('₹','₹')+' today → '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</span>
+      </div>
     </div>
     ${savedField}
     <div id="sip-preview" style="${sip>0?'':'display:none'}" class="sip-callout">
-      <div class="sip-label">Monthly SIP Needed</div>
+      <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="ph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
@@ -2719,7 +2734,11 @@ function sheetEditCustomPhase(kidId,cpId){
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
   const linkedIds=cp.linkedAssetIds||[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cp.current||0);
-  const sip=cp.target>0&&yl>0?sipNeeded(cp.target,autoCurrent,yl):0;
+  const infl=cp.inflationRate!=null?cp.inflationRate:10;
+  const ret=cp.expectedReturn!=null?cp.expectedReturn:12;
+  const todayTarget=Number(cp.todayTarget||cp.target||0);
+  const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
+  const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
   const savedField=linkedIds.length>0
     ?`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; auto from linked assets</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
@@ -2734,10 +2753,24 @@ function sheetEditCustomPhase(kidId,cpId){
       <div style="font-size:1.4rem">${kid.gender==='girl'?'&#128103;':'&#128102;'}</div>
       <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">Age ${cp.ageStart}&#8211;${cp.ageEnd} &middot; ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
-    <div class="fg"><label class="fl">Target (&#8377;)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${cp.target||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Target in Today's Value (&#8377;)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${todayTarget||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2)">${yl>0?yl+' yrs away':yl===0?'Now':'Passed'}</div></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-cph-infl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-cph-ret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+    </div>
+    <div id="cph-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:2px">Inflation-Adjusted Target</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1)" id="cph-adj-val">${fmt(adjTarget)}</span>
+        <span style="font-size:0.7rem;color:var(--text3)" id="cph-adj-note">${todayTarget>0?fmt(todayTarget)+' today &#8594; '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</span>
+      </div>
+    </div>
     ${savedField}
     <div id="cph-sip-box" style="${sip>0?'':'display:none'}" class="sip-callout">
-      <div class="sip-label">Monthly SIP Needed</div>
+      <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="cph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
     </div>
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
@@ -2749,13 +2782,26 @@ function sheetEditCustomPhase(kidId,cpId){
 function updateCustomPhaseSIP(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
-  const t=Number(document.getElementById('f-cph-target')?.value||0);
+  const todayT=Number(document.getElementById('f-cph-target')?.value||0);
+  const infl=Number(document.getElementById('f-cph-infl')?.value||10);
+  const ret=Number(document.getElementById('f-cph-ret')?.value||12);
   const checkedIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cphal-',''));
   const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-cph-current')?.value||0);
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
+  const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
+  // Update inflation-adjusted box
+  const adjBox=document.getElementById('cph-adj-box');
+  const adjVal=document.getElementById('cph-adj-val');
+  const adjNote=document.getElementById('cph-adj-note');
+  if(adjBox){adjBox.style.display=(adjT>todayT&&todayT>0)?'':'none';}
+  if(adjVal)adjVal.textContent=fmt(adjT);
+  if(adjNote)adjNote.textContent=fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%';
+  // Update SIP rate label
+  const rateEl=document.getElementById('cph-sip-rate');
+  if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
   const box=document.getElementById('cph-sip-box');
   const valEl=document.getElementById('cph-sip-val');
-  if(t>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,yl));}
+  if(adjT>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,yl,ret/100));}
   else{if(box)box.style.display='none';}
 }
 function toggleCPHAssetLink(kidId,cpId,assetId){
@@ -2782,7 +2828,14 @@ function toggleCPHAssetLink(kidId,cpId,assetId){
 function saveCustomPhase(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
-  cp.target=Number(document.getElementById('f-cph-target')?.value||0);
+  const todayTarget=Number(document.getElementById('f-cph-target')?.value||0);
+  const infl=Number(document.getElementById('f-cph-infl')?.value||10);
+  const ret=Number(document.getElementById('f-cph-ret')?.value||12);
+  const yl=yearsUntil(kid.birthYear,cp.ageStart);
+  cp.todayTarget=todayTarget;
+  cp.target=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
+  cp.inflationRate=infl;
+  cp.expectedReturn=ret;
   cp.linkedAssetIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cphal-','')).filter(Boolean);
   if(!cp.linkedAssetIds.length) cp.current=Number(document.getElementById('f-cph-current')?.value||0);
   else delete cp.current;
@@ -2813,18 +2866,38 @@ function togglePhaseAssetLink(assetId,kidId,phaseId){
 }
 function updateSIPLive(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);const pd=KID_PHASES.find(p=>p.id===phaseId);if(!kid||!pd)return;
-  const t=Number(document.getElementById('f-pht')?.value||0);
+  const todayT=Number(document.getElementById('f-pht')?.value||0);
+  const infl=Number(document.getElementById('f-phinfl')?.value||10);
+  const ret=Number(document.getElementById('f-phret')?.value||12);
   const checkedIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('pal-',''));
   const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-phc')?.value||0);
   const yl=yearsUntil(kid.birthYear,pd.ageStart);
+  const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
+  // Update inflation-adjusted box
+  const adjBox=document.getElementById('ph-adj-box');
+  const adjVal=document.getElementById('ph-adj-val');
+  const adjNote=document.getElementById('ph-adj-note');
+  if(adjBox){adjBox.style.display=(adjT>todayT&&todayT>0)?'':'none';}
+  if(adjVal)adjVal.textContent=fmt(adjT);
+  if(adjNote)adjNote.textContent=fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%';
+  // Update SIP rate label
+  const rateEl=document.getElementById('ph-sip-rate');
+  if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
   const box=document.getElementById('sip-preview');const valEl=document.getElementById('sip-val');
-  if(t>0&&yl>0){box.style.display='';valEl.textContent=fmt(sipNeeded(t,c,yl))}else{box.style.display='none'}
+  if(adjT>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,yl,ret/100));}else{if(box)box.style.display='none';}
 }
 function savePhase(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   let ph=kid.phases.find(p=>p.phaseId===phaseId);
   if(!ph){ph={phaseId,enabled:true,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ph)}
-  ph.target=Number(document.getElementById('f-pht').value||0);
+  const todayTarget=Number(document.getElementById('f-pht').value||0);
+  const infl=Number(document.getElementById('f-phinfl')?.value||10);
+  const ret=Number(document.getElementById('f-phret')?.value||12);
+  const yl=yearsUntil(kid.birthYear,KID_PHASES.find(p=>p.id===phaseId)?.ageStart||0);
+  ph.todayTarget=todayTarget;
+  ph.target=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
+  ph.inflationRate=infl;
+  ph.expectedReturn=ret;
   ph.notes=document.getElementById('f-phn').value.trim();
   ph.linkedAssetIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('pal-','')).filter(Boolean);
   // Only save manual current if no assets linked
