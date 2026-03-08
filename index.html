@@ -1374,8 +1374,8 @@ function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scro
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m)/m).toFixed(d)}
 function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
-function fmtInputBlur(el){const raw=Number((el.dataset.raw||el.value).toString().replace(/[^\d.]/g,''));if(!raw)return;el.dataset.raw=raw;el.value=fmt(raw);el.style.fontWeight='700'}
-function fmtInputFocus(el){const raw=el.dataset.raw||(el.value||'').replace(/[^\d.]/g,'');el.value=raw==='0'?'':raw;el.style.fontWeight=''}
+function fmtInputBlur(el){const raw=Number((el.dataset.raw||el.value).toString().replace(/[^\d.]/g,''));if(!raw)return;el.dataset.raw=raw;el.value=fmt(raw)}
+function fmtInputFocus(el){const raw=el.dataset.raw||(el.value||'').replace(/[^\d.]/g,'');el.value=raw==='0'?'':raw}
 function rawVal(id){const el=document.getElementById(id);if(!el)return 0;return Number((el.dataset.raw&&el.dataset.raw!=='0'?el.dataset.raw:el.value).toString().replace(/[^\d.]/g,'')||0)}
 function pct(cur,tar){if(!tar||tar<=0)return 0;return Math.min(100,Math.round((cur/tar)*100))}
 function fmtDate(d){if(!d)return'';const p=d.split('-');if(p.length!==3)return d;const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const day=parseInt(p[0],10);const mon=months[parseInt(p[1],10)-1]||'';const yr=p[2];return day+' '+mon+', '+yr}
@@ -2452,14 +2452,14 @@ function sheetGoal(pid){
          <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${g.current>0?fmt(g.current):''}" data-raw="${g.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>`;
 
   return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
@@ -2523,7 +2523,7 @@ function updateGoalSIP(){
   const rateEl=document.getElementById('goal-sip-rate');
   if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
   const checkedIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('gal-',''));
-  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-gcurrent')?.value||0);
+  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):rawVal('f-gcurrent');
   const box=document.getElementById('goal-sip-box');
   const valEl=document.getElementById('goal-sip-val');
   if(adjT>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,y,ret/100));}
@@ -2552,7 +2552,7 @@ function saveGoal(){
   obj.inflationRate=infl;
   obj.expectedReturn=ret;
   obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
-  if(!obj.linkedAssetIds.length) obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
+  if(!obj.linkedAssetIds.length) obj.current=rawVal('f-gcurrent');
   const ex=data.goals.find(g=>g.type===type);
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
   save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
@@ -2819,7 +2819,7 @@ function sheetEditPhase(kidId,phaseId){
          <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="text" inputmode="decimal" placeholder="0" value="${ph.current>0?fmt(ph.current):''}" data-raw="${ph.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title"><span style="display:inline-flex;align-items:center;width:16px;height:16px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,"").replace("</svg>","")}</svg></span> ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
@@ -2828,7 +2828,7 @@ function sheetEditPhase(kidId,phaseId){
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
@@ -2866,7 +2866,7 @@ function sheetEditCustomPhase(kidId,cpId){
          <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (&#8377;)</label><input class="fi" id="f-cph-current" type="number" min="0" placeholder="0" value="${cp.current||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (&#8377;)</label><input class="fi" id="f-cph-current" type="text" inputmode="decimal" placeholder="0" value="${cp.current>0?fmt(cp.current):''}" data-raw="${cp.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
   const assetLinks=data.assets.length?data.assets.map(a=>{const on=linkedIds.includes(a.id);return`<div class="inv-link-item ${on?'on':''}" id="cphal-${a.id}" onclick="toggleCPHAssetLink('${kidId}','${cpId}','${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';
   return`<div class="sheet-hdr"><div class="sheet-title">&#128204; ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
@@ -2876,7 +2876,7 @@ function sheetEditCustomPhase(kidId,cpId){
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
@@ -2904,7 +2904,7 @@ function updateCustomPhaseSIP(kidId,cpId){
   const infl=Number(document.getElementById('f-cph-infl')?.value||10);
   const ret=Number(document.getElementById('f-cph-ret')?.value||12);
   const checkedIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cphal-',''));
-  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-cph-current')?.value||0);
+  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):rawVal('f-cph-current');
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
   const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
   // Update inline Future Cost field
@@ -2953,7 +2953,7 @@ function saveCustomPhase(kidId,cpId){
   cp.inflationRate=infl;
   cp.expectedReturn=ret;
   cp.linkedAssetIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cphal-','')).filter(Boolean);
-  if(!cp.linkedAssetIds.length) cp.current=Number(document.getElementById('f-cph-current')?.value||0);
+  if(!cp.linkedAssetIds.length) cp.current=rawVal('f-cph-current');
   else delete cp.current;
   cp.notes=document.getElementById('f-cph-notes')?.value?.trim()||'';
   save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
@@ -2986,7 +2986,7 @@ function updateSIPLive(kidId,phaseId){
   const infl=Number(document.getElementById('f-phinfl')?.value||10);
   const ret=Number(document.getElementById('f-phret')?.value||12);
   const checkedIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('pal-',''));
-  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-phc')?.value||0);
+  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):rawVal('f-phc');
   const yl=yearsUntil(kid.birthYear,pd.ageStart);
   const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
   // Update inline Future Cost field
@@ -3015,7 +3015,7 @@ function savePhase(kidId,phaseId){
   ph.notes=document.getElementById('f-phn').value.trim();
   ph.linkedAssetIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('pal-','')).filter(Boolean);
   // Only save manual current if no assets linked
-  if(!ph.linkedAssetIds.length) ph.current=Number(document.getElementById('f-phc')?.value||0);
+  if(!ph.linkedAssetIds.length) ph.current=rawVal('f-phc');
   save();closeSheet();renderKids();renderDashboard();toast('Saved ✓')
 }
 
