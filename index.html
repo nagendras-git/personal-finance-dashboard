@@ -550,8 +550,10 @@ body.scroll-locked {
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a4a60' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat:no-repeat; background-position:right 12px center; padding-right:34px; cursor:pointer;
 }
-.form-row2 { display:grid; grid-template-columns:1fr 1fr; gap:9px }
+.form-row2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; align-items:start }
 @media (max-width:340px) { .form-row2 { grid-template-columns:1fr } }
+.form-row2 .fg { display:flex; flex-direction:column }
+.form-row2 .fg .fi { flex:1; min-height:44px }
 .form-actions { display:flex; gap:9px; justify-content:flex-end; margin-top:16px; padding-top:14px; border-top:1px solid var(--border2) }
 .form-sec { font-size:0.72rem; font-weight:700; letter-spacing:0; color:var(--text3); margin:15px 0 8px; padding-bottom:5px; border-bottom:1px solid var(--border2) }
 
@@ -2454,7 +2456,7 @@ function sheetGoal(pid){
     ${typeSelect}
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Future Cost <span style="font-weight:500;color:var(--blue);font-size:0.65rem">(inflation adjusted)</span></label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue)">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Future Cost <span style="font-weight:600;color:var(--blue);font-size:0.62rem;letter-spacing:0">· adj.</span></label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
@@ -2823,7 +2825,7 @@ function sheetEditPhase(kidId,phaseId){
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost <span style="font-weight:500;color:var(--blue);font-size:0.65rem">(inflation adjusted)</span></label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue)">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Future Cost <span style="font-weight:600;color:var(--blue);font-size:0.62rem;letter-spacing:0">· adj.</span></label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
@@ -2871,7 +2873,7 @@ function sheetEditCustomPhase(kidId,cpId){
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${todayTarget||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost <span style="font-weight:500;color:var(--blue);font-size:0.65rem">(inflation adjusted)</span></label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue)">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Future Cost <span style="font-weight:600;color:var(--blue);font-size:0.62rem;letter-spacing:0">· adj.</span></label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
