@@ -982,6 +982,9 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
   </div>
 
+  <!-- INSURANCE EXPIRY ALERTS -->
+  <div class="container" style="padding-top:0;padding-bottom:4px" id="dash-ins-alert-wrap"></div>
+
   <div style="text-align:center;padding:14px 0 4px;color:var(--text3);font-size:0.62rem;font-weight:600;letter-spacing:0">Data stored on your device only 🔒</div>
 </div>
 
@@ -1583,7 +1586,48 @@ function renderRetirementReadiness(){
   }
 }
 
-/* ── BACKUP BANNER ── */
+/* ── INSURANCE EXPIRY ALERTS ── */
+function renderInsuranceAlerts(){
+  const wrap=document.getElementById('dash-ins-alert-wrap');if(!wrap)return;
+  if(!data.insurance||!data.insurance.length){wrap.innerHTML='';return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const WARN_DAYS=90;
+  const alerts=data.insurance.map(ins=>{
+    if(!ins.expiry)return null;
+    const p=ins.expiry.split('-');if(p.length!==3)return null;
+    // stored as DD-MM-YYYY
+    const expDate=new Date(parseInt(p[2]),parseInt(p[1])-1,parseInt(p[0]));
+    expDate.setHours(0,0,0,0);
+    const diffMs=expDate-today;
+    const diffDays=Math.ceil(diffMs/(1000*60*60*24));
+    if(diffDays>WARN_DAYS)return null;
+    return{ins,diffDays,expDate};
+  }).filter(Boolean).sort((a,b)=>a.diffDays-b.diffDays);
+  if(!alerts.length){wrap.innerHTML='';return;}
+  wrap.innerHTML=alerts.map(({ins,diffDays})=>{
+    const expired=diffDays<=0;
+    const urgent=diffDays<=30;
+    const bg=expired?'var(--red-bg)':urgent?'rgba(251,191,36,0.08)':'rgba(251,191,36,0.06)';
+    const border=expired?'rgba(248,113,113,0.25)':urgent?'rgba(251,191,36,0.3)':'rgba(251,191,36,0.2)';
+    const clr=expired?'var(--red)':'var(--amber)';
+    const icon=expired?'🚨':'⚠️';
+    const label=ins.type==='health'?'Health Insurance':'Term Insurance';
+    const msg=expired?`Expired ${Math.abs(diffDays)}d ago`
+      :diffDays===0?'Expires today!'
+      :diffDays<=30?`Expires in ${diffDays}d`
+      :`Expires in ${diffDays}d`;
+    return`<div onclick="navigate('goals',document.querySelectorAll('.tab-item')[1])" style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:${bg};border:1px solid ${border};border-radius:var(--r);margin-bottom:6px;cursor:pointer">
+      <span style="font-size:1rem;flex-shrink:0">${icon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.78rem;font-weight:700;color:${clr}">${msg}</div>
+        <div style="font-size:0.72rem;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ins.policyName||label} · ${label}</div>
+      </div>
+      <div style="font-size:0.62rem;font-weight:700;color:${clr};opacity:0.7;flex-shrink:0">Renew →</div>
+    </div>`;
+  }).join('');
+}
+
+
 function showBackupBanner(){
   const b=document.getElementById('backup-modal');
   if(b)b.classList.add('show');
@@ -1776,6 +1820,8 @@ function renderDashboard(){
       incomeWrap.style.display='none';
     }
   }
+  renderRetirementReadiness();
+  renderInsuranceAlerts();
 }
 
 function renderGoalHealth(){
@@ -2114,6 +2160,7 @@ function renderKids(){
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+          ${ph.target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500">${fmt(phaseCurrent)} <span style="opacity:0.6">of ${fmt(ph.target)}</span></div>`:''}
         </div>
         <div class="phase-prog">
           <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
@@ -2130,6 +2177,7 @@ function renderKids(){
         <div class="phase-info">
           <div class="phase-name">${esc(cp.label)}</div>
           <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+          ${target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500">${fmt(current)} <span style="opacity:0.6">of ${fmt(target)}</span></div>`:''}
         </div>
         <div class="phase-prog">
           <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
