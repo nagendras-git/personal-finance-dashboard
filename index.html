@@ -1374,6 +1374,9 @@ function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scro
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m)/m).toFixed(d)}
 function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
+function fmtInputBlur(el){const raw=Number((el.dataset.raw||el.value).toString().replace(/[^\d.]/g,''));if(!raw)return;el.dataset.raw=raw;el.value=fmt(raw);el.style.fontWeight='700'}
+function fmtInputFocus(el){const raw=el.dataset.raw||(el.value||'').replace(/[^\d.]/g,'');el.value=raw==='0'?'':raw;el.style.fontWeight=''}
+function rawVal(id){const el=document.getElementById(id);if(!el)return 0;return Number((el.dataset.raw&&el.dataset.raw!=='0'?el.dataset.raw:el.value).toString().replace(/[^\d.]/g,'')||0)}
 function pct(cur,tar){if(!tar||tar<=0)return 0;return Math.min(100,Math.round((cur/tar)*100))}
 function fmtDate(d){if(!d)return'';const p=d.split('-');if(p.length!==3)return d;const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const day=parseInt(p[0],10);const mon=months[parseInt(p[1],10)-1]||'';const yr=p[2];return day+' '+mon+', '+yr}
 function year(){return new Date().getFullYear()}
@@ -2455,8 +2458,8 @@ function sheetGoal(pid){
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Future Cost <span style="font-weight:600;color:var(--blue);font-size:0.62rem;letter-spacing:0">· adj.</span></label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
@@ -2506,7 +2509,7 @@ function switchGoalType(){
   closeSheet();openSheet('goal',sel.value);
 }
 function updateGoalSIP(){
-  const todayT=Number(document.getElementById('f-gtarget')?.value||0);
+  const todayT=rawVal('f-gtarget');
   const y=Number(document.getElementById('f-gtime')?.value||0);
   const infl=Number(document.getElementById('f-ginfl')?.value||7);
   const ret=Number(document.getElementById('f-gret')?.value||12);
@@ -2537,7 +2540,7 @@ function delGoal(typeId){
 function saveGoal(){
   const type=document.getElementById('f-gtype')?.value;
   const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
-  const todayTarget=Number(document.getElementById('f-gtarget')?.value||0);
+  const todayTarget=rawVal('f-gtarget');
   const yrs=Number(document.getElementById('f-gtime')?.value||0);
   const infl=Number(document.getElementById('f-ginfl')?.value||7);
   const ret=Number(document.getElementById('f-gret')?.value||12);
@@ -2824,8 +2827,8 @@ function sheetEditPhase(kidId,phaseId){
       <div><div style="font-weight:700;font-size:0.88rem">${kid.name}</div><div style="font-size:0.7rem;color:var(--text3)">${yl>0?yl+' years to this phase':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost <span style="font-weight:600;color:var(--blue);font-size:0.62rem;letter-spacing:0">· adj.</span></label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
@@ -2840,7 +2843,7 @@ function sheetEditPhase(kidId,phaseId){
       <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="ph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
-    <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
+    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
     <div class="form-sec">Link Assets</div>
     <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Update</button></div>
@@ -2872,8 +2875,8 @@ function sheetEditCustomPhase(kidId,cpId){
       <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">Age ${cp.ageStart}&#8211;${cp.ageEnd} &middot; ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="number" min="0" placeholder="0" value="${todayTarget||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost <span style="font-weight:600;color:var(--blue);font-size:0.62rem;letter-spacing:0">· adj.</span></label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--blue);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:700;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
@@ -2888,7 +2891,7 @@ function sheetEditCustomPhase(kidId,cpId){
       <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="cph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
     </div>
-    <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
+    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
     <div class="form-sec">Link Assets</div>
     <div id="cph-asset-link-list">${assetLinks}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Update</button></div>
@@ -2897,7 +2900,7 @@ function sheetEditCustomPhase(kidId,cpId){
 function updateCustomPhaseSIP(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
-  const todayT=Number(document.getElementById('f-cph-target')?.value||0);
+  const todayT=rawVal('f-cph-target');
   const infl=Number(document.getElementById('f-cph-infl')?.value||10);
   const ret=Number(document.getElementById('f-cph-ret')?.value||12);
   const checkedIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cphal-',''));
@@ -2941,7 +2944,7 @@ function toggleCPHAssetLink(kidId,cpId,assetId){
 function saveCustomPhase(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
-  const todayTarget=Number(document.getElementById('f-cph-target')?.value||0);
+  const todayTarget=rawVal('f-cph-target');
   const infl=Number(document.getElementById('f-cph-infl')?.value||10);
   const ret=Number(document.getElementById('f-cph-ret')?.value||12);
   const yl=yearsUntil(kid.birthYear,cp.ageStart);
@@ -2979,7 +2982,7 @@ function togglePhaseAssetLink(assetId,kidId,phaseId){
 }
 function updateSIPLive(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);const pd=KID_PHASES.find(p=>p.id===phaseId);if(!kid||!pd)return;
-  const todayT=Number(document.getElementById('f-pht')?.value||0);
+  const todayT=rawVal('f-pht');
   const infl=Number(document.getElementById('f-phinfl')?.value||10);
   const ret=Number(document.getElementById('f-phret')?.value||12);
   const checkedIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('pal-',''));
@@ -3001,7 +3004,7 @@ function savePhase(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   let ph=kid.phases.find(p=>p.phaseId===phaseId);
   if(!ph){ph={phaseId,enabled:true,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ph)}
-  const todayTarget=Number(document.getElementById('f-pht').value||0);
+  const todayTarget=rawVal('f-pht');
   const infl=Number(document.getElementById('f-phinfl')?.value||10);
   const ret=Number(document.getElementById('f-phret')?.value||12);
   const yl=yearsUntil(kid.birthYear,KID_PHASES.find(p=>p.id===phaseId)?.ageStart||0);
