@@ -982,6 +982,8 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
   </div>
 
+  <!-- FINANCIAL SAFETY BANNER -->
+  <div class="container" style="padding-top:8px;padding-bottom:0" id="dash-safety-wrap"></div>
   <!-- INSURANCE EXPIRY ALERTS -->
   <div class="container" style="padding-top:0;padding-bottom:4px" id="dash-ins-alert-wrap"></div>
 
@@ -1627,6 +1629,80 @@ function renderInsuranceAlerts(){
   }).join('');
 }
 
+/* ── FINANCIAL SAFETY CHECK ── */
+function dismissSafetyBanner(){
+  // Store dismissed state with a hash of current gaps so it re-shows if situation changes
+  const gaps=_getSafetyGaps();
+  const key='safety_dismissed_'+gaps.map(g=>g.id).join('_');
+  localStorage.setItem('wp_safety_dismiss',key);
+  const wrap=document.getElementById('dash-safety-wrap');
+  if(wrap)wrap.innerHTML='';
+}
+function _getSafetyGaps(){
+  const gaps=[];
+  const expenses=Number(data.profile.monthlyExpenses||0);
+  if(expenses>0){
+    const efGoal=data.goals.find(g=>g.type==='emergency');
+    const efLinked=efGoal?.linkedAssetIds||[];
+    const efSaved=efLinked.length>0?linkedAssetTotal(efLinked):Number(efGoal?.current||0);
+    const efRequired=expenses*6;
+    if(efSaved<efRequired){
+      const shortfall=efRequired-efSaved;
+      gaps.push({id:'ef',icon:'🛡️',title:'Emergency Fund',
+        detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (6 months)`:`Build ${fmt(efRequired)} — 6× your monthly expenses`,
+        badge:efSaved>0?`${fmt(shortfall)} short`:'Not started',
+        badgeClr:efSaved>0?'var(--amber)':'var(--red)',
+        action:'Set up →', onclick:`openSheet('goal','emergency')`});
+    }
+  }
+  const hasHealth=data.insurance.some(i=>i.type==='health');
+  if(!hasHealth) gaps.push({id:'health',icon:'🏥',title:'Health Insurance',
+    detail:'Shields your savings from medical emergencies',
+    badge:'Missing',badgeClr:'var(--red)',action:'Add →',
+    onclick:`openSheet('insurance',null);setTimeout(()=>{const e=document.getElementById('f-ins-type');if(e)e.value='health'},100)`});
+  const hasTerm=data.insurance.some(i=>i.type==='term');
+  if(!hasTerm) gaps.push({id:'term',icon:'🔒',title:'Term Insurance',
+    detail:'Income protection for your family',
+    badge:'Missing',badgeClr:'var(--red)',action:'Add →',
+    onclick:`openSheet('insurance',null);setTimeout(()=>{const e=document.getElementById('f-ins-type');if(e)e.value='term'},100)`});
+  return gaps;
+}
+function renderSafetyCheck(){
+  const wrap=document.getElementById('dash-safety-wrap');if(!wrap)return;
+  const gaps=_getSafetyGaps();
+  if(!gaps.length){wrap.innerHTML='';return;}
+
+  // Check if user dismissed this exact set of gaps
+  const key='safety_dismissed_'+gaps.map(g=>g.id).join('_');
+  if(localStorage.getItem('wp_safety_dismiss')===key){wrap.innerHTML='';return;}
+
+  const n=gaps.length;
+  // Escalating tone: 1 gap = friendly nudge, 2 = moderate, 3 = urgent
+  const tone = n===1
+    ? {emoji:'💡', label:'Quick heads-up', sub:'One thing worth setting up for peace of mind', bg:'rgba(59,130,246,0.06)', border:'rgba(59,130,246,0.18)', clr:'var(--blue)'}
+    : n===2
+    ? {emoji:'⚠️', label:'Safety gaps found', sub:'Set these up before growing your portfolio', bg:'rgba(251,191,36,0.07)', border:'rgba(251,191,36,0.22)', clr:'var(--amber)'}
+    : {emoji:'🚨', label:'Financial safety at risk', sub:'These 3 foundations must come before any investment', bg:'var(--red-bg)', border:'rgba(248,113,113,0.25)', clr:'var(--red)'};
+
+  wrap.innerHTML=`<div style="background:${tone.bg};border:1px solid ${tone.border};border-radius:var(--r-lg);overflow:hidden">
+    <div style="display:flex;align-items:center;gap:9px;padding:10px 13px 9px;border-bottom:1px solid ${tone.border}">
+      <span style="font-size:1rem;flex-shrink:0">${tone.emoji}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.76rem;font-weight:800;color:${tone.clr}">${tone.label}</div>
+        <div style="font-size:0.65rem;color:var(--text3);margin-top:1px">${tone.sub}</div>
+      </div>
+      <button onclick="dismissSafetyBanner()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;flex-shrink:0;opacity:0.6" title="Dismiss">✕</button>
+    </div>
+    ${gaps.map((g,i)=>`<div onclick="${g.onclick}" style="display:flex;align-items:center;gap:10px;padding:9px 13px;${i<gaps.length-1?'border-bottom:1px solid '+tone.border+';':''}cursor:pointer" ontouchstart="this.style.background='var(--surface2)'" ontouchend="this.style.background=''">
+      <span style="font-size:0.95rem;flex-shrink:0">${g.icon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:6px">${g.title}<span style="font-size:0.65rem;font-weight:700;color:${g.badgeClr};background:${g.badgeClr==='var(--red)'?'var(--red-bg)':'var(--amber-bg)'};padding:1px 6px;border-radius:99px">${g.badge}</span></div>
+        <div style="font-size:0.68rem;color:var(--text3);margin-top:2px">${g.detail}</div>
+      </div>
+      <div style="font-size:0.7rem;font-weight:700;color:${g.badgeClr};flex-shrink:0">${g.action}</div>
+    </div>`).join('')}
+  </div>`;
+}
 
 function showBackupBanner(){
   const b=document.getElementById('backup-modal');
@@ -1822,6 +1898,7 @@ function renderDashboard(){
   }
   renderRetirementReadiness();
   renderInsuranceAlerts();
+  renderSafetyCheck();
 }
 
 function renderGoalHealth(){
