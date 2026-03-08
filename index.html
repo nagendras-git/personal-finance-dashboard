@@ -2160,7 +2160,7 @@ function renderKids(){
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
           <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
-          ${ph.target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500">${fmt(phaseCurrent)} <span style="opacity:0.6">of ${fmt(ph.target)}</span></div>`:''}
+          ${ph.target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500"><span style="color:var(--text2)">${fmt(phaseCurrent)}</span> of ${fmt(ph.target)}</div>`:''}
         </div>
         <div class="phase-prog">
           <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
@@ -2177,7 +2177,7 @@ function renderKids(){
         <div class="phase-info">
           <div class="phase-name">${esc(cp.label)}</div>
           <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
-          ${target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500">${fmt(current)} <span style="opacity:0.6">of ${fmt(target)}</span></div>`:''}
+          ${target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500"><span style="color:var(--text2)">${fmt(current)}</span> of ${fmt(target)}</div>`:''}
         </div>
         <div class="phase-prog">
           <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
@@ -2365,12 +2365,12 @@ function sheetGoal(pid){
   const sip=adjTarget&&yrs?sipNeeded(adjTarget,autoCurrent,yrs,ret/100):0;
 
   const savedField=linkedIds.length>0
-    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
+    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
          <span style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="number" placeholder="0" value="${g.current||''}" oninput="updateGoalSIP()"/></div>`;
 
   return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
   <div class="sheet-body">
@@ -2384,18 +2384,16 @@ function sheetGoal(pid){
       <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-gret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateGoalSIP()"/></div>
     </div>
     <div id="goal-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
-      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:2px">Inflation-Adjusted Target</div>
-      <div style="display:flex;align-items:baseline;gap:6px">
-        <span style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1)" id="goal-adj-val">${fmt(adjTarget)}</span>
-        <span style="font-size:0.7rem;color:var(--text3)" id="goal-adj-note">₹${todayTarget>0?fmt(todayTarget).replace('₹',''):0} today → ${fmt(adjTarget)} in ${yrs}y at ${infl}%</span>
-      </div>
+      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:4px">Inflation-Adjusted Target</div>
+      <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1);margin-bottom:3px" id="goal-adj-val">${fmt(adjTarget)}</div>
+      <div style="font-size:0.7rem;color:var(--text3)" id="goal-adj-note">${todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yrs+'y at '+infl+'%':''}</div>
     </div>
     ${savedField}
     <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
       <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7" id="goal-sip-rate">@ ${ret}% p.a.</span></div>
       <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
-    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
+    <div class="form-sec">Link Assets</div>
     <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions">${g.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delGoal(\''+pr.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveGoal()">${g.id?'Update':'Save'}</button></div>
   </div>`}
@@ -2412,7 +2410,7 @@ function toggleGoalAssetLink(assetId){
     // Replace manual input with auto display in-place
     const wrap=manualEl.closest('.fg');
     if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
+      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
         <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
           <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
           <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
@@ -2541,12 +2539,12 @@ function sheetCustomGoal(id){
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
   const sip = cg.target&&cg.timePeriod ? sipNeeded(Number(cg.target),autoCurrent,Number(cg.timePeriod)) : 0;
   const savedField=linkedIds.length>0
-    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
+    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
          <span id="cg-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'New'} Custom Goal</div>${closeX}</div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-cg-name" placeholder="e.g. Car Purchase, Business Fund…" value="${cg.name||''}"/></div>
@@ -2559,7 +2557,7 @@ function sheetCustomGoal(id){
       <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
       <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
-    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
+    <div class="form-sec">Link Assets</div>
     <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions">
       ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delCustomGoal(\''+cg.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
@@ -2576,7 +2574,7 @@ function toggleCGAssetLink(assetId){
   if(manualEl){
     const wrap=manualEl.closest('.fg');
     if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
+      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
         <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
           <span id="cg-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
           <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
@@ -2738,12 +2736,12 @@ function sheetEditPhase(kidId,phaseId){
   const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
   const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
   const savedField=linkedIds.length>0
-    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
+    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
          <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— or link assets below</span></label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="number" placeholder="0" value="${ph.current||''}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title"><span style="display:inline-flex;align-items:center;width:16px;height:16px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,"").replace("</svg>","")}</svg></span> ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
@@ -2759,11 +2757,9 @@ function sheetEditPhase(kidId,phaseId){
       <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-phret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
     </div>
     <div id="ph-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
-      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:2px">Inflation-Adjusted Target</div>
-      <div style="display:flex;align-items:baseline;gap:6px">
-        <span style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1)" id="ph-adj-val">${fmt(adjTarget)}</span>
-        <span style="font-size:0.7rem;color:var(--text3)" id="ph-adj-note">${todayTarget>0?fmt(todayTarget).replace('₹','₹')+' today → '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</span>
-      </div>
+      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:4px">Inflation-Adjusted Target</div>
+      <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1);margin-bottom:3px" id="ph-adj-val">${fmt(adjTarget)}</div>
+      <div style="font-size:0.7rem;color:var(--text3)" id="ph-adj-note">${todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
     </div>
     ${savedField}
     <div id="sip-preview" style="${sip>0?'':'display:none'}" class="sip-callout">
@@ -2771,7 +2767,7 @@ function sheetEditPhase(kidId,phaseId){
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
-    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
+    <div class="form-sec">Link Assets</div>
     <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Update</button></div>
   </div>`}
@@ -2788,12 +2784,12 @@ function sheetEditCustomPhase(kidId,cpId){
   const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
   const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
   const savedField=linkedIds.length>0
-    ?`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; auto from linked assets</span></label>
+    ?`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; linked</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
          <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&#8212; or link assets below</span></label><input class="fi" id="f-cph-current" type="number" min="0" placeholder="0" value="${cp.current||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (&#8377;)</label><input class="fi" id="f-cph-current" type="number" min="0" placeholder="0" value="${cp.current||''}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
   const assetLinks=data.assets.length?data.assets.map(a=>{const on=linkedIds.includes(a.id);return`<div class="inv-link-item ${on?'on':''}" id="cphal-${a.id}" onclick="toggleCPHAssetLink('${kidId}','${cpId}','${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';
   return`<div class="sheet-hdr"><div class="sheet-title">&#128204; ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
@@ -2810,11 +2806,9 @@ function sheetEditCustomPhase(kidId,cpId){
       <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-cph-ret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
     </div>
     <div id="cph-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
-      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:2px">Inflation-Adjusted Target</div>
-      <div style="display:flex;align-items:baseline;gap:6px">
-        <span style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1)" id="cph-adj-val">${fmt(adjTarget)}</span>
-        <span style="font-size:0.7rem;color:var(--text3)" id="cph-adj-note">${todayTarget>0?fmt(todayTarget)+' today &#8594; '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</span>
-      </div>
+      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:4px">Inflation-Adjusted Target</div>
+      <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1);margin-bottom:3px" id="cph-adj-val">${fmt(adjTarget)}</div>
+      <div style="font-size:0.7rem;color:var(--text3)" id="cph-adj-note">${todayTarget>0?fmt(todayTarget)+' today &#8594; '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
     </div>
     ${savedField}
     <div id="cph-sip-box" style="${sip>0?'':'display:none'}" class="sip-callout">
@@ -2822,7 +2816,7 @@ function sheetEditCustomPhase(kidId,cpId){
       <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
     </div>
     <div class="fg" style="margin-top:11px"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
-    <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&#8212; saved amount auto-updates</span></div>
+    <div class="form-sec">Link Assets</div>
     <div id="cph-asset-link-list">${assetLinks}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Update</button></div>
   </div>`
@@ -2861,7 +2855,7 @@ function toggleCPHAssetLink(kidId,cpId,assetId){
   if(manualEl){
     const wrap=manualEl.closest('.fg');
     if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; auto from linked assets</span></label>
+      wrap.innerHTML=`<label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; linked</span></label>
         <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
           <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
           <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
@@ -2900,7 +2894,7 @@ function togglePhaseAssetLink(assetId,kidId,phaseId){
   if(manualEl){
     const wrap=manualEl.closest('.fg');
     if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
+      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
         <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
           <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
           <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
