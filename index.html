@@ -1372,7 +1372,8 @@ function fmtDate(d){if(!d)return'';const p=d.split('-');if(p.length!==3)return d
 function year(){return new Date().getFullYear()}
 function age(bYear){return year()-bYear}
 function yearsUntil(bYear,ageTarget){return Math.max(0,(bYear+ageTarget)-year())}
-function sipNeeded(target,current,years){const r=0.12/12;const n=years*12;if(n<=0)return Math.max(0,target-current);const fv=current*Math.pow(1+r,n);const needed=target-fv;return needed<=0?0:needed*r/(Math.pow(1+r,n)-1)}
+function sipNeeded(target,current,years,annualReturn){const rate=annualReturn||0.12;const r=rate/12;const n=years*12;if(n<=0)return Math.max(0,target-current);const fv=current*Math.pow(1+r,n);const needed=target-fv;return needed<=0?0:needed*r/(Math.pow(1+r,n)-1)}
+function inflAdj(todayVal,years,inflRate){return todayVal*Math.pow(1+(inflRate||0.07),years||0)}
 function linkedAssetTotal(ids){if(!ids||!ids.length)return 0;return (ids).reduce((s,id)=>{const a=data.assets.find(x=>x.id===id);return s+Number(a?.currentValue||0)},0)}
 function getAsset(v){return ASSET_CATS.find(c=>c.v===v)||ASSET_CATS[ASSET_CATS.length-1]}
 function getLiab(v){return LIAB_CATS.find(c=>c.v===v)||LIAB_CATS[LIAB_CATS.length-1]}
@@ -1906,12 +1907,34 @@ function renderGoals(){
         ${chevronSvg}
       </div>`;
     }
-    return policies.map(ins=>{
+    // Calculate total cover for this type
+    const totalCover=policies.reduce((s,p)=>s+Number(p.coverAmount||0),0);
+    return policies.map((ins,idx)=>{
       const insTypeLabel=ins.type==='health'?'Health Insurance':'Term Insurance';
+      // Adequacy hint (only on last policy of each type)
+      let adequacyHtml='';
+      if(idx===policies.length-1 && totalCover>0){
+        if(ins.type==='health'){
+          // Health: recommend ₹10L+ per family, ideally ₹25L+ with medical inflation
+          const income=Number(data.profile.monthlyIncome||0)*12;
+          const recommended=Math.max(1000000, income>0?income*0.5:1000000);
+          if(totalCover>=recommended) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover looks adequate (${fmt(totalCover)} total)</div>`;
+          else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Consider increasing cover — ${fmt(totalCover)} may not suffice at 14% medical inflation</div>`;
+        } else {
+          // Term: recommend 10-15x annual income
+          const income=Number(data.profile.monthlyIncome||0)*12;
+          if(income>0){
+            const rec10x=income*10;
+            if(totalCover>=rec10x) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover is ${Math.round(totalCover/income)}x annual income (${fmt(totalCover)})</div>`;
+            else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Cover is only ${Math.round(totalCover/income)}x income — aim for 10-15x (${fmt(rec10x)}+)</div>`;
+          }
+        }
+      }
       let detailsHtml=`<div style="display:flex;flex-direction:column;gap:3px;margin-top:5px">
         ${ins.coverAmount?`<div style="font-size:0.78rem;color:var(--text2)">Cover <span style="color:var(--text1);font-weight:600">${fmt(ins.coverAmount)}</span></div>`:''}
         ${ins.premium?`<div style="font-size:0.78rem;color:var(--text2)">Premium <span style="color:var(--text1);font-weight:600">${fmt(ins.premium)}/yr</span></div>`:''}
         ${ins.expiry?`<div style="font-size:0.78rem;color:var(--text2)">Expiry on <span style="color:var(--text1);font-weight:600">${fmtDate(ins.expiry)}</span></div>`:''}
+        ${adequacyHtml}
       </div>`;
       return`<div class="goal-row" onclick="openSheet('insurance','${ins.id}')">
         ${goalIconBox(pr)}
@@ -1928,13 +1951,15 @@ function renderGoals(){
   function savingsRow(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
     const target=Number(g.target||0);
-    // Auto-derive current from linked assets; fall back to manual if no assets linked
+    const todayTarget=Number(g.todayTarget||g.target||0);
     const linkedIds=g.linkedAssetIds||[];
     const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(g.current||0);
     const p=pct(current,target);
+    const ret=g.expectedReturn||12;
     let pCls='pill-muted',pTxt='Not Set';
     if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
     const autoTag=linkedIds.length>0?`<span style="font-size:0.84rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
+    const inflTag=(target>todayTarget&&todayTarget>0)?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">(${fmt(todayTarget)} today)</span>`:'';
     return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
       ${goalIconBox(pr)}
       <div class="goal-body">
@@ -1942,7 +1967,7 @@ function renderGoals(){
         <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#3B82F6;width:${p}%"></div></div>
         <div class="goal-amounts">
           <span class="goal-saved">${fmt(current)}${autoTag}</span>
-          <span class="goal-target">${target>0?'of '+fmt(target)+(g.timePeriod?' · '+g.timePeriod+'y':''):'Tap to set'}</span>
+          <span class="goal-target">${target>0?'of '+fmt(target)+inflTag+(g.timePeriod?' · '+g.timePeriod+'y':''):'Tap to set'}</span>
           <span class="goal-pct" style="color:#3B82F6">${p}%</span>
         </div>
       </div>
@@ -2284,9 +2309,13 @@ function sheetGoal(pid){
 
   const linkedIds=g.linkedAssetIds||[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
-  const sip=g.target&&g.timePeriod?sipNeeded(Number(g.target),autoCurrent,Number(g.timePeriod)):0;
+  const todayTarget=Number(g.todayTarget||g.target||0);
+  const infl=g.inflationRate!=null?g.inflationRate:7;
+  const ret=g.expectedReturn!=null?g.expectedReturn:12;
+  const yrs=Number(g.timePeriod||0);
+  const adjTarget=yrs>0?Math.round(inflAdj(todayTarget,yrs,infl/100)):todayTarget;
+  const sip=adjTarget&&yrs?sipNeeded(adjTarget,autoCurrent,yrs,ret/100):0;
 
-  // Build saved display — auto if linked, editable if not
   const savedField=linkedIds.length>0
     ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● auto from linked assets</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
@@ -2299,12 +2328,23 @@ function sheetGoal(pid){
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${g.target||''}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Target in Today's Value (₹)</label><input class="fi" id="f-gtarget" type="number" placeholder="0" value="${todayTarget||''}" oninput="updateGoalSIP()"/></div>
       <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-ginfl" type="number" step="0.5" placeholder="7" value="${infl}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-gret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateGoalSIP()"/></div>
+    </div>
+    <div id="goal-adj-box" style="${adjTarget>todayTarget&&todayTarget>0?'':'display:none'};padding:9px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:var(--r);margin-bottom:4px">
+      <div style="font-size:0.62rem;font-weight:700;color:var(--blue);margin-bottom:2px">Inflation-Adjusted Target</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <span style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--text1)" id="goal-adj-val">${fmt(adjTarget)}</span>
+        <span style="font-size:0.7rem;color:var(--text3)" id="goal-adj-note">₹${todayTarget>0?fmt(todayTarget).replace('₹',''):0} today → ${fmt(adjTarget)} in ${yrs}y at ${infl}%</span>
+      </div>
     </div>
     ${savedField}
     <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
-      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7" id="goal-sip-rate">@ ${ret}% p.a.</span></div>
       <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="form-sec">Link Assets <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— saved amount auto-updates</span></div>
@@ -2342,14 +2382,27 @@ function switchGoalType(){
   closeSheet();openSheet('goal',sel.value);
 }
 function updateGoalSIP(){
-  const t=Number(document.getElementById('f-gtarget')?.value||0);
+  const todayT=Number(document.getElementById('f-gtarget')?.value||0);
   const y=Number(document.getElementById('f-gtime')?.value||0);
+  const infl=Number(document.getElementById('f-ginfl')?.value||7);
+  const ret=Number(document.getElementById('f-gret')?.value||12);
+  const adjT=y>0?Math.round(inflAdj(todayT,y,infl/100)):todayT;
+  // Update inflation box
+  const adjBox=document.getElementById('goal-adj-box');
+  const adjVal=document.getElementById('goal-adj-val');
+  const adjNote=document.getElementById('goal-adj-note');
+  if(adjBox){adjBox.style.display=(adjT>todayT&&todayT>0)?'':'none';}
+  if(adjVal)adjVal.textContent=fmt(adjT);
+  if(adjNote)adjNote.textContent=fmt(todayT)+' today → '+fmt(adjT)+' in '+y+'y at '+infl+'%';
+  // Update SIP rate display
+  const rateEl=document.getElementById('goal-sip-rate');
+  if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
   // Use auto total if assets linked, else manual input
   const checkedIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('gal-',''));
   const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-gcurrent')?.value||0);
   const box=document.getElementById('goal-sip-box');
   const valEl=document.getElementById('goal-sip-val');
-  if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
+  if(adjT>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,y,ret/100));}
   else{if(box)box.style.display='none';}
 }
 function delGoal(typeId){
@@ -2363,11 +2416,18 @@ function delGoal(typeId){
 function saveGoal(){
   const type=document.getElementById('f-gtype')?.value;
   const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
+  const todayTarget=Number(document.getElementById('f-gtarget')?.value||0);
+  const yrs=Number(document.getElementById('f-gtime')?.value||0);
+  const infl=Number(document.getElementById('f-ginfl')?.value||7);
+  const ret=Number(document.getElementById('f-gret')?.value||12);
+  const adjTarget=yrs>0?Math.round(inflAdj(todayTarget,yrs,infl/100)):todayTarget;
   let obj={type,name:pr.name};
-  obj.target=Number(document.getElementById('f-gtarget')?.value||0);
+  obj.todayTarget=todayTarget;
+  obj.target=adjTarget;
   obj.timePeriod=document.getElementById('f-gtime')?.value||'';
+  obj.inflationRate=infl;
+  obj.expectedReturn=ret;
   obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
-  // Only save manual current if no assets linked
   if(!obj.linkedAssetIds.length) obj.current=Number(document.getElementById('f-gcurrent')?.value||0);
   const ex=data.goals.find(g=>g.type===type);
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
