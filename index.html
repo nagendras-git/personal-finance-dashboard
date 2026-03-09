@@ -1374,7 +1374,7 @@ function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scro
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m)/m).toFixed(d)}
 function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
-function fmtInputBlur(el){const raw=Number((el.dataset.raw||el.value).toString().replace(/[^\d.]/g,''));if(!raw)return;el.dataset.raw=raw;el.value=fmt(raw)}
+function fmtInputBlur(el){const typed=el.value.toString().replace(/[^\d.]/g,'');const raw=Number(typed||el.dataset.raw||0);if(!raw){el.dataset.raw='';return}el.dataset.raw=raw;el.value=fmt(raw)}
 function fmtInputFocus(el){const raw=el.dataset.raw||(el.value||'').replace(/[^\d.]/g,'');el.value=raw==='0'?'':raw}
 function rawVal(id){const el=document.getElementById(id);if(!el)return 0;return Number((el.dataset.raw&&el.dataset.raw!=='0'?el.dataset.raw:el.value).toString().replace(/[^\d.]/g,'')||0)}
 function pct(cur,tar){if(!tar||tar<=0)return 0;return Math.min(100,Math.round((cur/tar)*100))}
