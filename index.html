@@ -68,8 +68,8 @@
   --green-bg:  rgba(34,197,94,0.1);
   --red:       #f87171;
   --red-bg:    rgba(248,113,113,0.1);
-  --amber:     #fbbf24;
-  --amber-bg:  rgba(251,191,36,0.1);
+  --amber:     #6366f1;
+  --amber-bg:  rgba(99,102,241,0.1);
 
   --accent:    rgba(255,255,255,0.9);
   --accent2:   rgba(255,255,255,0.06);
@@ -102,18 +102,22 @@
 [data-theme="light"] {
   --bg:       #f2f2f7;
   --surface:  #ffffff;
-  --surface2: #ffffff;
-  --surface3: #f0f0f5;
-  --border:   #c8c8d8;
-  --border2:  #d8d8e4;
-  --text1:    #1a1a25;
-  --text2:    #606078;
-  --text3:    #9898b0;
+  --surface2: #f7f7fb;
+  --surface3: #ededf3;
+  --border:   #d4d4e0;
+  --border2:  #e4e4ee;
+  --text1:    #111120;
+  --text2:    #52526e;
+  --text3:    #9090aa;
   --accent2:  rgba(0,0,0,0.04);
   --scrim:    rgba(0,0,0,0.45);
+  --green:     #16a34a;
+  --green-bg:  rgba(22,163,74,0.08);
+  --red:       #dc2626;
+  --red-bg:    rgba(220,38,38,0.08);
 }
-[data-theme="light"] .top-header { background: var(--bg); box-shadow: none; border-bottom: 1px solid var(--border) }
-[data-theme="light"] .tab-bar { background: var(--bg); border-top: 1px solid var(--border) }
+[data-theme="light"] .top-header { background: rgba(242,242,247,0.97); box-shadow: none; border-bottom: 1px solid var(--border) }
+[data-theme="light"] .tab-bar { background: rgba(242,242,247,0.98); border-top: 1px solid var(--border) }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
 html { height:100%; overflow-x:hidden; font-size:16px; background:var(--bg) }
@@ -275,8 +279,7 @@ body.scroll-locked {
 .ins-type-tag { font-size:0.62rem; font-weight:700; color:var(--text3); letter-spacing:0.3px; text-transform:uppercase; margin-top:1px }
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
 .goal-name { font-size:0.88rem; font-weight:600; color:var(--text1) }
-.goal-pct { font-size:0.84rem; font-weight:800; color:var(--text1); flex-shrink:0 }
-[data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
+.goal-pct { font-size:0.84rem; font-weight:800; color:#3B82F6; flex-shrink:0 }
 .prog-track { height:6px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .prog-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .goal-amounts { display:flex; align-items:center; justify-content:space-between; margin-top:5px }
@@ -374,9 +377,9 @@ body.scroll-locked {
 
 /* ── LIGHT MODE: all financial values dark & bold ── */
 [data-theme="light"] .acat-val { color:var(--text1); font-weight:700 }
-[data-theme="light"] .acat-pct { color:#3B82F6; font-weight:700 }
-[data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
-[data-theme="light"] .mini-pct { color:var(--text1); font-weight:700 }
+[data-theme="light"] .acat-pct { color:#2563EB; font-weight:700 }
+[data-theme="light"] .goal-pct { color:#2563EB; font-weight:700 }
+[data-theme="light"] .mini-pct { color:#2563EB; font-weight:700 }
 [data-theme="light"] .sec-total { color:var(--text1); font-weight:700 }
 [data-theme="light"] .row-value { color:var(--text1); font-weight:700 }
 [data-theme="light"] .goal-saved { color:var(--text1); font-weight:700 }
@@ -385,6 +388,21 @@ body.scroll-locked {
 [data-theme="light"] .cf-val { color:var(--text1); font-weight:700 }
 [data-theme="light"] .gh-pct { color:var(--text1); font-weight:700 }
 [data-theme="light"] .stat-val { color:var(--text1); font-weight:700 }
+/* Light mode: secondary text clearly subordinate */
+[data-theme="light"] .row-sub { color:var(--text3) }
+[data-theme="light"] .goal-target { color:var(--text3) }
+[data-theme="light"] .phase-age { color:var(--text3) }
+[data-theme="light"] .phase-name { color:var(--text1); font-weight:600 }
+[data-theme="light"] .goal-name { color:var(--text1) }
+[data-theme="light"] .row-title { color:var(--text1) }
+[data-theme="light"] .stat-label { color:#6b6b88 }
+[data-theme="light"] .inv-stat-label { color:#6b6b88 }
+[data-theme="light"] .wealth-item-label { color:#6b6b88 }
+[data-theme="light"] .cf-label { color:#6b6b88 }
+
+[data-theme="light"] .prog-track { background: #e2e2ee }
+[data-theme="light"] .mini-prog { background: #e2e2ee }
+[data-theme="light"] .acat-bar-wrap { background: #e2e2ee }
 
 /* ── MID-LABEL: dashboard section labels — readable but subordinate ── */
 .lbl {
@@ -435,7 +453,7 @@ body.scroll-locked {
 .pill { display:inline-flex; align-items:center; padding:2px 8px; border-radius:99px; font-size:0.63rem; font-weight:600 }
 .pill-green  { background:rgba(34,197,94,0.12);  color:#16a34a; border:1px solid rgba(34,197,94,0.25) }
 .pill-red    { background:rgba(248,113,113,0.12); color:#dc2626; border:1px solid rgba(248,113,113,0.25) }
-.pill-amber  { background:rgba(251,191,36,0.12);  color:#b45309; border:1px solid rgba(251,191,36,0.3) }
+.pill-amber  { background:rgba(99,102,241,0.1); color:#4f46e5; border:1px solid rgba(99,102,241,0.25) }
 .pill-muted  { background:var(--surface2); color:var(--text3); border:1px solid var(--border) }
 .pill-blue   { background:rgba(59,130,246,0.12);  color:#3B82F6; border:1px solid rgba(59,130,246,0.25) }
 
@@ -786,7 +804,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 .ret-bar { height:100%; border-radius:99px; transition:width 0.6s var(--ease) }
 
 /* ── DEBT PAYOFF BADGE ── */
-.payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.66rem; font-weight:700; color:var(--amber); background:var(--amber-bg); border:1px solid rgba(251,191,36,0.2); border-radius:99px; padding:2px 8px; margin-top:4px }
+.payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.66rem; font-weight:700; color:#4f46e5; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.2); border-radius:99px; padding:2px 8px; margin-top:4px }
 
 /* ── SWIPE INDICATOR ON SHEET HANDLE ── */
 .sheet-handle, .qa-handle { cursor:grab }
@@ -1309,7 +1327,7 @@ const ASSET_CATS = [
   {v:'MutualFunds',l:'Mutual Funds',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>', color:'#34d399', cat:'growth'},
   {v:'ETF',  l:'ETF',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>', color:'#4ade80', cat:'growth'},
   {v:'Stocks',l:'Stocks',      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>', color:'#fb923c', cat:'growth'},
-  {v:'Gold', l:'Gold / Hedge', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', color:'#fbbf24', cat:'hedge'},
+  {v:'Gold', l:'Gold / Hedge', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', color:'#d97706', cat:'hedge'},
   {v:'RealEstate',l:'Real Estate',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="4" y1="7" x2="9" y2="7"/><line x1="4" y1="12" x2="9" y2="12"/><line x1="4" y1="17" x2="9" y2="17"/><line x1="14" y1="7" x2="20" y2="7"/><line x1="14" y1="12" x2="20" y2="12"/><line x1="14" y1="17" x2="20" y2="17"/></svg>', color:'#f87171', cat:'real'},
   {v:'FD',   l:'Fixed Deposit',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="11" rx="2"/><path d="M12 16v2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>', color:'#a78bfa', cat:'safe'},
   {v:'NPS',  l:'NPS',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>', color:'#38bdf8', cat:'safe'},
@@ -1340,7 +1358,7 @@ const GOAL_PRESETS = [
    color:'#fb923c', light:'rgba(251,146,60,0.1)', isIns:false},
   {id:'retirement', name:'Retirement',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M4.93 4.93l2.83 2.83M2 12h4M4.93 19.07l2.83-2.83M12 22v-4M19.07 19.07l-2.83-2.83M22 12h-4M19.07 4.93l-2.83 2.83"/><circle cx="12" cy="12" r="4"/></svg>`,
-   color:'#fbbf24', light:'rgba(251,191,36,0.1)', isIns:false},
+   color:'#d97706', light:'rgba(217,119,6,0.1)', isIns:false},
 ];
 const KID_PHASES = [
   {id:'playschool',  label:'Play School',    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><line x1="16" y1="11" x2="22" y2="11"/><line x1="19" y1="8" x2="19" y2="14"/></svg>', ageStart:2.5,ageEnd:5,  color:'#fb923c'},
@@ -1582,7 +1600,7 @@ function renderRetirementReadiness(){
   const sipFV=monthlySIP*((Math.pow(1+r,n)-1)/r);
   const totalProjected=projected+sipFV;
   const readiness=Math.min(100,Math.round((totalProjected/target)*100));
-  const color=readiness>=80?'var(--green)':readiness>=50?'var(--amber)':'var(--red)';
+  const color=readiness>=80?'var(--green)':readiness>=50?'#6366f1':'var(--red)';
   const barEl=document.getElementById('ret-bar');
   const lblEl=document.getElementById('ret-pct-label');
   const metaEl=document.getElementById('ret-meta');
@@ -1614,9 +1632,9 @@ function renderInsuranceAlerts(){
   wrap.innerHTML=alerts.map(({ins,diffDays})=>{
     const expired=diffDays<=0;
     const urgent=diffDays<=30;
-    const bg=expired?'var(--red-bg)':urgent?'rgba(251,191,36,0.08)':'rgba(251,191,36,0.06)';
-    const border=expired?'rgba(248,113,113,0.25)':urgent?'rgba(251,191,36,0.3)':'rgba(251,191,36,0.2)';
-    const clr=expired?'var(--red)':'var(--amber)';
+    const bg=expired?'var(--red-bg)':urgent?'rgba(99,102,241,0.07)':'rgba(99,102,241,0.05)';
+    const border=expired?'rgba(248,113,113,0.25)':urgent?'rgba(99,102,241,0.25)':'rgba(99,102,241,0.18)';
+    const clr=expired?'var(--red)':'#6366f1';
     const icon=expired?'🚨':'⚠️';
     const label=ins.type==='health'?'Health Insurance':'Term Insurance';
     const msg=expired?`Expired ${Math.abs(diffDays)}d ago`
@@ -1656,7 +1674,7 @@ function _getSafetyGaps(){
       gaps.push({id:'ef',icon:'🛡️',title:'Emergency Fund',
         detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (6 months)`:`Build ${fmt(efRequired)} — 6× your monthly expenses`,
         badge:efSaved>0?`${fmt(shortfall)} short`:'Not started',
-        badgeClr:efSaved>0?'var(--amber)':'var(--red)',
+        badgeClr:efSaved>0?'#6366f1':'var(--red)',
         action:'Set up →', onclick:`openSheet('goal','emergency')`});
     }
   }
@@ -1686,7 +1704,7 @@ function renderSafetyCheck(){
   const tone = n===1
     ? {emoji:'💡', label:'Quick heads-up', sub:'One thing worth setting up for peace of mind', bg:'rgba(59,130,246,0.06)', border:'rgba(59,130,246,0.18)', clr:'var(--blue)'}
     : n===2
-    ? {emoji:'⚠️', label:'Safety gaps found', sub:'Set these up before growing your portfolio', bg:'rgba(251,191,36,0.07)', border:'rgba(251,191,36,0.22)', clr:'var(--amber)'}
+    ? {emoji:'⚠️', label:'Safety gaps found', sub:'Set these up before growing your portfolio', bg:'rgba(99,102,241,0.06)', border:'rgba(99,102,241,0.2)', clr:'#6366f1'}
     : {emoji:'🚨', label:'Financial safety at risk', sub:'These 3 foundations must come before any investment', bg:'var(--red-bg)', border:'rgba(248,113,113,0.25)', clr:'var(--red)'};
 
   wrap.innerHTML=`<div style="background:${tone.bg};border:1px solid ${tone.border};border-radius:var(--r-lg);overflow:hidden">
@@ -1701,7 +1719,7 @@ function renderSafetyCheck(){
     ${gaps.map((g,i)=>`<div onclick="${g.onclick}" style="display:flex;align-items:center;gap:10px;padding:9px 13px;${i<gaps.length-1?'border-bottom:1px solid '+tone.border+';':''}cursor:pointer" ontouchstart="this.style.background='var(--surface2)'" ontouchend="this.style.background=''">
       <span style="font-size:0.95rem;flex-shrink:0">${g.icon}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:0.78rem;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:6px">${g.title}<span style="font-size:0.65rem;font-weight:700;color:${g.badgeClr};background:${g.badgeClr==='var(--red)'?'var(--red-bg)':'var(--amber-bg)'};padding:1px 6px;border-radius:99px">${g.badge}</span></div>
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:6px">${g.title}<span style="font-size:0.65rem;font-weight:700;color:${g.badgeClr};background:${g.badgeClr==='var(--red)'?'var(--red-bg)':'rgba(99,102,241,0.1)'};padding:1px 6px;border-radius:99px">${g.badge}</span></div>
         <div style="font-size:0.68rem;color:var(--text3);margin-top:2px">${g.detail}</div>
       </div>
       <div style="font-size:0.7rem;font-weight:700;color:${g.badgeClr};flex-shrink:0">${g.action}</div>
@@ -1853,12 +1871,12 @@ function renderDashboard(){
 
       // Color the free cash based on health
       const freeEl = document.getElementById('dash-free-pct');
-      if(freeEl) freeEl.style.color = freeCash<0?'var(--red)':freePct<10?'var(--amber)':'var(--text1)';
+      if(freeEl) freeEl.style.color = freeCash<0?'var(--red)':freePct<10?'#6366f1':'var(--text1)';
       const freeAmtEl = document.getElementById('dash-free-amt');
       if(freeAmtEl) freeAmtEl.style.color = freeCash<0?'var(--red)':'var(--text3)';
 
       // Savings bar color
-      if(bar) bar.style.background = savingsRate>=20?'var(--green)':savingsRate>=10?'var(--amber)':'var(--red)';
+      if(bar) bar.style.background = savingsRate>=20?'var(--green)':savingsRate>=10?'#6366f1':'var(--red)';
 
       // Nudge message
       const nudge = document.getElementById('dash-income-nudge');
@@ -1884,8 +1902,8 @@ function renderDashboard(){
         } else if(savingsRate>=10){
           nudge.style.display='';
           nudge.style.background='var(--amber-bg)';
-          nudge.style.color='var(--amber)';
-          nudge.style.border='1px solid rgba(251,191,36,0.2)';
+          nudge.style.color='#6366f1';
+          nudge.style.border='1px solid rgba(99,102,241,0.18)';
           nudge.textContent='💡 Investing '+savingsRate+'% — try to reach the 20% benchmark for faster growth.';
         } else if(monthlySIP>0){
           nudge.style.display='';
@@ -2047,14 +2065,14 @@ function renderGoals(){
           const income=Number(data.profile.monthlyIncome||0)*12;
           const recommended=Math.max(1000000, income>0?income*0.5:1000000);
           if(totalCover>=recommended) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover looks adequate (${fmt(totalCover)} total)</div>`;
-          else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Consider increasing cover — ${fmt(totalCover)} may not suffice at 14% medical inflation</div>`;
+          else adequacyHtml=`<div style="font-size:0.68rem;color:#6366f1;margin-top:4px;font-weight:600">⚠ Consider increasing cover — ${fmt(totalCover)} may not suffice at 14% medical inflation</div>`;
         } else {
           // Term: recommend 10-15x annual income
           const income=Number(data.profile.monthlyIncome||0)*12;
           if(income>0){
             const rec10x=income*10;
             if(totalCover>=rec10x) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover is ${Math.round(totalCover/income)}x annual income (${fmt(totalCover)})</div>`;
-            else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Cover is only ${Math.round(totalCover/income)}x income — aim for 10-15x (${fmt(rec10x)}+)</div>`;
+            else adequacyHtml=`<div style="font-size:0.68rem;color:#6366f1;margin-top:4px;font-weight:600">⚠ Cover is only ${Math.round(totalCover/income)}x income — aim for 10-15x (${fmt(rec10x)}+)</div>`;
           }
         }
       }
