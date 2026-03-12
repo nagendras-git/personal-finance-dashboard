@@ -3558,76 +3558,170 @@ const CAT_BADGE_COLORS = {
   PPF:         { bg: 'rgba(56,189,248,0.1)',  color: '#0284c7' },
 };
 
+/* ── SMART MATCHING ENGINE ── 
+   3-layer match: 1) ISIN exact  2) Name exact (case-insensitive)
+   3) Fuzzy — extract key words and check overlap
+   Returns the matched existing asset or null
+*/
+function ziKeywords(name) {
+  // Strip common noise words, return significant tokens
+  const noise = /\b(fund|direct|plan|regular|growth|idcw|dividend|option|series|the|and|of|ltd|limited|india|-e)\b/gi;
+  return name.toLowerCase().replace(noise, '').replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 2);
+}
+
+function ziFuzzyMatch(importedName, existingAssets, importedISIN) {
+  // Layer 1: ISIN match (most reliable)
+  if (importedISIN) {
+    const byISIN = existingAssets.find(a => a.isin && a.isin === importedISIN);
+    if (byISIN) return { asset: byISIN, confidence: 'isin' };
+  }
+
+  // Layer 2: Exact name match
+  const exact = existingAssets.find(a => a.name.toLowerCase() === importedName.toLowerCase());
+  if (exact) return { asset: exact, confidence: 'exact' };
+
+  // Layer 3: Fuzzy keyword overlap
+  const importedKws = ziKeywords(importedName);
+  let bestMatch = null, bestScore = 0;
+  for (const a of existingAssets) {
+    const existingKws = ziKeywords(a.name);
+    const common = importedKws.filter(k => existingKws.some(ek => ek.includes(k) || k.includes(ek)));
+    const score = common.length / Math.max(importedKws.length, existingKws.length, 1);
+    if (score > bestScore && score >= 0.55) { bestScore = score; bestMatch = a; }
+  }
+  if (bestMatch) return { asset: bestMatch, confidence: 'fuzzy' };
+
+  return null;
+}
+
+/* Annotate each row with match status before preview */
+function ziAnnotateRows(rows) {
+  return rows.map(r => {
+    const match = ziFuzzyMatch(r.name, data.assets, r.isin);
+    return {
+      ...r,
+      matchedAsset: match?.asset || null,
+      matchConfidence: match?.confidence || null,
+      // Default action: update if matched, add if new
+      action: match ? 'update' : 'add'
+    };
+  });
+}
+
 function showZiPreview(rows) {
+  _ziParsed = ziAnnotateRows(rows); // re-annotate with match info
+
   document.getElementById('zi-step-upload').style.display = 'none';
   document.getElementById('zi-step-preview').style.display = '';
 
-  // Summary
-  const bySource = {};
-  rows.forEach(r => { bySource[r.source] = (bySource[r.source] || 0) + 1; });
+  ziRenderPreview();
+}
+
+function ziRenderPreview() {
+  const rows = _ziParsed;
   const totalVal = rows.reduce((s, r) => s + r.currentValue, 0);
+  const updates  = rows.filter(r => r.action === 'update').length;
+  const adds     = rows.filter(r => r.action === 'add').length;
+  const skips    = rows.filter(r => r.action === 'skip').length;
+
+  // Summary bar
   const summaryEl = document.getElementById('zi-summary');
   summaryEl.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:0.82rem;font-weight:800;color:var(--text1)">${rows.length} holdings found</div>
-      <div style="font-size:0.84rem;font-weight:700;color:#3B82F6">${fmt(totalVal)}</div>
+      <div style="font-size:0.82rem;font-weight:800;color:var(--text1)">${rows.length} holdings found · ${fmt(totalVal)}</div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:5px">
-      ${Object.entries(bySource).map(([src, cnt]) =>
-        `<span style="font-size:0.65rem;font-weight:700;background:rgba(59,130,246,0.1);color:#3B82F6;border:1px solid rgba(59,130,246,0.2);border-radius:99px;padding:2px 9px">${src}: ${cnt}</span>`
-      ).join('')}
-    </div>`;
+      ${adds    > 0 ? `<span style="font-size:0.65rem;font-weight:700;background:rgba(34,197,94,0.1);color:#16a34a;border:1px solid rgba(34,197,94,0.2);border-radius:99px;padding:2px 9px">➕ Add ${adds} new</span>` : ''}
+      ${updates > 0 ? `<span style="font-size:0.65rem;font-weight:700;background:rgba(59,130,246,0.1);color:#3B82F6;border:1px solid rgba(59,130,246,0.2);border-radius:99px;padding:2px 9px">🔄 Update ${updates}</span>` : ''}
+      ${skips   > 0 ? `<span style="font-size:0.65rem;font-weight:700;background:rgba(156,163,175,0.1);color:#6b7280;border:1px solid rgba(156,163,175,0.2);border-radius:99px;padding:2px 9px">⏭ Skip ${skips}</span>` : ''}
+    </div>
+    ${updates > 0 ? `<div style="font-size:0.68rem;color:var(--text3);margin-top:7px;padding:7px 10px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">💡 SIP amounts are preserved from your existing entries. Only values are updated.</div>` : ''}`;
 
-  // Preview rows
+  // Preview rows with per-row action toggle
   const listEl = document.getElementById('zi-preview-list');
   listEl.innerHTML = rows.map((r, i) => {
     const badge = CAT_BADGE_COLORS[r.category] || { bg: 'rgba(156,163,175,0.1)', color: '#6b7280' };
-    const existing = data.assets.find(a => a.name.toLowerCase() === r.name.toLowerCase());
-    const isUpdate = !!existing;
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;${i < rows.length - 1 ? 'border-bottom:1px solid var(--border2)' : ''};background:${isUpdate ? 'rgba(59,130,246,0.03)' : 'transparent'}">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:0.82rem;font-weight:600;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px">
-          ${esc(r.name)}
-          ${isUpdate ? '<span style="font-size:0.58rem;font-weight:700;background:rgba(99,102,241,0.1);color:#6366f1;border:1px solid rgba(99,102,241,0.2);border-radius:99px;padding:1px 6px;flex-shrink:0">UPDATE</span>' : ''}
+    const isLast = i === rows.length - 1;
+
+    let statusBadge = '';
+    let matchNote = '';
+    let actionBtns = '';
+
+    if (r.action === 'skip') {
+      statusBadge = `<span style="font-size:0.58rem;font-weight:700;background:rgba(156,163,175,0.1);color:#6b7280;border:1px solid rgba(156,163,175,0.25);border-radius:99px;padding:1px 7px;flex-shrink:0">SKIP</span>`;
+      actionBtns = `<button onclick="ziSetAction(${i},'update')" style="font-size:0.65rem;font-weight:700;color:#3B82F6;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);border-radius:6px;padding:3px 8px;cursor:pointer">Update instead</button>`;
+    } else if (r.action === 'update' && r.matchedAsset) {
+      const conf = r.matchConfidence === 'fuzzy' ? '~' : '✓';
+      statusBadge = `<span style="font-size:0.58rem;font-weight:700;background:rgba(59,130,246,0.1);color:#3B82F6;border:1px solid rgba(59,130,246,0.2);border-radius:99px;padding:1px 7px;flex-shrink:0">${conf} UPDATE</span>`;
+      matchNote = `<div style="font-size:0.67rem;color:var(--text3);margin-top:2px">Matches: <span style="color:var(--text2);font-weight:600">"${esc(r.matchedAsset.name)}"</span>${r.matchConfidence==='fuzzy'?' (fuzzy)':''} · SIP ₹${r.matchedAsset.sip||0}/mo preserved</div>`;
+      actionBtns = `<button onclick="ziSetAction(${i},'skip')" style="font-size:0.65rem;font-weight:700;color:#6b7280;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer">Skip</button>
+        <button onclick="ziSetAction(${i},'add')" style="font-size:0.65rem;font-weight:700;color:#16a34a;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:6px;padding:3px 8px;cursor:pointer">Add new</button>`;
+    } else {
+      statusBadge = `<span style="font-size:0.58rem;font-weight:700;background:rgba(34,197,94,0.1);color:#16a34a;border:1px solid rgba(34,197,94,0.2);border-radius:99px;padding:1px 7px;flex-shrink:0">NEW</span>`;
+      actionBtns = `<button onclick="ziSetAction(${i},'skip')" style="font-size:0.65rem;font-weight:700;color:#6b7280;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 8px;cursor:pointer">Skip</button>`;
+    }
+
+    return `<div id="zi-row-${i}" style="padding:10px 12px;${!isLast ? 'border-bottom:1px solid var(--border2)' : ''};opacity:${r.action==='skip'?'0.45':'1'}">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.82rem;font-weight:600;color:var(--text1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:5px">
+            ${esc(r.name)} ${statusBadge}
+          </div>
+          <div style="font-size:0.7rem;color:var(--text3);margin-top:2px">Invested: ${fmt(r.invested)} · Current: ${fmt(r.currentValue)}</div>
+          ${matchNote}
         </div>
-        <div style="font-size:0.7rem;color:var(--text3);margin-top:2px">Invested: ${fmt(r.invested)}</div>
+        <div style="text-align:right;flex-shrink:0">
+          <span style="font-size:0.6rem;font-weight:700;background:${badge.bg};color:${badge.color};border-radius:99px;padding:1px 7px;display:inline-block">${r.category}</span>
+        </div>
       </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:0.84rem;font-weight:700;color:var(--text1)">${fmt(r.currentValue)}</div>
-        <span style="font-size:0.6rem;font-weight:700;background:${badge.bg};color:${badge.color};border-radius:99px;padding:1px 7px;display:inline-block;margin-top:2px">${r.category}</span>
-      </div>
+      <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap">${actionBtns}</div>
     </div>`;
   }).join('');
 
-  // Update confirm button text
-  const updates = rows.filter(r => data.assets.find(a => a.name.toLowerCase() === r.name.toLowerCase())).length;
-  const adds = rows.length - updates;
-  const parts = [];
-  if (adds > 0) parts.push(`Add ${adds}`);
-  if (updates > 0) parts.push(`Update ${updates}`);
-  document.getElementById('zi-confirm-btn').textContent = `✓ ${parts.join(' · ')} Assets`;
+  // Confirm button
+  const activeCount = rows.filter(r => r.action !== 'skip').length;
+  document.getElementById('zi-confirm-btn').textContent = activeCount > 0
+    ? `✓ Apply ${activeCount} changes`
+    : 'Nothing to import';
+  document.getElementById('zi-confirm-btn').disabled = activeCount === 0;
+}
+
+function ziSetAction(idx, action) {
+  _ziParsed[idx].action = action;
+  // If setting to 'add' on a previously matched row, clear the match
+  if (action === 'add') _ziParsed[idx].matchedAsset = null;
+  ziRenderPreview();
 }
 
 /* ── CONFIRM IMPORT ── */
 function ziConfirmImport() {
-  let added = 0, updated = 0;
+  let added = 0, updated = 0, skipped = 0;
 
   _ziParsed.forEach(r => {
-    const existing = data.assets.find(a => a.name.toLowerCase() === r.name.toLowerCase());
-    if (existing) {
-      // Update values, preserve id and sip if not in import
-      existing.currentValue = r.currentValue;
-      existing.invested = r.invested || existing.invested;
-      if (r.sip > 0) existing.sip = r.sip;
-      updated++;
+    if (r.action === 'skip') { skipped++; return; }
+
+    if (r.action === 'update' && r.matchedAsset) {
+      // Update values — preserve SIP, name, category from existing
+      const existing = data.assets.find(a => a.id === r.matchedAsset.id);
+      if (existing) {
+        existing.currentValue = r.currentValue;
+        existing.invested = r.invested || existing.invested;
+        existing.isin = r.isin || existing.isin;
+        existing.zerodhaSync = true;
+        existing.syncedAt = Date.now();
+        // SIP intentionally NOT overwritten — user manages it manually
+        updated++;
+      }
     } else {
+      // Add new asset
       data.assets.push({
         id: uid(),
         category: r.category,
         name: r.name,
         currentValue: r.currentValue,
         invested: r.invested || 0,
-        sip: r.sip || 0,
+        sip: 0, // No SIP in Zerodha export — user sets manually
+        isin: r.isin || '',
         zerodhaSync: true,
         syncedAt: Date.now()
       });
@@ -3638,11 +3732,16 @@ function ziConfirmImport() {
   save();
   renderDashboard();
 
-  // Show done
   document.getElementById('zi-step-preview').style.display = 'none';
   document.getElementById('zi-step-done').style.display = '';
-  document.getElementById('zi-done-title').textContent = `Import complete!`;
-  document.getElementById('zi-done-sub').textContent = `${added > 0 ? added + ' assets added' : ''}${added > 0 && updated > 0 ? ' · ' : ''}${updated > 0 ? updated + ' assets updated' : ''}. Your dashboard now reflects the latest Zerodha data.`;
+  document.getElementById('zi-done-title').textContent = 'Import complete!';
+
+  const parts = [];
+  if (added)   parts.push(`${added} added`);
+  if (updated) parts.push(`${updated} updated`);
+  if (skipped) parts.push(`${skipped} skipped`);
+  document.getElementById('zi-done-sub').textContent = parts.join(' · ') +
+    '. SIP amounts on existing assets were preserved. Set SIP manually on new assets if needed.';
 
   _ziParsed = [];
 }
