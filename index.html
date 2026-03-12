@@ -3405,140 +3405,32 @@ function parseAndShow(text, isCSV) {
   }
 }
 
-/* ── COLUMN DETECTION ── */
-function normalizeHeader(h) {
-  return String(h || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-}
+/* ══════════════════════════════════════════════════
+   ZERODHA EXACT FORMAT PARSER
+   Based on real holdings-XU1493.xlsx structure:
 
-function findCol(headers, ...candidates) {
-  const norm = headers.map(normalizeHeader);
-  for (const c of candidates) {
-    const cn = normalizeHeader(c);
-    const idx = norm.findIndex(h => h === cn || h.includes(cn));
-    if (idx >= 0) return idx;
-  }
-  return -1;
-}
+   Sheets: Equity | Mutual Funds | Combined
+   Header row: Row 23 (index 22) — after summary block
+   Data starts: Row 24 onwards
 
-/* ── DETECT FILE TYPE ── */
-// Zerodha Coin MF export columns: Scheme Name, Invested Amount, Current Value, P&L, P&L %, Units, Avg NAV, Cur NAV
-// Zerodha Console Holdings: Instrument, Qty, Avg Cost, LTP, Cur Val, P&L, Net Chng, Day Chng
-function detectFileType(headers) {
-  const norm = headers.map(normalizeHeader).join(' ');
-  if (norm.includes('scheme') || norm.includes('nav') || norm.includes('units')) return 'mf';
-  if (norm.includes('instrument') || norm.includes('qty') || norm.includes('ltp')) return 'holdings';
-  if (norm.includes('scripname') || norm.includes('scrip')) return 'holdings';
-  return 'generic';
-}
+   Equity columns (0-based):
+     0: Symbol, 1: ISIN, 2: Sector
+     3: Qty Available, 4: Qty Discrepant, 5: Qty Long Term
+     6: Qty Pledged(Margin), 7: Qty Pledged(Loan)
+     8: Average Price, 9: Previous Closing Price
+     10: Unrealized P&L, 11: Unrealized P&L Pct.
 
-function parseZerodhaWorkbook(wb) {
-  const results = [];
+   Mutual Funds columns (0-based):
+     0: Symbol(Fund Name), 1: ISIN, 2: Instrument Type
+     3: Qty Available, 4: Qty Discrepant
+     5: Qty Pledged(Margin), 6: Qty Pledged(Loan)
+     7: Average Price, 8: Previous Closing Price
+     9: Unrealized P&L, 10: Unrealized P&L Pct.
 
-  for (const sheetName of wb.SheetNames) {
-    const ws = wb.Sheets[sheetName];
-    // Convert to array of arrays
-    const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-    if (!raw.length) continue;
-
-    // Find the header row (first row with 3+ non-empty cells)
-    let headerIdx = 0;
-    for (let i = 0; i < Math.min(10, raw.length); i++) {
-      const nonEmpty = raw[i].filter(c => String(c).trim()).length;
-      if (nonEmpty >= 3) { headerIdx = i; break; }
-    }
-
-    const headers = raw[headerIdx].map(h => String(h).trim());
-    const fileType = detectFileType(headers);
-    const dataRows = raw.slice(headerIdx + 1).filter(r => r.some(c => String(c).trim()));
-
-    if (fileType === 'mf') {
-      // Coin MF export
-      const iName    = findCol(headers, 'Scheme Name', 'Fund Name', 'Scheme', 'Name');
-      const iInvested= findCol(headers, 'Invested Amount', 'Invested', 'Buy Value', 'Invested Value');
-      const iCurVal  = findCol(headers, 'Current Value', 'Cur Value', 'Current Amount', 'Market Value');
-      const iUnits   = findCol(headers, 'Units', 'Unit', 'Quantity');
-      const iSIP     = findCol(headers, 'SIP', 'Monthly SIP', 'SIP Amount');
-
-      for (const row of dataRows) {
-        const name = String(row[iName] || '').trim();
-        if (!name || name.toLowerCase().includes('total') || name.toLowerCase().includes('grand')) continue;
-        const invested = parseNum(row[iInvested]);
-        const curVal   = parseNum(row[iCurVal]);
-        const units    = parseNum(row[iUnits]);
-        const sip      = iSIP >= 0 ? parseNum(row[iSIP]) : 0;
-        if (!name) continue;
-        results.push({
-          name,
-          category: 'MutualFunds',
-          currentValue: curVal || invested || 0,
-          invested: invested || 0,
-          sip: sip || 0,
-          source: 'Coin MF',
-          sheet: sheetName
-        });
-      }
-    } else if (fileType === 'holdings') {
-      // Console Holdings export
-      const iName    = findCol(headers, 'Instrument', 'Symbol', 'Scrip Name', 'Security');
-      const iQty     = findCol(headers, 'Qty', 'Quantity', 'Shares');
-      const iAvgCost = findCol(headers, 'Avg Cost', 'Avg. Cost', 'Average Cost', 'Buy Avg');
-      const iLTP     = findCol(headers, 'LTP', 'Last Price', 'Current Price', 'Cur. Price', 'CMP');
-      const iCurVal  = findCol(headers, 'Cur Val', 'Current Value', 'Market Value', 'Value');
-      const iInvested= findCol(headers, 'Buy Value', 'Invested', 'Cost', 'Total Cost');
-
-      for (const row of dataRows) {
-        const name = String(row[iName] || '').trim();
-        if (!name || name.toLowerCase().includes('total') || name.toLowerCase() === 'instrument') continue;
-
-        const qty      = parseNum(row[iQty]);
-        const avgCost  = parseNum(row[iAvgCost]);
-        const ltp      = parseNum(row[iLTP]);
-        const curVal   = iCurVal >= 0 ? parseNum(row[iCurVal]) : (qty * ltp) || 0;
-        const invested = iInvested >= 0 ? parseNum(row[iInvested]) : (qty * avgCost) || 0;
-
-        if (!name || (!curVal && !invested)) continue;
-
-        // Guess category from name
-        const cat = guessAssetCat(name);
-
-        results.push({
-          name,
-          category: cat,
-          currentValue: curVal || invested || 0,
-          invested: invested || curVal || 0,
-          sip: 0,
-          source: cat === 'ETF' ? 'Console ETF' : 'Console Stocks',
-          sheet: sheetName
-        });
-      }
-    } else {
-      // Generic CSV — try to auto-detect columns
-      const iName    = findCol(headers, 'Name', 'Fund', 'Scheme', 'Instrument', 'Symbol', 'Stock');
-      const iCurVal  = findCol(headers, 'Current Value', 'Market Value', 'Value', 'Amount', 'Cur Val');
-      const iInvested= findCol(headers, 'Invested', 'Cost', 'Buy Value', 'Purchase Value');
-
-      if (iName < 0 || iCurVal < 0) continue; // skip unrecognizable sheets
-
-      for (const row of dataRows) {
-        const name = String(row[iName] || '').trim();
-        if (!name || name.toLowerCase().includes('total')) continue;
-        const curVal   = parseNum(row[iCurVal]);
-        const invested = iInvested >= 0 ? parseNum(row[iInvested]) : 0;
-        if (!curVal && !invested) continue;
-        results.push({
-          name,
-          category: guessAssetCat(name),
-          currentValue: curVal || invested,
-          invested: invested || curVal,
-          sip: 0,
-          source: 'Generic',
-          sheet: sheetName
-        });
-      }
-    }
-  }
-  return results;
-}
+   Combined has both — skip it to avoid duplicates.
+   Current Value = Qty Available × Previous Closing Price
+   Invested      = Qty Available × Average Price
+══════════════════════════════════════════════════ */
 
 function parseNum(v) {
   if (v === undefined || v === null || v === '') return 0;
@@ -3547,17 +3439,114 @@ function parseNum(v) {
   return isNaN(n) ? 0 : n;
 }
 
-/* ETF name patterns */
-const ETF_PATTERNS = ['etf','bees','liquid bees','nifty bees','goldbees','juniorbees','bankbees','iciciprudential nifty'];
-const MF_PATTERNS  = ['fund','nfo','direct','regular','growth','idcw','plan','flexi','bluechip','midcap','smallcap','largecap','multicap','hybrid','debt','gilt','liquid','overnight','arbitage','arbitrage','elss','index fund'];
+function findHeaderRow(raw) {
+  // Look for the row containing 'Symbol' as first non-empty cell
+  for (let i = 0; i < raw.length; i++) {
+    const cells = raw[i].map(c => String(c || '').trim());
+    if (cells[0] === 'Symbol' || cells[1] === 'Symbol') return i;
+  }
+  // Fallback: first row with 5+ non-empty cells
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i].filter(c => String(c).trim()).length >= 5) return i;
+  }
+  return 0;
+}
 
-function guessAssetCat(name) {
-  const n = name.toLowerCase();
-  if (ETF_PATTERNS.some(p => n.includes(p))) return 'ETF';
-  if (MF_PATTERNS.some(p => n.includes(p))) return 'MutualFunds';
-  // Likely stock — uppercase names like RELIANCE, INFY
-  if (/^[A-Z0-9&\-\s]+$/.test(name.trim()) && name.trim().length < 20) return 'Stocks';
+function classifyMFType(instrType) {
+  // instrType like "{Equity - ELSS true}" or "{Debt - Liquid true}"
+  const t = String(instrType || '').toLowerCase();
+  if (t.includes('debt') || t.includes('liquid') || t.includes('overnight')) return 'FD'; // treat debt MF as safe
+  if (t.includes('arbitrage')) return 'MutualFunds';
+  if (t.includes('hybrid')) return 'MutualFunds';
+  if (t.includes('index') || t.includes('etf')) return 'ETF';
+  return 'MutualFunds';
+}
+
+function guessEquityType(sector, symbol) {
+  const s = String(sector || '').toLowerCase();
+  const sym = String(symbol || '').toLowerCase();
+  if (s === 'etf' || sym.includes('bees') || sym.includes('-e')) return 'ETF';
   return 'Stocks';
+}
+
+function parseZerodhaWorkbook(wb) {
+  const results = [];
+  const seen = new Set(); // deduplicate by ISIN across sheets
+
+  for (const sheetName of wb.SheetNames) {
+    // Skip Combined sheet — it duplicates Equity + MF data
+    if (sheetName.toLowerCase().includes('combined')) continue;
+
+    const ws = wb.Sheets[sheetName];
+    const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    if (!raw.length) continue;
+
+    const isEquity = sheetName.toLowerCase().includes('equity');
+    const isMF     = sheetName.toLowerCase().includes('mutual') || sheetName.toLowerCase().includes('mf');
+
+    const headerIdx = findHeaderRow(raw);
+    const headers   = raw[headerIdx].map(c => String(c || '').trim());
+    const dataRows  = raw.slice(headerIdx + 1);
+
+    // Locate columns by header name (robust to minor changes)
+    const col = (names) => {
+      for (const name of names) {
+        const idx = headers.findIndex(h => h.toLowerCase().includes(name.toLowerCase()));
+        if (idx >= 0) return idx;
+      }
+      return -1;
+    };
+
+    const iSymbol   = col(['Symbol']);
+    const iISIN     = col(['ISIN']);
+    const iSector   = col(['Sector']);
+    const iInstrType= col(['Instrument Type']);
+    const iQty      = col(['Quantity Available']);
+    const iAvgPrice = col(['Average Price']);
+    const iPrevClose= col(['Previous Closing Price']);
+
+    for (const row of dataRows) {
+      const name = String(row[iSymbol] || '').trim();
+      if (!name || name === 'Symbol') continue;
+      // Skip summary/blank rows
+      if (String(row[1] || '').trim() === '' && String(row[2] || '').trim() === '') continue;
+
+      const isin      = String(row[iISIN] || '').trim();
+      const qty       = parseNum(row[iQty]);
+      const avgPrice  = parseNum(row[iAvgPrice]);
+      const prevClose = parseNum(row[iPrevClose]);
+
+      if (!qty || (!avgPrice && !prevClose)) continue;
+      if (isin && seen.has(isin)) continue;
+      if (isin) seen.add(isin);
+
+      const invested    = Math.round(qty * avgPrice * 100) / 100;
+      const curVal      = Math.round(qty * prevClose * 100) / 100;
+
+      let category;
+      if (isEquity) {
+        const sector = iSector >= 0 ? String(row[iSector] || '') : '';
+        category = guessEquityType(sector, name);
+      } else if (isMF) {
+        const instrType = iInstrType >= 0 ? String(row[iInstrType] || '') : '';
+        category = classifyMFType(instrType);
+      } else {
+        category = 'MutualFunds';
+      }
+
+      results.push({
+        name,
+        isin,
+        category,
+        currentValue: curVal,
+        invested,
+        sip: 0,
+        source: isEquity ? (category === 'ETF' ? 'Equity ETF' : 'Equity Stocks') : 'Mutual Funds',
+        sheet: sheetName
+      });
+    }
+  }
+  return results;
 }
 
 /* ── PREVIEW ── */
