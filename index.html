@@ -1390,6 +1390,8 @@ function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scro
 
 /* ── UTILS ── */
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function fmtAge(ts){if(!ts)return null;const d=new Date(ts),now=new Date();const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const sameYear=d.getFullYear()===now.getFullYear();const label=d.getDate()+' '+months[d.getMonth()]+(sameYear?'':' '+d.getFullYear());const days=Math.floor((now-d)/86400000);return{label,days}}
+function staleTag(ts,threshold=30){const r=fmtAge(ts);if(!r)return'';const dot=r.days>threshold?'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-right:3px;vertical-align:middle;flex-shrink:0"></span>':'';return`${dot}<span style="color:${r.days>threshold?'var(--red)':'var(--text3)'};font-size:0.67rem">Updated ${r.label}</span>`}
 function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m)/m).toFixed(d)}
 function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
 function fmtInputBlur(el){const typed=el.value.toString().replace(/[^\d.]/g,'');const raw=Number(typed||el.dataset.raw||0);if(!raw){el.dataset.raw='';return}el.dataset.raw=raw;el.value=fmt(raw)}
@@ -1977,7 +1979,7 @@ function renderAssets(){
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
-        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
+        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}${a.updatedAt?' · '+staleTag(a.updatedAt):''}</div>
       </div>
       <div class="row-right">
         <div class="row-value">${fmt(a.currentValue)}</div>
@@ -2005,7 +2007,7 @@ function renderLiabilities(){
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${l.name}</div>
-        <div class="row-sub">${info.l} · ${l.interestRate||0}% · EMI ${fmt(l.emi)}/mo${l.endDate?' · Ends '+l.endDate:''}</div>
+        <div class="row-sub">${info.l} · ${l.interestRate||0}% · EMI ${fmt(l.emi)}/mo${l.endDate?' · Ends '+l.endDate:''}${l.updatedAt?' · '+staleTag(l.updatedAt):''}</div>
         ${payoffBadge}
       </div>
       <div class="row-right">
@@ -2080,6 +2082,7 @@ function renderGoals(){
         ${ins.coverAmount?`<div style="font-size:0.78rem;color:var(--text2)">Cover <span style="color:var(--text1);font-weight:600">${fmt(ins.coverAmount)}</span></div>`:''}
         ${ins.premium?`<div style="font-size:0.78rem;color:var(--text2)">Premium <span style="color:var(--text1);font-weight:600">${fmt(ins.premium)}/yr</span></div>`:''}
         ${ins.expiry?`<div style="font-size:0.78rem;color:var(--text2)">Expiry on <span style="color:var(--text1);font-weight:600">${fmtDate(ins.expiry)}</span></div>`:''}
+        ${ins.updatedAt?`<div style="font-size:0.67rem;margin-top:2px;display:flex;align-items:center;gap:3px">${staleTag(ins.updatedAt,365)}</div>`:''}
         ${adequacyHtml}
       </div>`;
       return`<div class="goal-row" onclick="openSheet('insurance','${ins.id}')">
@@ -2430,7 +2433,7 @@ function sheetAsset(a){
     <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
     <div class="form-actions">${a.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delAsset(\''+a.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">${a.id?'Update':'Add'}</button></div>
   </div>`}
-function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
+function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0),updatedAt:Date.now()};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -2447,7 +2450,7 @@ function sheetLiability(l){
     </div>
     <div class="form-actions">${l.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delLiab(\''+l.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveLiab('${l.id||''}')">${l.id?'Update':'Add'}</button></div>
   </div>`}
-function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||''};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
+function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||'',updatedAt:Date.now()};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetGoal(pid){
   const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
@@ -2608,7 +2611,7 @@ function saveInsurance(editId){
   const expiry=document.getElementById('f-ins-insexp')?.value||'';
   const notes=document.getElementById('f-ins-notes')?.value?.trim()||'';
   if(!policyName){toast('Enter a policy name',true);return}
-  const obj={type,policyName,premium,coverAmount,expiry,notes};
+  const obj={type,policyName,premium,coverAmount,expiry,notes,updatedAt:Date.now()};
   if(editId){
     const ex=data.insurance.find(x=>x.id===editId);
     if(ex)Object.assign(ex,obj);
