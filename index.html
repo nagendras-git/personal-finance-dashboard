@@ -68,8 +68,8 @@
   --green-bg:  rgba(34,197,94,0.1);
   --red:       #f87171;
   --red-bg:    rgba(248,113,113,0.1);
-  --amber:     #6366f1;
-  --amber-bg:  rgba(99,102,241,0.1);
+  --amber:     #fbbf24;
+  --amber-bg:  rgba(251,191,36,0.1);
 
   --accent:    rgba(255,255,255,0.9);
   --accent2:   rgba(255,255,255,0.06);
@@ -102,22 +102,18 @@
 [data-theme="light"] {
   --bg:       #f2f2f7;
   --surface:  #ffffff;
-  --surface2: #f7f7fb;
-  --surface3: #ededf3;
-  --border:   #d4d4e0;
-  --border2:  #e4e4ee;
-  --text1:    #111120;
-  --text2:    #52526e;
-  --text3:    #9090aa;
+  --surface2: #ffffff;
+  --surface3: #f0f0f5;
+  --border:   #c8c8d8;
+  --border2:  #d8d8e4;
+  --text1:    #1a1a25;
+  --text2:    #606078;
+  --text3:    #9898b0;
   --accent2:  rgba(0,0,0,0.04);
   --scrim:    rgba(0,0,0,0.45);
-  --green:     #16a34a;
-  --green-bg:  rgba(22,163,74,0.08);
-  --red:       #dc2626;
-  --red-bg:    rgba(220,38,38,0.08);
 }
-[data-theme="light"] .top-header { background: rgba(242,242,247,0.97); box-shadow: none; border-bottom: 1px solid var(--border) }
-[data-theme="light"] .tab-bar { background: rgba(242,242,247,0.98); border-top: 1px solid var(--border) }
+[data-theme="light"] .top-header { background: var(--bg); box-shadow: none; border-bottom: 1px solid var(--border) }
+[data-theme="light"] .tab-bar { background: var(--bg); border-top: 1px solid var(--border) }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
 html { height:100%; overflow-x:hidden; font-size:16px; background:var(--bg) }
@@ -279,7 +275,8 @@ body.scroll-locked {
 .ins-type-tag { font-size:0.62rem; font-weight:700; color:var(--text3); letter-spacing:0.3px; text-transform:uppercase; margin-top:1px }
 .goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:7px }
 .goal-name { font-size:0.88rem; font-weight:600; color:var(--text1) }
-.goal-pct { font-size:0.84rem; font-weight:800; color:#3B82F6; flex-shrink:0 }
+.goal-pct { font-size:0.84rem; font-weight:800; color:var(--text1); flex-shrink:0 }
+[data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
 .prog-track { height:6px; background:var(--surface3); border-radius:99px; overflow:hidden }
 .prog-fill { height:100%; border-radius:99px; transition:width 0.5s var(--ease) }
 .goal-amounts { display:flex; align-items:center; justify-content:space-between; margin-top:5px }
@@ -377,9 +374,9 @@ body.scroll-locked {
 
 /* ── LIGHT MODE: all financial values dark & bold ── */
 [data-theme="light"] .acat-val { color:var(--text1); font-weight:700 }
-[data-theme="light"] .acat-pct { color:#2563EB; font-weight:700 }
-[data-theme="light"] .goal-pct { color:#2563EB; font-weight:700 }
-[data-theme="light"] .mini-pct { color:#2563EB; font-weight:700 }
+[data-theme="light"] .acat-pct { color:#3B82F6; font-weight:700 }
+[data-theme="light"] .goal-pct { color:var(--text1); font-weight:700 }
+[data-theme="light"] .mini-pct { color:var(--text1); font-weight:700 }
 [data-theme="light"] .sec-total { color:var(--text1); font-weight:700 }
 [data-theme="light"] .row-value { color:var(--text1); font-weight:700 }
 [data-theme="light"] .goal-saved { color:var(--text1); font-weight:700 }
@@ -388,21 +385,6 @@ body.scroll-locked {
 [data-theme="light"] .cf-val { color:var(--text1); font-weight:700 }
 [data-theme="light"] .gh-pct { color:var(--text1); font-weight:700 }
 [data-theme="light"] .stat-val { color:var(--text1); font-weight:700 }
-/* Light mode: secondary text clearly subordinate */
-[data-theme="light"] .row-sub { color:var(--text3) }
-[data-theme="light"] .goal-target { color:var(--text3) }
-[data-theme="light"] .phase-age { color:var(--text3) }
-[data-theme="light"] .phase-name { color:var(--text1); font-weight:600 }
-[data-theme="light"] .goal-name { color:var(--text1) }
-[data-theme="light"] .row-title { color:var(--text1) }
-[data-theme="light"] .stat-label { color:#6b6b88 }
-[data-theme="light"] .inv-stat-label { color:#6b6b88 }
-[data-theme="light"] .wealth-item-label { color:#6b6b88 }
-[data-theme="light"] .cf-label { color:#6b6b88 }
-
-[data-theme="light"] .prog-track { background: #e2e2ee }
-[data-theme="light"] .mini-prog { background: #e2e2ee }
-[data-theme="light"] .acat-bar-wrap { background: #e2e2ee }
 
 /* ── MID-LABEL: dashboard section labels — readable but subordinate ── */
 .lbl {
@@ -452,8 +434,8 @@ body.scroll-locked {
 /* ── PILLS ── */
 .pill { display:inline-flex; align-items:center; padding:2px 8px; border-radius:99px; font-size:0.63rem; font-weight:600 }
 .pill-green  { background:rgba(34,197,94,0.12);  color:#16a34a; border:1px solid rgba(34,197,94,0.25) }
-.pill-red    { background:rgba(248,113,113,0.12); color:#dc2626; border:1px solid rgba(248,113,113,0.25) }
-.pill-amber  { background:rgba(99,102,241,0.1); color:#4f46e5; border:1px solid rgba(99,102,241,0.25) }
+.pill-red    { background:var(--red-bg); color:var(--red); border:1px solid rgba(220,38,38,0.2) }
+.pill-amber  { background:var(--amber-bg);  color:var(--amber); border:1px solid rgba(180,83,9,0.18) }
 .pill-muted  { background:var(--surface2); color:var(--text3); border:1px solid var(--border) }
 .pill-blue   { background:rgba(59,130,246,0.12);  color:#3B82F6; border:1px solid rgba(59,130,246,0.25) }
 
@@ -804,7 +786,21 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 .ret-bar { height:100%; border-radius:99px; transition:width 0.6s var(--ease) }
 
 /* ── DEBT PAYOFF BADGE ── */
-.payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.66rem; font-weight:700; color:#4f46e5; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.2); border-radius:99px; padding:2px 8px; margin-top:4px }
+.payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.66rem; font-weight:700; color:var(--amber); background:var(--amber-bg); border:1px solid rgba(251,191,36,0.2); border-radius:99px; padding:2px 8px; margin-top:4px }
+/* ── Bucket Strategy ── */
+.bkt-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border2) }
+.bkt-row:last-child { border-bottom:none }
+.bkt-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0 }
+.bkt-info { flex:1; min-width:0 }
+.bkt-name { font-size:0.78rem; font-weight:700; color:var(--text1) }
+.bkt-sub { font-size:0.66rem; color:var(--text3); margin-top:1px }
+.bkt-val { font-size:0.88rem; font-weight:800; color:var(--text1); text-align:right; flex-shrink:0 }
+.bkt-bar-wrap { height:8px; background:var(--surface3); border-radius:99px; overflow:hidden; display:flex; margin:10px 0 6px }
+.bkt-bar-seg { height:100%; transition:width 0.5s var(--ease) }
+.bkt-alert { padding:8px 12px; border-radius:var(--r); font-size:0.72rem; font-weight:600; line-height:1.4; margin-top:8px }
+.bkt-fund { display:flex; align-items:center; gap:8px; padding:4px 0; font-size:0.72rem }
+.bkt-fund-name { flex:1; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.bkt-fund-val { color:var(--text1); font-weight:700; flex-shrink:0 }
 
 /* ── SWIPE INDICATOR ON SHEET HANDLE ── */
 .sheet-handle, .qa-handle { cursor:grab }
@@ -1004,6 +1000,20 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 
   <!-- FINANCIAL SAFETY BANNER -->
   <div class="container" style="padding-top:8px;padding-bottom:0" id="dash-safety-wrap"></div>
+  <!-- BUCKET STRATEGY (ISR) -->
+  <div class="container" style="padding-top:8px;padding-bottom:4px;display:none" id="dash-bucket-wrap">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-buckets')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Bucket Strategy</span><span class="sec-badge" id="dash-bucket-badge">—</span></div>
+        <div class="sec-hdr-right">
+          <span class="sec-caret" id="caret-sec-buckets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+      <div class="sec-body closed" id="sec-buckets">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:8px">
+          <div id="dash-bucket-content" style="padding:12px 14px 10px"></div>
+        </div>
+      </div>
+  </div>
   <!-- INSURANCE EXPIRY ALERTS -->
   <div class="container" style="padding-top:0;padding-bottom:4px" id="dash-ins-alert-wrap"></div>
 
@@ -1225,7 +1235,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
         <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-checklist">
-        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:#3B82F6;width:0%"></div></div></div>
+        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:var(--blue);width:0%"></div></div></div>
         <div id="checklist-items"></div>
       </div>
     </div>
@@ -1237,7 +1247,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
         <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-tools"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-tools">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
           <div class="more-row" onclick="exportData()" style="margin-bottom:0"><div class="more-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div class="more-row-body"><div class="more-row-title">Export</div><div class="more-row-sub">Download JSON backup</div></div></div>
           <div class="more-row" onclick="document.getElementById('import-file').click()" style="margin-bottom:0"><div class="more-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="more-row-body"><div class="more-row-title">Import</div><div class="more-row-sub">Restore from JSON</div></div></div>
           <div class="more-row" onclick="loadSampleData()" style="margin-bottom:0"><div class="more-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><div class="more-row-body"><div class="more-row-title">Sample Data</div><div class="more-row-sub">Load demo data</div></div></div>
@@ -1327,7 +1337,7 @@ const ASSET_CATS = [
   {v:'MutualFunds',l:'Mutual Funds',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>', color:'#34d399', cat:'growth'},
   {v:'ETF',  l:'ETF',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>', color:'#4ade80', cat:'growth'},
   {v:'Stocks',l:'Stocks',      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>', color:'#fb923c', cat:'growth'},
-  {v:'Gold', l:'Gold / Hedge', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', color:'#d97706', cat:'hedge'},
+  {v:'Gold', l:'Gold / Hedge', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', color:'#fbbf24', cat:'hedge'},
   {v:'RealEstate',l:'Real Estate',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="4" y1="7" x2="9" y2="7"/><line x1="4" y1="12" x2="9" y2="12"/><line x1="4" y1="17" x2="9" y2="17"/><line x1="14" y1="7" x2="20" y2="7"/><line x1="14" y1="12" x2="20" y2="12"/><line x1="14" y1="17" x2="20" y2="17"/></svg>', color:'#f87171', cat:'real'},
   {v:'FD',   l:'Fixed Deposit',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="11" rx="2"/><path d="M12 16v2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>', color:'#a78bfa', cat:'safe'},
   {v:'NPS',  l:'NPS',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>', color:'#38bdf8', cat:'safe'},
@@ -1358,7 +1368,7 @@ const GOAL_PRESETS = [
    color:'#fb923c', light:'rgba(251,146,60,0.1)', isIns:false},
   {id:'retirement', name:'Retirement',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M4.93 4.93l2.83 2.83M2 12h4M4.93 19.07l2.83-2.83M12 22v-4M19.07 19.07l-2.83-2.83M22 12h-4M19.07 4.93l-2.83 2.83"/><circle cx="12" cy="12" r="4"/></svg>`,
-   color:'#d97706', light:'rgba(217,119,6,0.1)', isIns:false},
+   color:'#fbbf24', light:'rgba(251,191,36,0.1)', isIns:false},
 ];
 const KID_PHASES = [
   {id:'playschool',  label:'Play School',    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><line x1="16" y1="11" x2="22" y2="11"/><line x1="19" y1="8" x2="19" y2="14"/></svg>', ageStart:2.5,ageEnd:5,  color:'#fb923c'},
@@ -1375,6 +1385,9 @@ const CHECKLIST_ITEMS = [
   {label:'Started Retirement SIP',       desc:'Investing consistently for retirement'},
   {label:'No high-interest debt',        desc:'Credit card / personal loans cleared'},
   {label:'Will / Nomination updated',    desc:'Nominees set on all accounts'},
+  {label:'Income Bucket funded',         desc:'24–36 months of expenses in liquid / arbitrage funds'},
+  {label:'Stability Bucket active',      desc:'BAF / hybrid fund for 3–7 year refill pipeline'},
+  {label:'Return Bucket growing',        desc:'Equity / index funds for long-term wealth (7y+)'},
 ];
 let data = {
   profile:{name:'', avatarColor:'#6366f1'},
@@ -1390,8 +1403,6 @@ function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scro
 
 /* ── UTILS ── */
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
-function fmtAge(ts){if(!ts)return null;const d=new Date(ts),now=new Date();const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];const sameYear=d.getFullYear()===now.getFullYear();const label=d.getDate()+' '+months[d.getMonth()]+(sameYear?'':' '+d.getFullYear());const days=Math.floor((now-d)/86400000);return{label,days}}
-function staleTag(ts,threshold=30){const r=fmtAge(ts);if(!r)return'';const dot=r.days>threshold?'<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--red);margin-right:3px;vertical-align:middle;flex-shrink:0"></span>':'';return`${dot}<span style="color:${r.days>threshold?'var(--red)':'var(--text3)'};font-size:0.67rem">Updated ${r.label}</span>`}
 function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m)/m).toFixed(d)}
 function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
 function fmtInputBlur(el){const typed=el.value.toString().replace(/[^\d.]/g,'');const raw=Number(typed||el.dataset.raw||0);if(!raw){el.dataset.raw='';return}el.dataset.raw=raw;el.value=fmt(raw)}
@@ -1602,7 +1613,7 @@ function renderRetirementReadiness(){
   const sipFV=monthlySIP*((Math.pow(1+r,n)-1)/r);
   const totalProjected=projected+sipFV;
   const readiness=Math.min(100,Math.round((totalProjected/target)*100));
-  const color=readiness>=80?'var(--green)':readiness>=50?'#6366f1':'var(--red)';
+  const color=readiness>=80?'var(--green)':readiness>=50?'var(--amber)':'var(--red)';
   const barEl=document.getElementById('ret-bar');
   const lblEl=document.getElementById('ret-pct-label');
   const metaEl=document.getElementById('ret-meta');
@@ -1634,9 +1645,9 @@ function renderInsuranceAlerts(){
   wrap.innerHTML=alerts.map(({ins,diffDays})=>{
     const expired=diffDays<=0;
     const urgent=diffDays<=30;
-    const bg=expired?'var(--red-bg)':urgent?'rgba(99,102,241,0.07)':'rgba(99,102,241,0.05)';
-    const border=expired?'rgba(248,113,113,0.25)':urgent?'rgba(99,102,241,0.25)':'rgba(99,102,241,0.18)';
-    const clr=expired?'var(--red)':'#6366f1';
+    const bg=expired?'var(--red-bg)':urgent?'rgba(251,191,36,0.08)':'rgba(251,191,36,0.06)';
+    const border=expired?'rgba(248,113,113,0.25)':urgent?'rgba(251,191,36,0.3)':'rgba(251,191,36,0.2)';
+    const clr=expired?'var(--red)':'var(--amber)';
     const icon=expired?'🚨':'⚠️';
     const label=ins.type==='health'?'Health Insurance':'Term Insurance';
     const msg=expired?`Expired ${Math.abs(diffDays)}d ago`
@@ -1676,7 +1687,7 @@ function _getSafetyGaps(){
       gaps.push({id:'ef',icon:'🛡️',title:'Emergency Fund',
         detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (6 months)`:`Build ${fmt(efRequired)} — 6× your monthly expenses`,
         badge:efSaved>0?`${fmt(shortfall)} short`:'Not started',
-        badgeClr:efSaved>0?'#6366f1':'var(--red)',
+        badgeClr:efSaved>0?'var(--amber)':'var(--red)',
         action:'Set up →', onclick:`openSheet('goal','emergency')`});
     }
   }
@@ -1704,10 +1715,10 @@ function renderSafetyCheck(){
   const n=gaps.length;
   // Escalating tone: 1 gap = friendly nudge, 2 = moderate, 3 = urgent
   const tone = n===1
-    ? {emoji:'💡', label:'Quick heads-up', sub:'One thing worth setting up for peace of mind', bg:'rgba(59,130,246,0.06)', border:'rgba(59,130,246,0.18)', clr:'var(--blue)'}
+    ? {emoji:'💡', label:'Quick heads-up', sub:'One thing worth setting up for peace of mind', bg:'rgba(37,99,235,0.06)', border:'rgba(37,99,235,0.15)', clr:'var(--blue)'}
     : n===2
-    ? {emoji:'⚠️', label:'Safety gaps found', sub:'Set these up before growing your portfolio', bg:'rgba(99,102,241,0.06)', border:'rgba(99,102,241,0.2)', clr:'#6366f1'}
-    : {emoji:'🚨', label:'Financial safety at risk', sub:'These 3 foundations must come before any investment', bg:'var(--red-bg)', border:'rgba(248,113,113,0.25)', clr:'var(--red)'};
+    ? {emoji:'⚠️', label:'Safety gaps found', sub:'Set these up before growing your portfolio', bg:'var(--amber-bg)', border:'rgba(180,83,9,0.18)', clr:'var(--amber)'}
+    : {emoji:'🚨', label:'Financial safety at risk', sub:'These 3 foundations must come before any investment', bg:'var(--red-bg)', border:'rgba(220,38,38,0.18)', clr:'var(--red)'};
 
   wrap.innerHTML=`<div style="background:${tone.bg};border:1px solid ${tone.border};border-radius:var(--r-lg);overflow:hidden">
     <div style="display:flex;align-items:center;gap:9px;padding:10px 13px 9px;border-bottom:1px solid ${tone.border}">
@@ -1721,7 +1732,7 @@ function renderSafetyCheck(){
     ${gaps.map((g,i)=>`<div onclick="${g.onclick}" style="display:flex;align-items:center;gap:10px;padding:9px 13px;${i<gaps.length-1?'border-bottom:1px solid '+tone.border+';':''}cursor:pointer" ontouchstart="this.style.background='var(--surface2)'" ontouchend="this.style.background=''">
       <span style="font-size:0.95rem;flex-shrink:0">${g.icon}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:0.78rem;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:6px">${g.title}<span style="font-size:0.65rem;font-weight:700;color:${g.badgeClr};background:${g.badgeClr==='var(--red)'?'var(--red-bg)':'rgba(99,102,241,0.1)'};padding:1px 6px;border-radius:99px">${g.badge}</span></div>
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:6px">${g.title}<span style="font-size:0.65rem;font-weight:700;color:${g.badgeClr};background:${g.badgeClr==='var(--red)'?'var(--red-bg)':'var(--amber-bg)'};padding:1px 6px;border-radius:99px">${g.badge}</span></div>
         <div style="font-size:0.68rem;color:var(--text3);margin-top:2px">${g.detail}</div>
       </div>
       <div style="font-size:0.7rem;font-weight:700;color:${g.badgeClr};flex-shrink:0">${g.action}</div>
@@ -1873,12 +1884,12 @@ function renderDashboard(){
 
       // Color the free cash based on health
       const freeEl = document.getElementById('dash-free-pct');
-      if(freeEl) freeEl.style.color = freeCash<0?'var(--red)':freePct<10?'#6366f1':'var(--text1)';
+      if(freeEl) freeEl.style.color = freeCash<0?'var(--red)':freePct<10?'var(--amber)':'var(--text1)';
       const freeAmtEl = document.getElementById('dash-free-amt');
       if(freeAmtEl) freeAmtEl.style.color = freeCash<0?'var(--red)':'var(--text3)';
 
       // Savings bar color
-      if(bar) bar.style.background = savingsRate>=20?'var(--green)':savingsRate>=10?'#6366f1':'var(--red)';
+      if(bar) bar.style.background = savingsRate>=20?'var(--green)':savingsRate>=10?'var(--amber)':'var(--red)';
 
       // Nudge message
       const nudge = document.getElementById('dash-income-nudge');
@@ -1904,8 +1915,8 @@ function renderDashboard(){
         } else if(savingsRate>=10){
           nudge.style.display='';
           nudge.style.background='var(--amber-bg)';
-          nudge.style.color='#6366f1';
-          nudge.style.border='1px solid rgba(99,102,241,0.18)';
+          nudge.style.color='var(--amber)';
+          nudge.style.border='1px solid rgba(251,191,36,0.2)';
           nudge.textContent='💡 Investing '+savingsRate+'% — try to reach the 20% benchmark for faster growth.';
         } else if(monthlySIP>0){
           nudge.style.display='';
@@ -1924,6 +1935,168 @@ function renderDashboard(){
   renderRetirementReadiness();
   renderInsuranceAlerts();
   renderSafetyCheck();
+  renderBucketStrategy();
+}
+
+function renderBucketStrategy(){
+  const wrap=document.getElementById('dash-bucket-wrap');
+  const content=document.getElementById('dash-bucket-content');
+  const badge=document.getElementById('dash-bucket-badge');
+  if(!wrap||!content)return;
+
+  const bucketAssets=data.assets.filter(a=>a.bucket);
+  if(!bucketAssets.length){wrap.style.display='none';return;}
+  wrap.style.display='';
+
+  const buckets={
+    income:{label:'Income',color:'#22c55e',horizon:'0–3y',assets:[],total:0},
+    stability:{label:'Stability',color:'var(--blue)',horizon:'3–7y',assets:[],total:0},
+    return:{label:'Return',color:'#f97316',horizon:'7y+',assets:[],total:0}
+  };
+
+  bucketAssets.forEach(a=>{
+    const v=Number(a.currentValue||0);
+    if(buckets[a.bucket]){buckets[a.bucket].assets.push(a);buckets[a.bucket].total+=v;}
+  });
+
+  const grandTotal=Object.values(buckets).reduce((s,b)=>s+b.total,0)||1;
+  const expenses=Number(data.profile.monthlyExpenses||0);
+  const incomeCoverage=expenses>0?Math.floor(buckets.income.total/expenses):0;
+  const iPct=Math.round((buckets.income.total/grandTotal)*100);
+  const sPct=Math.round((buckets.stability.total/grandTotal)*100);
+  const rPct=100-iPct-sPct;
+
+  // Badge — show most important metric
+  if(badge){
+    if(expenses>0&&incomeCoverage>0) badge.textContent=incomeCoverage+'mo coverage';
+    else badge.textContent=bucketAssets.length+' funds';
+  }
+
+  // ── COMPACT VIEW: bar + 3 bucket summary rows ──
+  let html=`<div class="bkt-bar-wrap">
+    <div class="bkt-bar-seg" style="width:${iPct}%;background:#22c55e"></div>
+    <div class="bkt-bar-seg" style="width:${sPct}%;background:var(--blue)"></div>
+    <div class="bkt-bar-seg" style="width:${rPct}%;background:#f97316"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+    ${['income','stability','return'].map(key=>{
+      const b=buckets[key];
+      const p=Math.round((b.total/grandTotal)*100);
+      return`<div style="text-align:center;padding:6px 4px">
+        <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:3px"><div class="bkt-dot" style="background:${b.color}"></div><span style="font-size:0.68rem;font-weight:700;color:var(--text1)">${b.label}</span></div>
+        <div style="font-size:0.92rem;font-weight:800;color:var(--text1)">${fmt(b.total)}</div>
+        <div style="font-size:0.62rem;font-weight:600;color:${b.color}">${p}%</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+
+  // One-line coverage summary
+  if(expenses>0){
+    const totalMo=Math.floor((buckets.income.total+buckets.stability.total+buckets.return.total)/expenses);
+    const fmtDur=(m)=>{if(m>=12){const y=Math.floor(m/12);const r=m%12;return r>0?y+'y '+r+'m':y+'y'}return m+'m'};
+    const safeClr=incomeCoverage>=24?'var(--green)':incomeCoverage>=12?'var(--amber)':'var(--red)';
+    const safeLabel=incomeCoverage>=24?'Crash-proof':incomeCoverage>=12?'Moderate':'Low safety';
+    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border2)">
+      <div style="font-size:0.72rem;color:var(--text3)">Coverage <span style="font-weight:700;color:var(--text1)">${fmtDur(totalMo)}</span> at ${fmt(expenses)}/mo</div>
+      <div style="font-size:0.68rem;font-weight:700;color:${safeClr}">${safeLabel}</div>
+    </div>`;
+  }
+
+  // ── ANALYSIS (hidden by default, toggled) ──
+  // Build all analysis content
+  const targetI=Number(data.profile.bucketTargetIncome||30);
+  const targetS=Number(data.profile.bucketTargetStability||20);
+  const targetR=Number(data.profile.bucketTargetReturn||50);
+  const DRIFT_THRESHOLD=5;
+  const driftI=iPct-targetI;
+  const driftS=sPct-targetS;
+  const driftR=rPct-targetR;
+  const hasDrift=Math.abs(driftI)>DRIFT_THRESHOLD||Math.abs(driftS)>DRIFT_THRESHOLD||Math.abs(driftR)>DRIFT_THRESHOLD;
+
+  // Smart alerts: coverage-first, then percentage-based only for mature portfolios
+  let alerts=[];
+  const portfolioMature = expenses>0 && incomeCoverage>=24; // Only use % rebalancing after Income is adequate
+
+  if(expenses>0){
+    // Coverage-based alerts (always relevant)
+    if(incomeCoverage<12){
+      const needed=12*expenses-buckets.income.total;
+      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`⚠ Income covers only ${incomeCoverage}mo — build to 24mo (need ${fmt(needed>0?needed:0)} more in liquid/arbitrage)`});
+    } else if(incomeCoverage<24){
+      const needed=24*expenses-buckets.income.total;
+      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Income at ${incomeCoverage}mo — target 24mo (need ${fmt(needed)} more)`});
+    }
+    if(incomeCoverage>=24&&buckets.stability.total===0){
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`✓ Income is strong. Now start building Stability bucket with a BAF/hybrid fund SIP.`});
+    }
+  }
+
+  // Percentage-based rebalancing (only when Income is adequate)
+  if(portfolioMature){
+    if(driftR>15){
+      const moveAmt=Math.round(grandTotal*(driftR-targetR)/100);
+      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`↘ Book ~${fmt(moveAmt)} profits from Return → Stability`});
+    }
+    if(driftS<-DRIFT_THRESHOLD&&buckets.return.total>0&&buckets.stability.total>0){
+      const moveAmt=Math.round(grandTotal*Math.abs(driftS)/100);
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`↗ Move ~${fmt(moveAmt)} from Return → Stability`});
+    }
+  } else if(!alerts.length&&expenses>0){
+    alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`📋 Priority: Fill Income bucket to 24mo (${fmt(24*expenses)}), then build Stability, then grow Return.`});
+  }
+
+  // Goal proximity hints (always relevant)
+  data.goals.forEach(g=>{
+    const pr=GOAL_PRESETS.find(p=>p.id===g.type);
+    if(!pr||!g.timePeriod)return;
+    const yrs=Number(g.timePeriod);const linked=g.linkedAssetIds||[];
+    if(!linked.length)return;
+    const linkedInReturn=linked.filter(id=>{const a=data.assets.find(x=>x.id===id);return a?.bucket==='return'});
+    if(yrs<=3&&linkedInReturn.length>0) alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`${pr.name} (${yrs}y away) — shift from Return → Income`});
+    else if(yrs<=7&&yrs>3&&linkedInReturn.length>0) alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`${pr.name} (${yrs}y away) — shift from Return → Stability`});
+  });
+
+  // Show "View Analysis" toggle only if there's something to show
+  const hasAnalysis=hasDrift||alerts.length||(expenses>0);
+  if(hasAnalysis){
+    html+=`<div style="text-align:center;padding:4px 0 2px">
+      <button onclick="document.getElementById('bkt-analysis').classList.toggle('closed');this.textContent=document.getElementById('bkt-analysis').classList.contains('closed')?'View Analysis ▾':'Hide Analysis ▴'" style="background:none;border:none;color:var(--blue);font-size:0.72rem;font-weight:700;cursor:pointer;padding:6px 12px;font-family:inherit">${'View Analysis ▾'}</button>
+    </div>
+    <div id="bkt-analysis" class="sec-body closed" style="transition:max-height 0.3s var(--ease),opacity 0.2s ease">`;
+
+    // Rebalance grid — show % drift label only when portfolio is mature
+    html+=`<div style="padding:6px 0 8px">
+      <div style="font-size:0.68rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">${portfolioMature?'Rebalance Check':'Bucket Status'}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        ${[{label:'Income',cur:iPct,target:targetI,drift:driftI,clr:'#22c55e'},{label:'Stability',cur:sPct,target:targetS,drift:driftS,clr:'var(--blue)'},{label:'Return',cur:rPct,target:targetR,drift:driftR,clr:'#f97316'}].map(b=>{
+          const ok=Math.abs(b.drift)<=DRIFT_THRESHOLD;
+          const driftTxt=b.drift>0?'+'+b.drift+'%':b.drift+'%';
+          return`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:7px 8px;text-align:center">
+            <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:3px">${b.label}</div>
+            <div style="font-size:0.82rem;font-weight:800;color:${b.clr}">${b.cur}%</div>
+            <div style="font-size:0.58rem;color:var(--text3);margin-top:1px">Target ${b.target}%</div>
+            ${portfolioMature?`<div style="font-size:0.58rem;font-weight:700;margin-top:1px;color:${ok?'var(--green)':'var(--amber)'}">${ok?'✓ On track':driftTxt}</div>`:''}
+          </div>`;
+        }).join('')}
+      </div>
+      ${!portfolioMature&&expenses>0?`<div style="font-size:0.6rem;color:var(--text3);margin-top:5px;text-align:center">% rebalancing activates once Income bucket reaches 24 months</div>`:''}
+    </div>`;
+
+    // Alerts
+    if(alerts.length){
+      html+=alerts.map(a=>`<div class="bkt-alert" style="background:${a.bg};color:${a.clr};border:1px solid ${a.clr==='var(--red)'?'rgba(220,38,38,0.15)':a.clr==='var(--amber)'?'rgba(180,83,9,0.12)':'rgba(37,99,235,0.12)'}">${a.msg}</div>`).join('');
+    } else if(portfolioMature&&!hasDrift){
+      html+=`<div class="bkt-alert" style="background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,0.15)">✓ Buckets are well-balanced. No action needed.</div>`;
+    }
+
+    html+=`<div style="display:flex;align-items:flex-start;gap:5px;padding:8px 0 2px;margin-top:6px;border-top:1px solid var(--border2)">
+      <span style="font-size:0.7rem;flex-shrink:0;opacity:0.5">ⓘ</span>
+      <span style="font-size:0.62rem;color:var(--text3);line-height:1.4">Suggestions are directional guidance — review before acting. Consider starting new SIPs rather than moving existing investments.</span>
+    </div>`;
+    html+=`</div>`; // close bkt-analysis
+  }
+
+  content.innerHTML=html;
 }
 
 function renderGoalHealth(){
@@ -1979,7 +2152,7 @@ function renderAssets(){
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
-        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}${a.updatedAt?' · '+staleTag(a.updatedAt):''}</div>
+        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}${a.bucket?` · <span style="color:${a.bucket==='income'?'var(--green)':a.bucket==='stability'?'var(--blue)':'#f97316'};font-weight:600">${a.bucket==='income'?'Income':a.bucket==='stability'?'Stability':'Return'}</span>`:''}</div>
       </div>
       <div class="row-right">
         <div class="row-value">${fmt(a.currentValue)}</div>
@@ -2007,7 +2180,7 @@ function renderLiabilities(){
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${l.name}</div>
-        <div class="row-sub">${info.l} · ${l.interestRate||0}% · EMI ${fmt(l.emi)}/mo${l.endDate?' · Ends '+l.endDate:''}${l.updatedAt?' · '+staleTag(l.updatedAt):''}</div>
+        <div class="row-sub">${info.l} · ${l.interestRate||0}% · EMI ${fmt(l.emi)}/mo${l.endDate?' · Ends '+l.endDate:''}</div>
         ${payoffBadge}
       </div>
       <div class="row-right">
@@ -2067,14 +2240,14 @@ function renderGoals(){
           const income=Number(data.profile.monthlyIncome||0)*12;
           const recommended=Math.max(1000000, income>0?income*0.5:1000000);
           if(totalCover>=recommended) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover looks adequate (${fmt(totalCover)} total)</div>`;
-          else adequacyHtml=`<div style="font-size:0.68rem;color:#6366f1;margin-top:4px;font-weight:600">⚠ Consider increasing cover — ${fmt(totalCover)} may not suffice at 14% medical inflation</div>`;
+          else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Consider increasing cover — ${fmt(totalCover)} may not suffice at 14% medical inflation</div>`;
         } else {
           // Term: recommend 10-15x annual income
           const income=Number(data.profile.monthlyIncome||0)*12;
           if(income>0){
             const rec10x=income*10;
             if(totalCover>=rec10x) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover is ${Math.round(totalCover/income)}x annual income (${fmt(totalCover)})</div>`;
-            else adequacyHtml=`<div style="font-size:0.68rem;color:#6366f1;margin-top:4px;font-weight:600">⚠ Cover is only ${Math.round(totalCover/income)}x income — aim for 10-15x (${fmt(rec10x)}+)</div>`;
+            else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Cover is only ${Math.round(totalCover/income)}x income — aim for 10-15x (${fmt(rec10x)}+)</div>`;
           }
         }
       }
@@ -2082,7 +2255,6 @@ function renderGoals(){
         ${ins.coverAmount?`<div style="font-size:0.78rem;color:var(--text2)">Cover <span style="color:var(--text1);font-weight:600">${fmt(ins.coverAmount)}</span></div>`:''}
         ${ins.premium?`<div style="font-size:0.78rem;color:var(--text2)">Premium <span style="color:var(--text1);font-weight:600">${fmt(ins.premium)}/yr</span></div>`:''}
         ${ins.expiry?`<div style="font-size:0.78rem;color:var(--text2)">Expiry on <span style="color:var(--text1);font-weight:600">${fmtDate(ins.expiry)}</span></div>`:''}
-        ${ins.updatedAt?`<div style="font-size:0.67rem;margin-top:2px;display:flex;align-items:center;gap:3px">${staleTag(ins.updatedAt,365)}</div>`:''}
         ${adequacyHtml}
       </div>`;
       return`<div class="goal-row" onclick="openSheet('insurance','${ins.id}')">
@@ -2330,6 +2502,14 @@ function getCheckItems(){
     }));
     save();
   }
+  // Migration: add new default items that don't exist yet
+  CHECKLIST_ITEMS.forEach((item,i)=>{
+    const exists=data.checkItems.some(ci=>ci.label===item.label);
+    if(!exists){
+      data.checkItems.push({id:'ci_'+Date.now()+'_'+i, label:item.label, desc:item.desc, done:false, custom:false});
+      save();
+    }
+  });
   return data.checkItems;
 }
 function renderChecklist(){
@@ -2337,7 +2517,7 @@ function renderChecklist(){
   const done=items.filter(x=>x.done).length;
   const total=items.length;
   const p=total>0?Math.round((done/total)*100):0;
-  const cl=document.getElementById('checklist-pct-text');if(cl){cl.textContent=p+'%';cl.style.color='#3B82F6';}
+  const cl=document.getElementById('checklist-pct-text');if(cl){cl.textContent=p+'%';cl.style.color='var(--blue)';}
   const cnt=document.getElementById('check-sec-count');if(cnt)cnt.textContent=done+'/'+total;
   const bar=document.getElementById('checklist-bar');if(bar)bar.style.width=p+'%';
   const el=document.getElementById('checklist-items');if(!el)return;
@@ -2431,9 +2611,15 @@ function sheetAsset(a){
       <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
     </div>
     <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
+    <div class="fg"><label class="fl">Investment Bucket <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— ISR strategy</span></label><select class="fi fi-sel" id="f-bucket">
+      <option value="" ${!a.bucket?'selected':''}>Not Assigned</option>
+      <option value="income" ${a.bucket==='income'?'selected':''}>🟢 Income (0–3y) — Liquid, Arbitrage</option>
+      <option value="stability" ${a.bucket==='stability'?'selected':''}>🔵 Stability (3–7y) — BAF, Hybrid</option>
+      <option value="return" ${a.bucket==='return'?'selected':''}>🟠 Return (7y+) — Equity, Index</option>
+    </select></div>
     <div class="form-actions">${a.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delAsset(\''+a.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">${a.id?'Update':'Add'}</button></div>
   </div>`}
-function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0),updatedAt:Date.now()};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
+function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0),bucket:document.getElementById('f-bucket')?.value||''};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -2450,7 +2636,7 @@ function sheetLiability(l){
     </div>
     <div class="form-actions">${l.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delLiab(\''+l.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveLiab('${l.id||''}')">${l.id?'Update':'Add'}</button></div>
   </div>`}
-function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||'',updatedAt:Date.now()};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
+function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||''};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetGoal(pid){
   const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
@@ -2611,7 +2797,7 @@ function saveInsurance(editId){
   const expiry=document.getElementById('f-ins-insexp')?.value||'';
   const notes=document.getElementById('f-ins-notes')?.value?.trim()||'';
   if(!policyName){toast('Enter a policy name',true);return}
-  const obj={type,policyName,premium,coverAmount,expiry,notes,updatedAt:Date.now()};
+  const obj={type,policyName,premium,coverAmount,expiry,notes};
   if(editId){
     const ex=data.insurance.find(x=>x.id===editId);
     if(ex)Object.assign(ex,obj);
@@ -3049,12 +3235,30 @@ function sheetProfile(){
     <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value="${data.profile.monthlyIncome||''}"/></div>
     <div class="fg"><label class="fl">Monthly Expenses (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pexpenses" type="number" placeholder="e.g. 30000 (rent, bills, groceries)" value="${data.profile.monthlyExpenses||''}"/></div>
     <div style="font-size:0.68rem;color:var(--text3);margin:-2px 0 10px;line-height:1.4">Income & expenses power the dashboard snapshot. Leave blank to skip.</div>
+    <div class="form-sec">Bucket Target Allocation <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— must total 100%</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:0.62rem">🟢 Income %</label><input class="fi" id="f-bkt-income" type="number" placeholder="30" value="${data.profile.bucketTargetIncome||30}" style="text-align:center"/></div>
+      <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:0.62rem">🔵 Stability %</label><input class="fi" id="f-bkt-stability" type="number" placeholder="20" value="${data.profile.bucketTargetStability||20}" style="text-align:center"/></div>
+      <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:0.62rem">🟠 Return %</label><input class="fi" id="f-bkt-return" type="number" placeholder="50" value="${data.profile.bucketTargetReturn||50}" style="text-align:center"/></div>
+    </div>
     <div class="form-sec">Avatar Color</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 14px">${dots}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Update</button></div>
   </div>`}
 function selectColor(c){data.profile.avatarColor=c;document.querySelectorAll('.color-dot').forEach(d=>{d.classList.toggle('selected',d.style.background===c)})}
-function saveProfile(){data.profile.name=document.getElementById('f-pname').value.trim();data.profile.monthlyIncome=Number(document.getElementById('f-pincome').value||0);data.profile.monthlyExpenses=Number(document.getElementById('f-pexpenses').value||0);save();closeSheet();renderProfile();renderDashboard();toast('Saved ✓')}
+function saveProfile(){
+  data.profile.name=document.getElementById('f-pname').value.trim();
+  data.profile.monthlyIncome=Number(document.getElementById('f-pincome').value||0);
+  data.profile.monthlyExpenses=Number(document.getElementById('f-pexpenses').value||0);
+  const bi=Number(document.getElementById('f-bkt-income')?.value||30);
+  const bs=Number(document.getElementById('f-bkt-stability')?.value||20);
+  const br=Number(document.getElementById('f-bkt-return')?.value||50);
+  if(bi+bs+br!==100){toast('Bucket targets must total 100%',true);return;}
+  data.profile.bucketTargetIncome=bi;
+  data.profile.bucketTargetStability=bs;
+  data.profile.bucketTargetReturn=br;
+  save();closeSheet();renderProfile();renderDashboard();toast('Saved ✓');
+}
 
 /* ── TOGGLES & UI ── */
 function toggleSec(id){
@@ -3109,7 +3313,7 @@ function exportData(){
   toast('Exported ✓');
 }
 function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
-function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],insurance:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
+function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;const bi=data.profile.bucketTargetIncome;const bs=data.profile.bucketTargetStability;const br=data.profile.bucketTargetReturn;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp,bucketTargetIncome:bi,bucketTargetStability:bs,bucketTargetReturn:br},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],insurance:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
   showConfirm('Load Sample Data?','This will overwrite all current data with demo data.',()=>{
@@ -3195,6 +3399,5 @@ function init(){
 }
 init();
 </script>
-<script>
 </body>
 </html>
