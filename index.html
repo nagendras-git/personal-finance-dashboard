@@ -797,7 +797,8 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 .bkt-val { font-size:0.88rem; font-weight:800; color:var(--text1); text-align:right; flex-shrink:0 }
 .bkt-bar-wrap { height:8px; background:var(--surface3); border-radius:99px; overflow:hidden; display:flex; margin:10px 0 6px }
 .bkt-bar-seg { height:100%; transition:width 0.5s var(--ease) }
-.bkt-alert { padding:8px 12px; border-radius:var(--r); font-size:0.72rem; font-weight:500; line-height:1.5; margin-top:8px; color:var(--text2); background:var(--surface2); border:1px solid var(--border2) }
+.bkt-alert { padding:8px 12px 8px 24px; border-radius:var(--r); font-size:0.72rem; font-weight:500; line-height:1.5; margin-top:8px; color:var(--text2); background:var(--surface2); border:1px solid var(--border2); position:relative }
+.bkt-alert::before { content:''; position:absolute; left:10px; top:14px; width:5px; height:5px; border-radius:50%; background:var(--text3) }
 .bkt-fund { display:flex; align-items:center; gap:8px; padding:4px 0; font-size:0.72rem }
 .bkt-fund-name { flex:1; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .bkt-fund-val { color:var(--text1); font-weight:700; flex-shrink:0 }
@@ -2064,7 +2065,7 @@ function renderBucketStrategy(){
   // Show analysis toggle
   if(alerts.length){
     html+=`<div style="text-align:center;padding:4px 0 2px">
-      <button onclick="document.getElementById('bkt-analysis').classList.toggle('closed');this.textContent=document.getElementById('bkt-analysis').classList.contains('closed')?'View Analysis ▾':'Hide Analysis ▴'" style="background:none;border:none;color:var(--blue);font-size:0.72rem;font-weight:700;cursor:pointer;padding:6px 12px;font-family:inherit">${'View Analysis ▾'}</button>
+      <button onclick="const el=document.getElementById('bkt-analysis');el.classList.toggle('closed');const open=!el.classList.contains('closed');this.querySelector('span').textContent=open?'Hide Analysis':'View Analysis';this.querySelector('svg').style.transform=open?'rotate(180deg)':''" style="background:none;border:none;color:var(--blue);font-size:0.72rem;font-weight:700;cursor:pointer;padding:6px 12px;font-family:inherit;display:inline-flex;align-items:center;gap:4px"><span>View Analysis</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s ease"><polyline points="6 9 12 15 18 9"/></svg></button>
     </div>
     <div id="bkt-analysis" class="sec-body closed" style="transition:max-height 0.3s var(--ease),opacity 0.2s ease">`;
 
