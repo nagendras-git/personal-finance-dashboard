@@ -1563,7 +1563,7 @@ function save(){
     const cnt=(parseInt(localStorage.getItem('wp_save_count'))||0)+1;
     localStorage.setItem('wp_save_count',cnt);
     if(cnt>0&&cnt%15===0&&!localStorage.getItem('wp_last_export')){showBackupBanner();}
-  }catch(e){toast('⚠️ Storage full — export a backup!')}
+  }catch(e){toast('⚠️ Storage full. Export a backup!')}
 }
 function load(){
   try{const d=localStorage.getItem(STORAGE_KEY);if(d){data=JSON.parse(d)}}catch(e){}
@@ -1685,7 +1685,7 @@ function _getSafetyGaps(){
     if(efSaved<efRequired){
       const shortfall=efRequired-efSaved;
       gaps.push({id:'ef',icon:'🛡️',title:'Emergency Fund',
-        detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (6 months)`:`Build ${fmt(efRequired)} — 6× your monthly expenses`,
+        detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (6 months)`:`Build ${fmt(efRequired)} (6× monthly expenses)`,
         badge:efSaved>0?`${fmt(shortfall)} short`:'Not started',
         badgeClr:efSaved>0?'var(--amber)':'var(--red)',
         action:'Set up →', onclick:`openSheet('goal','emergency')`});
@@ -1905,7 +1905,7 @@ function renderDashboard(){
           nudge.style.background='var(--green-bg)';
           nudge.style.color='var(--green)';
           nudge.style.border='1px solid rgba(34,197,94,0.2)';
-          nudge.textContent='🚀 Excellent! You invest '+savingsRate+'% of your income — well above the 20% benchmark.';
+          nudge.textContent='🚀 Excellent! You invest '+savingsRate+'% of your income. Well above the 20% benchmark.';
         } else if(savingsRate>=20){
           nudge.style.display='';
           nudge.style.background='var(--green-bg)';
@@ -1917,7 +1917,7 @@ function renderDashboard(){
           nudge.style.background='var(--amber-bg)';
           nudge.style.color='var(--amber)';
           nudge.style.border='1px solid rgba(251,191,36,0.2)';
-          nudge.textContent='💡 Investing '+savingsRate+'% — try to reach the 20% benchmark for faster growth.';
+          nudge.textContent='💡 Investing '+savingsRate+'% . Try reaching the 20% benchmark for faster growth.';
         } else if(monthlySIP>0){
           nudge.style.display='';
           nudge.style.background='var(--red-bg)';
@@ -1996,7 +1996,7 @@ function renderBucketStrategy(){
     const fmtDur=(m)=>{if(m>=12){const y=Math.floor(m/12);const r=m%12;return r>0?y+'y '+r+'m':y+'y'}return m+'m'};
     const safeClr=incomeCoverage>=24?'var(--green)':incomeCoverage>=12?'var(--amber)':'var(--red)';
     // Plain language bucket health
-    const incomeHealth=incomeCoverage>=36?`Income bucket is strong — survives ${fmtDur(incomeCoverage)} even if markets crash`:incomeCoverage>=24?`Income bucket is healthy at ${fmtDur(incomeCoverage)} — safe through market downturns`:incomeCoverage>=12?`Income bucket at ${fmtDur(incomeCoverage)} — build to 24mo for crash safety`:`Income bucket only ${fmtDur(incomeCoverage)} — critically low, prioritize this`;
+    const incomeHealth=incomeCoverage>=36?`Income bucket is strong. Survives ${fmtDur(incomeCoverage)} even if markets crash.`:incomeCoverage>=24?`Income bucket healthy at ${fmtDur(incomeCoverage)}. Safe through market downturns.`:incomeCoverage>=12?`Income bucket at ${fmtDur(incomeCoverage)}. Build to 24mo for crash safety.`:`Income bucket only ${fmtDur(incomeCoverage)}. Critically low, prioritize this.`;
     html+=`<div style="padding:8px 0;border-top:1px solid var(--border2)">
       <div style="font-size:0.72rem;font-weight:600;color:${safeClr};line-height:1.5">${incomeCoverage>=24?'🛡️':'⚠️'} ${incomeHealth}</div>
     </div>`;
@@ -2011,32 +2011,32 @@ function renderBucketStrategy(){
     // Phase 1: Income bucket (the kitchen — must be stocked first)
     if(incomeCoverage<12){
       const needed=Math.max(0,24*expenses-buckets.income.total);
-      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`⚠ Income bucket covers only ${fmtDur(incomeCoverage)}. In a crash, this runs out fast. Build to 24mo by adding ${fmt(needed)} in liquid/arbitrage funds.`});
+      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`⚠ Income covers only ${fmtDur(incomeCoverage)}. Build to 24mo with ${fmt(needed)} more in liquid/arbitrage funds.`});
     } else if(incomeCoverage<24){
       const needed=24*expenses-buckets.income.total;
-      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Income bucket at ${fmtDur(incomeCoverage)} — decent, but aim for 24mo (${fmt(needed)} more) for full crash protection.`});
+      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Income at ${fmtDur(incomeCoverage)}. Aim for 24mo (${fmt(needed)} more) for full crash protection.`});
     }
 
     // Phase 2: Stability bucket (the storehouse — refills the kitchen)
     if(incomeCoverage>=24 && buckets.stability.total===0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🏗️ Income is strong. Now build a Stability bucket — start a BAF/hybrid fund SIP. This becomes your refill pipeline so you never touch equity in a downturn.`});
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🏗️ Income is strong. Start a BAF/hybrid fund SIP to build your Stability bucket. This refills Income so you never touch equity in a downturn.`});
     } else if(incomeCoverage>=24 && stabMonths>0 && stabMonths<36){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Stability can refill Income for ${fmtDur(stabMonths)}. Keep growing this to 3–5 years for a stronger safety net.`});
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Stability can refill Income for ${fmtDur(stabMonths)}. Grow to 3-5 years for a stronger pipeline.`});
     }
 
     // Phase 3: Return bucket (the tree — let it grow, harvest only the excess)
     if(incomeCoverage>=24 && buckets.stability.total>0 && buckets.return.total===0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🌱 Foundation is set. Start equity/index fund SIPs in the Return bucket — your Income and Stability give you the patience to let equity compound.`});
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🌱 Foundation is set. Start equity/index fund SIPs. Your Income and Stability give you patience to let equity compound.`});
     }
 
     // Harvest signal: Return bucket has grown very large relative to others
     if(incomeCoverage>=24 && buckets.return.total>0 && rPct>60){
-      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`🌳 Return bucket has grown well (${rPct}% of portfolio). Harvest some profits → Stability to lock gains. Don't cut the tree — just pick the excess fruit.`});
+      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`🌳 Return bucket at ${rPct}% of portfolio. Harvest some profits into Stability to lock gains.`});
     }
 
     // Overstocked storehouse: Stability is very large but Return is small
     if(incomeCoverage>=24 && sPct>50 && rPct<25 && buckets.return.total>0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Storehouse is full but the tree needs growing. Future SIPs could go to Return bucket — equity compounds best over 7+ years.`});
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Stability is well-stocked. Direct future SIPs to Return bucket for long-term compounding.`});
     }
 
     // Building phase — show the roadmap
@@ -2047,7 +2047,7 @@ function renderBucketStrategy(){
 
   // All buckets healthy
   if(expenses>0 && incomeCoverage>=24 && !alerts.length){
-    alerts.push({clr:'var(--green)',bg:'var(--green-bg)',msg:`✓ All buckets healthy. Income survives crashes, Stability refills it, Return grows wealth. Stay the course and let compounding work.`});
+    alerts.push({clr:'var(--green)',bg:'var(--green-bg)',msg:`✓ All buckets healthy. Income survives crashes, Stability refills it, Return grows wealth. Stay the course.`});
   }
 
   // Goal proximity hints
@@ -2057,8 +2057,8 @@ function renderBucketStrategy(){
     const yrs=Number(g.timePeriod);const linked=g.linkedAssetIds||[];
     if(!linked.length)return;
     const linkedInReturn=linked.filter(id=>{const a=data.assets.find(x=>x.id===id);return a?.bucket==='return'});
-    if(yrs<=3&&linkedInReturn.length>0) alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`${pr.name} is ${yrs}y away — move linked funds from Return to Income so the money is safe when needed.`});
-    else if(yrs<=7&&yrs>3&&linkedInReturn.length>0) alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`${pr.name} is ${yrs}y away — gradually shift linked funds from Return to Stability as the goal nears.`});
+    if(yrs<=3&&linkedInReturn.length>0) alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`${pr.name} (${yrs}y away). Move linked funds from Return to Income for safety.`});
+    else if(yrs<=7&&yrs>3&&linkedInReturn.length>0) alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`${pr.name} (${yrs}y away). Gradually shift linked funds from Return to Stability.`});
   });
 
   // Show analysis toggle
@@ -2072,7 +2072,7 @@ function renderBucketStrategy(){
 
     html+=`<div style="display:flex;align-items:flex-start;gap:5px;padding:8px 0 2px;margin-top:6px;border-top:1px solid var(--border2)">
       <span style="font-size:0.7rem;flex-shrink:0;opacity:0.5">ⓘ</span>
-      <span style="font-size:0.62rem;color:var(--text3);line-height:1.5">Bull market — harvest some equity profits into Stability & Income. Bear market — don't touch equity, keep SIPs running & buy more units at cheaper prices.</span>
+      <span style="font-size:0.62rem;color:var(--text3);line-height:1.5">Bull market: harvest some equity profits into Stability & Income. Bear market: don't touch equity, keep SIPs running & buy more units at cheaper prices.</span>
     </div>`;
     html+=`</div>`; // close bkt-analysis
   }
@@ -2221,14 +2221,14 @@ function renderGoals(){
           const income=Number(data.profile.monthlyIncome||0)*12;
           const recommended=Math.max(1000000, income>0?income*0.5:1000000);
           if(totalCover>=recommended) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover looks adequate (${fmt(totalCover)} total)</div>`;
-          else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Consider increasing cover — ${fmt(totalCover)} may not suffice at 14% medical inflation</div>`;
+          else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Consider increasing cover. ${fmt(totalCover)} may not suffice at 14% medical inflation</div>`;
         } else {
           // Term: recommend 10-15x annual income
           const income=Number(data.profile.monthlyIncome||0)*12;
           if(income>0){
             const rec10x=income*10;
             if(totalCover>=rec10x) adequacyHtml=`<div style="font-size:0.68rem;color:var(--green);margin-top:4px;font-weight:600">✓ Cover is ${Math.round(totalCover/income)}x annual income (${fmt(totalCover)})</div>`;
-            else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Cover is only ${Math.round(totalCover/income)}x income — aim for 10-15x (${fmt(rec10x)}+)</div>`;
+            else adequacyHtml=`<div style="font-size:0.68rem;color:var(--amber);margin-top:4px;font-weight:600">⚠ Cover is only ${Math.round(totalCover/income)}x income. Aim for 10-15x (${fmt(rec10x)}+)</div>`;
           }
         }
       }
@@ -2591,12 +2591,12 @@ function sheetAsset(a){
       <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-cur" type="number" placeholder="0" value="${a.currentValue||''}"/></div>
       <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
     </div>
-    <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
-    <div class="fg"><label class="fl">Investment Bucket <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— ISR strategy</span></label><select class="fi fi-sel" id="f-bucket">
+    <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
+    <div class="fg"><label class="fl">Investment Bucket <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">ISR strategy</span></label><select class="fi fi-sel" id="f-bucket">
       <option value="" ${!a.bucket?'selected':''}>Not Assigned</option>
-      <option value="income" ${a.bucket==='income'?'selected':''}>🟢 Income (0–3y) — Liquid, Arbitrage</option>
-      <option value="stability" ${a.bucket==='stability'?'selected':''}>🔵 Stability (3–7y) — BAF, Hybrid</option>
-      <option value="return" ${a.bucket==='return'?'selected':''}>🟠 Return (7y+) — Equity, Index</option>
+      <option value="income" ${a.bucket==='income'?'selected':''}>🟢 Income (0–3y): Liquid, Arbitrage</option>
+      <option value="stability" ${a.bucket==='stability'?'selected':''}>🔵 Stability (3–7y): BAF, Hybrid</option>
+      <option value="return" ${a.bucket==='return'?'selected':''}>🟠 Return (7y+): Equity, Index</option>
     </select></div>
     <div class="form-actions">${a.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delAsset(\''+a.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">${a.id?'Update':'Add'}</button></div>
   </div>`}
@@ -2933,7 +2933,7 @@ function sheetManagePhases(kidId){
   <div class="sheet-body">
     <div class="form-sec" style="margin-top:0">Standard Phases</div>
     <div class="phase-opts">${stdHtml}</div>
-    <div class="form-sec">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— e.g. Coaching, Exchange Program</span></div>
+    <div class="form-sec">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">e.g. Coaching, Exchange Program</span></div>
     <div class="phase-opts" id="custom-phase-list">${customHtml||'<div style="font-size:0.62rem;color:var(--text3);padding:4px 2px">No custom phases yet.</div>'}</div>
     <div style="display:grid;grid-template-columns:1fr 64px 64px auto;gap:5px;margin-top:8px">
       <div style="font-size:0.62rem;color:var(--text3);font-weight:600;padding:0 2px">Phase Name</div>
@@ -2971,13 +2971,13 @@ function addCustomPhaseInSheet(kidId){
   document.getElementById('cp-name').value='';
   document.getElementById('cp-age-start').value='';
   document.getElementById('cp-age-end').value='';
-  toast('Phase added — tap Save to confirm');
+  toast('Phase added. Tap Save to confirm');
 }
 function deleteCustomPhaseInSheet(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid||!kid.customPhases)return;
   kid.customPhases=kid.customPhases.filter(p=>p.id!==cpId);
   const el=document.getElementById('mpopt-custom-'+cpId);if(el)el.remove();
-  toast('Removed — tap Save to confirm');
+  toast('Removed. Tap Save to confirm');
 }
 function saveManagePhases(kidId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
@@ -3213,8 +3213,8 @@ function sheetProfile(){
   return`<div class="sheet-hdr"><div class="sheet-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Ravi" value="${data.profile.name||''}"/></div>
-    <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value="${data.profile.monthlyIncome||''}"/></div>
-    <div class="fg"><label class="fl">Monthly Expenses (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pexpenses" type="number" placeholder="e.g. 30000 (rent, bills, groceries)" value="${data.profile.monthlyExpenses||''}"/></div>
+    <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value="${data.profile.monthlyIncome||''}"/></div>
+    <div class="fg"><label class="fl">Monthly Expenses (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-pexpenses" type="number" placeholder="e.g. 30000 (rent, bills, groceries)" value="${data.profile.monthlyExpenses||''}"/></div>
     <div style="font-size:0.68rem;color:var(--text3);margin:-2px 0 10px;line-height:1.4">Income & expenses power the dashboard snapshot. Leave blank to skip.</div>
     <div class="form-sec">Avatar Color</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 14px">${dots}</div>
