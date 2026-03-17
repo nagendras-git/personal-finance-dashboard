@@ -1995,103 +1995,84 @@ function renderBucketStrategy(){
     const totalMo=Math.floor((buckets.income.total+buckets.stability.total+buckets.return.total)/expenses);
     const fmtDur=(m)=>{if(m>=12){const y=Math.floor(m/12);const r=m%12;return r>0?y+'y '+r+'m':y+'y'}return m+'m'};
     const safeClr=incomeCoverage>=24?'var(--green)':incomeCoverage>=12?'var(--amber)':'var(--red)';
-    const safeLabel=incomeCoverage>=24?'Crash-proof':incomeCoverage>=12?'Moderate':'Low safety';
-    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border2)">
-      <div style="font-size:0.72rem;color:var(--text3)">Coverage <span style="font-weight:700;color:var(--text1)">${fmtDur(totalMo)}</span> at ${fmt(expenses)}/mo</div>
-      <div style="font-size:0.68rem;font-weight:700;color:${safeClr}">${safeLabel}</div>
+    // Plain language bucket health
+    const incomeHealth=incomeCoverage>=36?`Income bucket is strong — survives ${fmtDur(incomeCoverage)} even if markets crash`:incomeCoverage>=24?`Income bucket is healthy at ${fmtDur(incomeCoverage)} — safe through market downturns`:incomeCoverage>=12?`Income bucket at ${fmtDur(incomeCoverage)} — build to 24mo for crash safety`:`Income bucket only ${fmtDur(incomeCoverage)} — critically low, prioritize this`;
+    html+=`<div style="padding:8px 0;border-top:1px solid var(--border2)">
+      <div style="font-size:0.72rem;font-weight:600;color:${safeClr};line-height:1.5">${incomeCoverage>=24?'🛡️':'⚠️'} ${incomeHealth}</div>
     </div>`;
   }
 
-  // ── ANALYSIS (hidden by default, toggled) ──
-  // Build all analysis content
-  const targetI=Number(data.profile.bucketTargetIncome||30);
-  const targetS=Number(data.profile.bucketTargetStability||20);
-  const targetR=Number(data.profile.bucketTargetReturn||50);
-  const DRIFT_THRESHOLD=5;
-  const driftI=iPct-targetI;
-  const driftS=sPct-targetS;
-  const driftR=rPct-targetR;
-  const hasDrift=Math.abs(driftI)>DRIFT_THRESHOLD||Math.abs(driftS)>DRIFT_THRESHOLD||Math.abs(driftR)>DRIFT_THRESHOLD;
-
-  // Smart alerts: coverage-first, then percentage-based only for mature portfolios
+  // ── ANALYSIS: lifecycle-based guidance ──
   let alerts=[];
-  const portfolioMature = expenses>0 && incomeCoverage>=24; // Only use % rebalancing after Income is adequate
+  const stabMonths=expenses>0?Math.floor(buckets.stability.total/expenses):0;
+  const fmtDur=(m)=>{if(m>=12){const y=Math.floor(m/12);const r=m%12;return r>0?y+'y '+r+'m':y+'y'}return m+'mo'};
 
   if(expenses>0){
-    // Coverage-based alerts (always relevant)
+    // Phase 1: Income bucket (the kitchen — must be stocked first)
     if(incomeCoverage<12){
-      const needed=12*expenses-buckets.income.total;
-      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`⚠ Income covers only ${incomeCoverage}mo — build to 24mo (need ${fmt(needed>0?needed:0)} more in liquid/arbitrage)`});
+      const needed=Math.max(0,24*expenses-buckets.income.total);
+      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`⚠ Income bucket covers only ${fmtDur(incomeCoverage)}. In a crash, this runs out fast. Build to 24mo by adding ${fmt(needed)} in liquid/arbitrage funds.`});
     } else if(incomeCoverage<24){
       const needed=24*expenses-buckets.income.total;
-      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Income at ${incomeCoverage}mo — target 24mo (need ${fmt(needed)} more)`});
+      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Income bucket at ${fmtDur(incomeCoverage)} — decent, but aim for 24mo (${fmt(needed)} more) for full crash protection.`});
     }
-    if(incomeCoverage>=24&&buckets.stability.total===0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`✓ Income is strong. Now start building Stability bucket with a BAF/hybrid fund SIP.`});
+
+    // Phase 2: Stability bucket (the storehouse — refills the kitchen)
+    if(incomeCoverage>=24 && buckets.stability.total===0){
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🏗️ Income is strong. Now build a Stability bucket — start a BAF/hybrid fund SIP. This becomes your refill pipeline so you never touch equity in a downturn.`});
+    } else if(incomeCoverage>=24 && stabMonths>0 && stabMonths<36){
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Stability can refill Income for ${fmtDur(stabMonths)}. Keep growing this to 3–5 years for a stronger safety net.`});
+    }
+
+    // Phase 3: Return bucket (the tree — let it grow, harvest only the excess)
+    if(incomeCoverage>=24 && buckets.stability.total>0 && buckets.return.total===0){
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🌱 Foundation is set. Start equity/index fund SIPs in the Return bucket — your Income and Stability give you the patience to let equity compound.`});
+    }
+
+    // Harvest signal: Return bucket has grown very large relative to others
+    if(incomeCoverage>=24 && buckets.return.total>0 && rPct>60){
+      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`🌳 Return bucket has grown well (${rPct}% of portfolio). Harvest some profits → Stability to lock gains. Don't cut the tree — just pick the excess fruit.`});
+    }
+
+    // Overstocked storehouse: Stability is very large but Return is small
+    if(incomeCoverage>=24 && sPct>50 && rPct<25 && buckets.return.total>0){
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Storehouse is full but the tree needs growing. Future SIPs could go to Return bucket — equity compounds best over 7+ years.`});
+    }
+
+    // Building phase — show the roadmap
+    if(incomeCoverage<24 && !alerts.some(a=>a.clr==='var(--red)'||a.clr==='var(--amber)')){
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`📋 Build in order: Income (24mo) → Stability (BAF) → Return (equity). Each protects the next.`});
     }
   }
 
-  // Percentage-based rebalancing (only when Income is adequate)
-  if(portfolioMature){
-    if(driftR>15){
-      const moveAmt=Math.round(grandTotal*(driftR-targetR)/100);
-      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`↘ Book ~${fmt(moveAmt)} profits from Return → Stability`});
-    }
-    if(driftS<-DRIFT_THRESHOLD&&buckets.return.total>0&&buckets.stability.total>0){
-      const moveAmt=Math.round(grandTotal*Math.abs(driftS)/100);
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`↗ Move ~${fmt(moveAmt)} from Return → Stability`});
-    }
-  } else if(!alerts.length&&expenses>0){
-    alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`📋 Priority: Fill Income bucket to 24mo (${fmt(24*expenses)}), then build Stability, then grow Return.`});
+  // All buckets healthy
+  if(expenses>0 && incomeCoverage>=24 && !alerts.length){
+    alerts.push({clr:'var(--green)',bg:'var(--green-bg)',msg:`✓ All buckets healthy. Income survives crashes, Stability refills it, Return grows wealth. Stay the course and let compounding work.`});
   }
 
-  // Goal proximity hints (always relevant)
+  // Goal proximity hints
   data.goals.forEach(g=>{
     const pr=GOAL_PRESETS.find(p=>p.id===g.type);
     if(!pr||!g.timePeriod)return;
     const yrs=Number(g.timePeriod);const linked=g.linkedAssetIds||[];
     if(!linked.length)return;
     const linkedInReturn=linked.filter(id=>{const a=data.assets.find(x=>x.id===id);return a?.bucket==='return'});
-    if(yrs<=3&&linkedInReturn.length>0) alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`${pr.name} (${yrs}y away) — shift from Return → Income`});
-    else if(yrs<=7&&yrs>3&&linkedInReturn.length>0) alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`${pr.name} (${yrs}y away) — shift from Return → Stability`});
+    if(yrs<=3&&linkedInReturn.length>0) alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`${pr.name} is ${yrs}y away — move linked funds from Return to Income so the money is safe when needed.`});
+    else if(yrs<=7&&yrs>3&&linkedInReturn.length>0) alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`${pr.name} is ${yrs}y away — gradually shift linked funds from Return to Stability as the goal nears.`});
   });
 
-  // Show "View Analysis" toggle only if there's something to show
-  const hasAnalysis=hasDrift||alerts.length||(expenses>0);
-  if(hasAnalysis){
+  // Show analysis toggle
+  if(alerts.length){
     html+=`<div style="text-align:center;padding:4px 0 2px">
       <button onclick="document.getElementById('bkt-analysis').classList.toggle('closed');this.textContent=document.getElementById('bkt-analysis').classList.contains('closed')?'View Analysis ▾':'Hide Analysis ▴'" style="background:none;border:none;color:var(--blue);font-size:0.72rem;font-weight:700;cursor:pointer;padding:6px 12px;font-family:inherit">${'View Analysis ▾'}</button>
     </div>
     <div id="bkt-analysis" class="sec-body closed" style="transition:max-height 0.3s var(--ease),opacity 0.2s ease">`;
 
-    // Rebalance grid — show % drift label only when portfolio is mature
-    html+=`<div style="padding:6px 0 8px">
-      <div style="font-size:0.68rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">${portfolioMature?'Rebalance Check':'Bucket Status'}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-        ${[{label:'Income',cur:iPct,target:targetI,drift:driftI,clr:'#22c55e'},{label:'Stability',cur:sPct,target:targetS,drift:driftS,clr:'var(--blue)'},{label:'Return',cur:rPct,target:targetR,drift:driftR,clr:'#f97316'}].map(b=>{
-          const ok=Math.abs(b.drift)<=DRIFT_THRESHOLD;
-          const driftTxt=b.drift>0?'+'+b.drift+'%':b.drift+'%';
-          return`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:7px 8px;text-align:center">
-            <div style="font-size:0.56rem;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:3px">${b.label}</div>
-            <div style="font-size:0.82rem;font-weight:800;color:${b.clr}">${b.cur}%</div>
-            <div style="font-size:0.58rem;color:var(--text3);margin-top:1px">Target ${b.target}%</div>
-            ${portfolioMature?`<div style="font-size:0.58rem;font-weight:700;margin-top:1px;color:${ok?'var(--green)':'var(--amber)'}">${ok?'✓ On track':driftTxt}</div>`:''}
-          </div>`;
-        }).join('')}
-      </div>
-      ${!portfolioMature&&expenses>0?`<div style="font-size:0.6rem;color:var(--text3);margin-top:5px;text-align:center">% rebalancing activates once Income bucket reaches 24 months</div>`:''}
-    </div>`;
-
-    // Alerts
-    if(alerts.length){
-      html+=alerts.map(a=>`<div class="bkt-alert" style="background:${a.bg};color:${a.clr};border:1px solid ${a.clr==='var(--red)'?'rgba(220,38,38,0.15)':a.clr==='var(--amber)'?'rgba(180,83,9,0.12)':'rgba(37,99,235,0.12)'}">${a.msg}</div>`).join('');
-    } else if(portfolioMature&&!hasDrift){
-      html+=`<div class="bkt-alert" style="background:var(--green-bg);color:var(--green);border:1px solid rgba(34,197,94,0.15)">✓ Buckets are well-balanced. No action needed.</div>`;
-    }
+    html+=alerts.map(a=>`<div class="bkt-alert" style="background:${a.bg};color:${a.clr};border:1px solid ${a.clr==='var(--red)'?'rgba(220,38,38,0.15)':a.clr==='var(--amber)'?'rgba(180,83,9,0.12)':'rgba(37,99,235,0.12)'}">${a.msg}</div>`).join('');
 
     html+=`<div style="display:flex;align-items:flex-start;gap:5px;padding:8px 0 2px;margin-top:6px;border-top:1px solid var(--border2)">
       <span style="font-size:0.7rem;flex-shrink:0;opacity:0.5">ⓘ</span>
-      <span style="font-size:0.62rem;color:var(--text3);line-height:1.4">Suggestions are directional guidance — review before acting. Consider starting new SIPs rather than moving existing investments.</span>
+      <span style="font-size:0.62rem;color:var(--text3);line-height:1.4">Harvest profits, don't uproot the tree. Consider new SIPs to rebalance rather than redeeming existing investments.</span>
     </div>`;
     html+=`</div>`; // close bkt-analysis
   }
@@ -3235,12 +3216,6 @@ function sheetProfile(){
     <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value="${data.profile.monthlyIncome||''}"/></div>
     <div class="fg"><label class="fl">Monthly Expenses (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">— optional</span></label><input class="fi" id="f-pexpenses" type="number" placeholder="e.g. 30000 (rent, bills, groceries)" value="${data.profile.monthlyExpenses||''}"/></div>
     <div style="font-size:0.68rem;color:var(--text3);margin:-2px 0 10px;line-height:1.4">Income & expenses power the dashboard snapshot. Leave blank to skip.</div>
-    <div class="form-sec">Bucket Target Allocation <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">— must total 100%</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
-      <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:0.62rem">🟢 Income %</label><input class="fi" id="f-bkt-income" type="number" placeholder="30" value="${data.profile.bucketTargetIncome||30}" style="text-align:center"/></div>
-      <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:0.62rem">🔵 Stability %</label><input class="fi" id="f-bkt-stability" type="number" placeholder="20" value="${data.profile.bucketTargetStability||20}" style="text-align:center"/></div>
-      <div class="fg" style="margin-bottom:0"><label class="fl" style="font-size:0.62rem">🟠 Return %</label><input class="fi" id="f-bkt-return" type="number" placeholder="50" value="${data.profile.bucketTargetReturn||50}" style="text-align:center"/></div>
-    </div>
     <div class="form-sec">Avatar Color</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 14px">${dots}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveProfile()">Update</button></div>
@@ -3250,13 +3225,6 @@ function saveProfile(){
   data.profile.name=document.getElementById('f-pname').value.trim();
   data.profile.monthlyIncome=Number(document.getElementById('f-pincome').value||0);
   data.profile.monthlyExpenses=Number(document.getElementById('f-pexpenses').value||0);
-  const bi=Number(document.getElementById('f-bkt-income')?.value||30);
-  const bs=Number(document.getElementById('f-bkt-stability')?.value||20);
-  const br=Number(document.getElementById('f-bkt-return')?.value||50);
-  if(bi+bs+br!==100){toast('Bucket targets must total 100%',true);return;}
-  data.profile.bucketTargetIncome=bi;
-  data.profile.bucketTargetStability=bs;
-  data.profile.bucketTargetReturn=br;
   save();closeSheet();renderProfile();renderDashboard();toast('Saved ✓');
 }
 
@@ -3313,7 +3281,7 @@ function exportData(){
   toast('Exported ✓');
 }
 function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
-function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;const bi=data.profile.bucketTargetIncome;const bs=data.profile.bucketTargetStability;const br=data.profile.bucketTargetReturn;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp,bucketTargetIncome:bi,bucketTargetStability:bs,bucketTargetReturn:br},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],insurance:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
+function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],insurance:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
   showConfirm('Load Sample Data?','This will overwrite all current data with demo data.',()=>{
