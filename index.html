@@ -797,7 +797,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 .bkt-val { font-size:0.88rem; font-weight:800; color:var(--text1); text-align:right; flex-shrink:0 }
 .bkt-bar-wrap { height:8px; background:var(--surface3); border-radius:99px; overflow:hidden; display:flex; margin:10px 0 6px }
 .bkt-bar-seg { height:100%; transition:width 0.5s var(--ease) }
-.bkt-alert { padding:8px 12px; border-radius:var(--r); font-size:0.72rem; font-weight:500; line-height:1.5; margin-top:8px; color:var(--text1); border-left:3px solid; background:var(--surface2) }
+.bkt-alert { padding:8px 12px; border-radius:var(--r); font-size:0.72rem; font-weight:500; line-height:1.5; margin-top:8px; color:var(--text2); background:var(--surface2); border:1px solid var(--border2) }
 .bkt-fund { display:flex; align-items:center; gap:8px; padding:4px 0; font-size:0.72rem }
 .bkt-fund-name { flex:1; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
 .bkt-fund-val { color:var(--text1); font-weight:700; flex-shrink:0 }
@@ -1998,7 +1998,7 @@ function renderBucketStrategy(){
     // Plain language bucket health
     const incomeHealth=incomeCoverage>=36?`Income bucket is strong. Survives ${fmtDur(incomeCoverage)} even if markets crash.`:incomeCoverage>=24?`Income bucket healthy at ${fmtDur(incomeCoverage)}. Safe through market downturns.`:incomeCoverage>=12?`Income bucket at ${fmtDur(incomeCoverage)}. Build to 24mo for crash safety.`:`Income bucket only ${fmtDur(incomeCoverage)}. Critically low, prioritize this.`;
     html+=`<div style="padding:8px 0;border-top:1px solid var(--border2)">
-      <div style="font-size:0.72rem;font-weight:500;color:var(--text1);line-height:1.5">${incomeCoverage>=24?'🛡️':'⚠️'} ${incomeHealth}</div>
+      <div style="font-size:0.72rem;font-weight:500;color:var(--text2);line-height:1.5">${incomeCoverage>=24?'🛡️':'ⓘ'} ${incomeHealth}</div>
     </div>`;
   }
 
@@ -2011,7 +2011,7 @@ function renderBucketStrategy(){
     // Phase 1: Income bucket (the kitchen — must be stocked first)
     if(incomeCoverage<12){
       const needed=Math.max(0,24*expenses-buckets.income.total);
-      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`⚠ Income covers only ${fmtDur(incomeCoverage)}. Build to 24mo with ${fmt(needed)} more in liquid/arbitrage funds.`});
+      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`Income covers only ${fmtDur(incomeCoverage)}. Build to 24mo with ${fmt(needed)} more in liquid/arbitrage funds.`});
     } else if(incomeCoverage<24){
       const needed=24*expenses-buckets.income.total;
       alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Income at ${fmtDur(incomeCoverage)}. Aim for 24mo (${fmt(needed)} more) for full crash protection.`});
@@ -2019,19 +2019,19 @@ function renderBucketStrategy(){
 
     // Phase 2: Stability bucket (the storehouse — refills the kitchen)
     if(incomeCoverage>=24 && buckets.stability.total===0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🏗️ Income is strong. Start a BAF/hybrid fund SIP to build your Stability bucket. This refills Income so you never touch equity in a downturn.`});
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Income is strong. Start a BAF/hybrid fund SIP to build your Stability bucket. This refills Income so you never touch equity in a downturn.`});
     } else if(incomeCoverage>=24 && stabMonths>0 && stabMonths<36){
       alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Stability can refill Income for ${fmtDur(stabMonths)}. Grow to 3-5 years for a stronger pipeline.`});
     }
 
     // Phase 3: Return bucket (the tree — let it grow, harvest only the excess)
     if(incomeCoverage>=24 && buckets.stability.total>0 && buckets.return.total===0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`🌱 Foundation is set. Start equity/index fund SIPs. Your Income and Stability give you patience to let equity compound.`});
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Foundation is set. Start equity/index fund SIPs. Your Income and Stability give you patience to let equity compound.`});
     }
 
     // Harvest signal: Return bucket has grown very large relative to others
     if(incomeCoverage>=24 && buckets.return.total>0 && rPct>60){
-      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`🌳 Return bucket at ${rPct}% of portfolio. Harvest some profits into Stability to lock gains.`});
+      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Return bucket at ${rPct}% of portfolio. Harvest some profits into Stability to lock gains.`});
     }
 
     // Overstocked storehouse: Stability is very large but Return is small
@@ -2041,13 +2041,13 @@ function renderBucketStrategy(){
 
     // Building phase — show the roadmap
     if(incomeCoverage<24 && !alerts.some(a=>a.clr==='var(--red)'||a.clr==='var(--amber)')){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`📋 Build in order: Income (24mo) → Stability (BAF) → Return (equity). Each protects the next.`});
+      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Build in order: Income (24mo) → Stability (BAF) → Return (equity). Each protects the next.`});
     }
   }
 
   // All buckets healthy
   if(expenses>0 && incomeCoverage>=24 && !alerts.length){
-    alerts.push({clr:'var(--green)',bg:'var(--green-bg)',msg:`✓ All buckets healthy. Income survives crashes, Stability refills it, Return grows wealth. Stay the course.`});
+    alerts.push({clr:'var(--green)',bg:'var(--green-bg)',msg:`All buckets healthy. Income survives crashes, Stability refills it, Return grows wealth. Stay the course.`});
   }
 
   // Goal proximity hints
@@ -2068,7 +2068,7 @@ function renderBucketStrategy(){
     </div>
     <div id="bkt-analysis" class="sec-body closed" style="transition:max-height 0.3s var(--ease),opacity 0.2s ease">`;
 
-    html+=alerts.map(a=>`<div class="bkt-alert" style="border-left-color:${a.clr}">${a.msg}</div>`).join('');
+    html+=alerts.map(a=>`<div class="bkt-alert">${a.msg}</div>`).join('');
 
     html+=`<div style="display:flex;align-items:flex-start;gap:5px;padding:8px 0 2px;margin-top:6px;border-top:1px solid var(--border2)">
       <span style="font-size:0.7rem;flex-shrink:0;opacity:0.5">ⓘ</span>
