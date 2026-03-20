@@ -1104,7 +1104,12 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     </div>
     <div class="sec-body closed" id="sec-assets">
       <div id="assets-list"></div>
-      <div class="add-row" onclick="openSheet('asset')">Add Asset</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px">
+        <div class="add-row" style="margin:0" onclick="openSheet('asset')">Add Asset</div>
+        <div class="add-row" style="margin:0;color:var(--blue);border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.05)" onclick="openSheet('importMF')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:middle"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Import MF / ETF
+        </div>
+      </div>
     </div>
 
     <!-- LIABILITIES -->
@@ -2564,6 +2569,7 @@ function openSheet(type,arg,arg2){
   closeQuickAdd(); // always close quick-add before opening a detail sheet
   let html='';
   if(type==='asset')html=sheetAsset(arg||{});
+  else if(type==='importMF')html=sheetImportMF();
   else if(type==='liability')html=sheetLiability(arg||{});
   else if(type==='goal')html=sheetGoal(arg||'emergency');
   else if(type==='child')html=sheetChild(arg||null);
@@ -2582,6 +2588,337 @@ function closeSheet(){document.getElementById('sheet-overlay').classList.remove(
 function closeSheetOnBg(e){if(e.target===document.getElementById('sheet-overlay'))closeSheet()}
 
 function onAssetCatChange(){}  // kept for safety, no redirect needed anymore
+
+/* ══════════════════════════════════════════════════
+   IMPORT MF / ETF — from Excel export (Kite / XLSX)
+   ══════════════════════════════════════════════════ */
+
+// Auto-assign ISR bucket based on fund name keywords
+function _guessBucket(name){
+  const n=(name||'').toLowerCase();
+  if(/liquid|overnight|money market/.test(n)) return 'income';
+  if(/arbitrage/.test(n)) return 'income';
+  if(/balanced advantage|baf|dynamic asset|hybrid|conservative/.test(n)) return 'stability';
+  if(/gold|silver|commodity/.test(n)) return 'stability';
+  if(/debt|bond|gilt|gsec|short dur|ultra short|low dur|credit risk|banking & psu|corporate bond/.test(n)) return 'stability';
+  if(/nifty next 50|niftynext/.test(n)) return 'stability';
+  return 'return'; // equity, index, sectoral, small, mid, flexi, elss
+}
+
+// Detect category: ETF vs MutualFunds
+function _guessCat(name){
+  const n=(name||'').toUpperCase();
+  if(/BEES$|ETF| ETF |^MON|GOLDBEES|NIFTYBEES|LIQUIDBEES|JUNIORBEES|BANKBEES|ITBEES|CONSUMBEES|INFRABEES|PSUBNKBEES|KOTAKBEES/.test(n)) return 'ETF';
+  return 'MutualFunds';
+}
+
+// Clean up fund name from Kite's ALL-CAPS or verbose format
+function _cleanName(raw){
+  if(!raw) return '';
+  // Title-case, trim common suffixes noise
+  return raw.trim()
+    .replace(/\s*-\s*DIRECT\s*(PLAN)?\s*$/i,'')
+    .replace(/\s*-\s*GROWTH\s*$/i,'')
+    .replace(/\s+/g,' ');
+}
+
+// Parse XLSX file from Kite export → array of {name, category, currentValue, invested, sip, bucket}
+// Supports two formats:
+//  A) MF Holdings export (columns: Fund, Folio, Avg Cost, Last Price, Qty, …)
+//  B) ETF Holdings export (columns: Instrument, Qty, Avg Cost, Last Price, …)
+function _parseXLSXToFunds(arrayBuffer){
+  return new Promise((resolve,reject)=>{
+    try{
+      // SheetJS via CDN loaded lazily
+      if(typeof XLSX==='undefined'){
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        s.onload=()=>{ try{resolve(_doParseXLSX(arrayBuffer))}catch(e){reject(e)} };
+        s.onerror=()=>reject(new Error('Failed to load XLSX library'));
+        document.head.appendChild(s);
+      } else {
+        resolve(_doParseXLSX(arrayBuffer));
+      }
+    }catch(e){reject(e)}
+  });
+}
+
+function _doParseXLSX(arrayBuffer){
+  const wb=XLSX.read(arrayBuffer,{type:'array'});
+  const results=[];
+
+  wb.SheetNames.forEach(sheetName=>{
+    const ws=wb.Sheets[sheetName];
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    if(!rows.length) return;
+
+    // Find header row (contains "fund" or "instrument" or "tradingsymbol")
+    let hdrIdx=-1;
+    let hdr=[];
+    for(let i=0;i<Math.min(10,rows.length);i++){
+      const r=rows[i].map(c=>(c+'').toLowerCase().trim());
+      if(r.some(c=>c.includes('fund')||c.includes('instrument')||c.includes('tradingsymbol')||c.includes('symbol'))){
+        hdrIdx=i; hdr=r; break;
+      }
+    }
+    if(hdrIdx<0) return; // skip sheet with no recognisable header
+
+    // Column index helpers
+    const col=(keywords)=>{
+      for(const kw of keywords){
+        const i=hdr.findIndex(h=>h.includes(kw));
+        if(i>=0) return i;
+      }
+      return -1;
+    };
+
+    const iName   = col(['fund','instrument','tradingsymbol','symbol','scheme']);
+    const iAvg    = col(['average','avg cost','avg price','avg_price','average_price','purchase price']);
+    const iNav    = col(['last price','last nav','last_price','current price','nav','ltp','close']);
+    const iQty    = col(['qty','quantity','units','unit']);
+    const iSIP    = col(['sip','monthly','contribution']);
+
+    if(iName<0||iQty<0) return; // can't identify columns
+
+    for(let r=hdrIdx+1;r<rows.length;r++){
+      const row=rows[r];
+      const rawName=(row[iName]+'').trim();
+      if(!rawName||rawName.toLowerCase()==='total'||rawName.toLowerCase()==='grand total') continue;
+
+      const qty     = parseFloat((row[iQty]+'').replace(/,/g,''))||0;
+      const avgCost = iAvg>=0 ? parseFloat((row[iAvg]+'').replace(/[₹,]/g,''))||0 : 0;
+      const lastNav = iNav>=0 ? parseFloat((row[iNav]+'').replace(/[₹,]/g,''))||0 : 0;
+      const sipAmt  = iSIP>=0 ? parseFloat((row[iSIP]+'').replace(/[₹,]/g,''))||0 : 0;
+
+      if(qty<=0 && avgCost<=0) continue; // empty row
+
+      const name      = _cleanName(rawName);
+      const category  = _guessCat(rawName);
+      const bucket    = _guessBucket(rawName);
+      const invested  = Math.round(qty*avgCost);
+      const currentValue = lastNav>0 ? Math.round(qty*lastNav) : invested;
+
+      results.push({name,category,invested,currentValue,sip:sipAmt,bucket,_raw:rawName});
+    }
+  });
+
+  return results;
+}
+
+// State for the import sheet
+let _importRows=[];    // parsed fund rows
+let _importBuckets={}; // overrides: {idx: bucket}
+
+function sheetImportMF(){
+  return`<div class="sheet-hdr">
+    <div class="sheet-title">Import MF / ETF</div>
+    <button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="sheet-body">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:11px 12px;margin-bottom:14px;font-size:0.72rem;color:var(--text2);line-height:1.6">
+      <strong style="color:var(--text1)">How to export from Zerodha Kite:</strong><br>
+      Console → Reports → Holdings → Export (XLSX)<br>
+      <span style="color:var(--text3)">Works with MF Holdings and ETF/Equity Holdings exports.</span>
+    </div>
+
+    <div id="imp-upload-area" style="border:2px dashed var(--border);border-radius:var(--r-lg);padding:28px 16px;text-align:center;cursor:pointer;transition:border-color 150ms;margin-bottom:12px" onclick="document.getElementById('imp-file-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--blue)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="event.preventDefault();this.style.borderColor='var(--border)';_handleImportDrop(event)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3;margin:0 auto 8px;display:block"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div style="font-size:0.82rem;font-weight:600;color:var(--text1);margin-bottom:3px">Tap to choose XLSX file</div>
+      <div style="font-size:0.68rem;color:var(--text3)">or drag & drop your Kite export here</div>
+    </div>
+    <input type="file" id="imp-file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="_handleImportFile(this)"/>
+
+    <div id="imp-preview" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text1)" id="imp-preview-title">0 funds found</div>
+        <button onclick="_importSelectAll(true)" style="font-size:0.68rem;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 0">Select all</button>
+      </div>
+      <div id="imp-fund-list" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;max-height:320px;overflow-y:auto;margin-bottom:12px"></div>
+      <div id="imp-notice" style="font-size:0.68rem;color:var(--amber);background:var(--amber-bg);border:1px solid rgba(251,191,36,0.2);border-radius:var(--r);padding:8px 10px;margin-bottom:12px;display:none"></div>
+      <div class="form-actions" style="margin-top:0">
+        <button class="btn btn-ghost" onclick="document.getElementById('imp-preview').style.display='none';document.getElementById('imp-upload-area').style.display='';_importRows=[]">Back</button>
+        <button class="btn btn-primary" id="imp-confirm-btn" onclick="_doImport()">Import Selected</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function _handleImportDrop(e){
+  const file=e.dataTransfer?.files?.[0];
+  if(file) _processImportFile(file);
+}
+function _handleImportFile(input){
+  const file=input.files?.[0];
+  if(file) _processImportFile(file);
+  input.value='';
+}
+function _processImportFile(file){
+  const uploadArea=document.getElementById('imp-upload-area');
+  if(uploadArea) uploadArea.innerHTML='<div style="text-align:center;padding:8px;font-size:0.8rem;color:var(--text3)">Reading file…</div>';
+
+  const reader=new FileReader();
+  reader.onload=async(e)=>{
+    try{
+      const rows=await _parseXLSXToFunds(e.target.result);
+      _importRows=rows;
+      _importBuckets={};
+      if(!rows.length){
+        toast('No fund data found in file');
+        if(uploadArea){uploadArea.style.display='';uploadArea.innerHTML=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3;margin:0 auto 8px;display:block"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><div style="font-size:0.82rem;font-weight:600;color:var(--text1);margin-bottom:3px">Tap to choose XLSX file</div><div style="font-size:0.68rem;color:var(--text3)">or drag & drop your Kite export here</div>`;}
+        return;
+      }
+      _renderImportPreview();
+    }catch(err){
+      toast('Could not read file: '+err.message);
+      if(uploadArea){uploadArea.style.display='';uploadArea.innerHTML=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3;margin:0 auto 8px;display:block"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><div style="font-size:0.82rem;font-weight:600;color:var(--text1);margin-bottom:3px">Tap to choose XLSX file</div><div style="font-size:0.68rem;color:var(--text3)">or drag & drop your Kite export here</div>`;}
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function _renderImportPreview(){
+  const uploadArea=document.getElementById('imp-upload-area');
+  const preview=document.getElementById('imp-preview');
+  const list=document.getElementById('imp-fund-list');
+  const title=document.getElementById('imp-preview-title');
+  const notice=document.getElementById('imp-notice');
+  if(!preview||!list) return;
+
+  if(uploadArea) uploadArea.style.display='none';
+  preview.style.display='';
+
+  // Check which existing assets would be replaced
+  const existingNames=new Set(data.assets.filter(a=>a.category==='MutualFunds'||a.category==='ETF').map(a=>a.name.toLowerCase()));
+
+  let replaceCount=0;
+  const BUCKET_LABELS={income:'🟢 Income',stability:'🔵 Stability',return:'🟠 Return','':'—'};
+
+  list.innerHTML=_importRows.map((f,i)=>{
+    const isExisting=existingNames.has(f.name.toLowerCase());
+    if(isExisting) replaceCount++;
+    const bucket=_importBuckets[i]||f.bucket;
+    const pnl=f.currentValue-f.invested;
+    const pnlColor=pnl>=0?'var(--green)':'var(--red)';
+    const pnlSign=pnl>=0?'+':'';
+    return`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border2);cursor:pointer" id="imp-row-${i}" onclick="_toggleImportRow(${i})">
+      <div id="imp-chk-${i}" style="width:18px;height:18px;border-radius:5px;border:2px solid var(--border);background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 120ms;border-color:var(--blue);background:rgba(59,130,246,0.12)">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">${f.name}</div>
+          ${isExisting?'<span style="font-size:0.6rem;font-weight:700;color:var(--amber);background:var(--amber-bg);border:1px solid rgba(251,191,36,0.25);padding:1px 5px;border-radius:99px;flex-shrink:0">UPDATE</span>':'<span style="font-size:0.6rem;font-weight:700;color:var(--blue);background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);padding:1px 5px;border-radius:99px;flex-shrink:0">NEW</span>'}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:0.68rem;color:var(--text3)">${f.category} · ${fmt(f.currentValue)}</span>
+          <span style="font-size:0.68rem;font-weight:600;color:${pnlColor}">${pnlSign}${fmt(pnl)}</span>
+        </div>
+        <div style="margin-top:5px">
+          <select style="font-size:0.65rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:2px 5px;font-family:inherit;cursor:pointer;outline:none" onclick="event.stopPropagation()" onchange="_setImportBucket(${i},this.value)">
+            <option value="income" ${bucket==='income'?'selected':''}>🟢 Income</option>
+            <option value="stability" ${bucket==='stability'?'selected':''}>🔵 Stability</option>
+            <option value="return" ${bucket==='return'?'selected':''}>🟠 Return</option>
+            <option value="" ${!bucket?'selected':''}>— Unassigned</option>
+          </select>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  if(title) title.textContent=_importRows.length+' fund'+(  _importRows.length!==1?'s':'')+' found';
+
+  if(notice){
+    if(replaceCount>0){
+      notice.style.display='';
+      notice.textContent=`⚠️ ${replaceCount} existing fund${replaceCount>1?'s':''} will have their values updated. Nothing will be deleted.`;
+    } else {
+      notice.style.display='none';
+    }
+  }
+  _updateImportBtn();
+}
+
+function _toggleImportRow(i){
+  const chk=document.getElementById('imp-chk-'+i);
+  if(!chk)return;
+  const selected=chk.dataset.sel!=='0';
+  if(selected){
+    chk.dataset.sel='0';
+    chk.style.borderColor='var(--border)';
+    chk.style.background='var(--surface2)';
+    chk.innerHTML='';
+  } else {
+    chk.dataset.sel='';
+    chk.style.borderColor='var(--blue)';
+    chk.style.background='rgba(59,130,246,0.12)';
+    chk.innerHTML='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  }
+  _updateImportBtn();
+}
+function _importSelectAll(on){
+  _importRows.forEach((_,i)=>{
+    const chk=document.getElementById('imp-chk-'+i);
+    if(!chk)return;
+    if(on){
+      chk.dataset.sel='';
+      chk.style.borderColor='var(--blue)';
+      chk.style.background='rgba(59,130,246,0.12)';
+      chk.innerHTML='<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    } else {
+      chk.dataset.sel='0';
+      chk.style.borderColor='var(--border)';
+      chk.style.background='var(--surface2)';
+      chk.innerHTML='';
+    }
+  });
+  _updateImportBtn();
+}
+function _setImportBucket(i,val){_importBuckets[i]=val;}
+function _updateImportBtn(){
+  const btn=document.getElementById('imp-confirm-btn');
+  if(!btn)return;
+  const count=_importRows.filter((_,i)=>document.getElementById('imp-chk-'+i)?.dataset?.sel!=='0').length;
+  btn.textContent=count>0?'Import '+count+' Fund'+(count!==1?'s':''):'Import Selected';
+  btn.disabled=count===0;
+  btn.style.opacity=count===0?'0.45':'1';
+}
+
+function _doImport(){
+  const toImport=_importRows.filter((_,i)=>document.getElementById('imp-chk-'+i)?.dataset?.sel!=='0');
+  if(!toImport.length){toast('Select at least one fund');return;}
+
+  let added=0,updated=0;
+  toImport.forEach((f,idx)=>{
+    // Find original index for bucket override
+    const origIdx=_importRows.indexOf(f);
+    const bucket=_importBuckets[origIdx]??f.bucket;
+    const obj={category:f.category,name:f.name,currentValue:f.currentValue,invested:f.invested,sip:f.sip,bucket};
+    // Upsert: match by name (case-insensitive) within MF/ETF categories
+    const existing=data.assets.find(a=>(a.category==='MutualFunds'||a.category==='ETF')&&a.name.toLowerCase()===f.name.toLowerCase());
+    if(existing){
+      Object.assign(existing,obj);
+      updated++;
+    } else {
+      data.assets.push({id:uid(),...obj});
+      added++;
+    }
+  });
+
+  save();
+  closeSheet();
+  renderAssets();
+  renderDashboard();
+  // Open the assets section if closed
+  const sec=document.getElementById('sec-assets');
+  const caret=document.getElementById('caret-sec-assets');
+  if(sec&&sec.classList.contains('closed')){sec.classList.remove('closed');if(caret)caret.classList.add('open');}
+
+  const parts=[];
+  if(added) parts.push(added+' added');
+  if(updated) parts.push(updated+' updated');
+  toast('✓ '+parts.join(', '));
+}
+
 function sheetAsset(a){
   const sipHint={MutualFunds:'Monthly SIP amount',EPF:'Monthly contribution',PPF:'Monthly contribution',Gold:'Monthly buy',ETF:'Monthly SIP',Stocks:'Monthly buy',FD:'',NPS:'Monthly contribution',RealEstate:'',Other:''};
   const cat=a.category||'EPF';
