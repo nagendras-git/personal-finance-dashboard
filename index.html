@@ -2615,11 +2615,12 @@ function _guessCat(name){
 // Clean up fund name from Kite's ALL-CAPS or verbose format
 function _cleanName(raw){
   if(!raw) return '';
-  // Title-case, trim common suffixes noise
   return raw.trim()
     .replace(/\s*-\s*DIRECT\s*(PLAN)?\s*$/i,'')
     .replace(/\s*-\s*GROWTH\s*$/i,'')
-    .replace(/\s+/g,' ');
+    .replace(/-E$/,'')
+    .replace(/\s+/g,' ')
+    .trim();
 }
 
 // Parse XLSX file from Kite export → array of {name, category, currentValue, invested, sip, bucket}
