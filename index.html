@@ -2929,6 +2929,8 @@ function _doImport(){
     // Upsert: match by name (case-insensitive) within MF/ETF categories
     const existing=data.assets.find(a=>(a.category==='MutualFunds'||a.category==='ETF')&&a.name.toLowerCase()===f.name.toLowerCase());
     if(existing){
+      // Preserve SIP already set by user — XLSX has no SIP data
+      obj.sip = existing.sip || f.sip;
       Object.assign(existing,obj);
       updated++;
     } else {
