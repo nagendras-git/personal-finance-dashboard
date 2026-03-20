@@ -2646,63 +2646,95 @@ function _parseXLSXToFunds(arrayBuffer){
 function _doParseXLSX(arrayBuffer){
   const wb=XLSX.read(arrayBuffer,{type:'array'});
   const results=[];
+  const seen=new Set(); // deduplicate across sheets (Combined sheet repeats MF+Equity)
 
-  wb.SheetNames.forEach(sheetName=>{
+  // Process MF sheet first, then Equity, skip Combined (it's a superset)
+  const sheetOrder=['Mutual Funds','Equity',...wb.SheetNames.filter(s=>s!=='Mutual Funds'&&s!=='Equity'&&s!=='Combined')];
+  const sheetsToProcess=sheetOrder.filter(s=>wb.SheetNames.includes(s));
+
+  sheetsToProcess.forEach(sheetName=>{
     const ws=wb.Sheets[sheetName];
     const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
     if(!rows.length) return;
 
-    // Find header row (contains "fund" or "instrument" or "tradingsymbol")
+    // Scan ALL rows for the header (Zerodha puts it at row 23, far below top)
     let hdrIdx=-1;
     let hdr=[];
-    for(let i=0;i<Math.min(10,rows.length);i++){
+    for(let i=0;i<rows.length;i++){
       const r=rows[i].map(c=>(c+'').toLowerCase().trim());
-      if(r.some(c=>c.includes('fund')||c.includes('instrument')||c.includes('tradingsymbol')||c.includes('symbol'))){
+      // Header row contains 'symbol' or 'scheme' or 'fund' as a cell value
+      if(r.some(c=>c==='symbol'||c==='scheme'||c==='fund name')){
         hdrIdx=i; hdr=r; break;
       }
     }
-    if(hdrIdx<0) return; // skip sheet with no recognisable header
+    if(hdrIdx<0) return;
 
-    // Column index helpers
-    const col=(keywords)=>{
+    // Column finder — checks every cell in header row
+    const col=(...keywords)=>{
       for(const kw of keywords){
-        const i=hdr.findIndex(h=>h.includes(kw));
+        const i=hdr.findIndex(h=>h===kw||h.includes(kw));
         if(i>=0) return i;
       }
       return -1;
     };
 
-    const iName   = col(['fund','instrument','tradingsymbol','symbol','scheme']);
-    const iAvg    = col(['average','avg cost','avg price','avg_price','average_price','purchase price']);
-    const iNav    = col(['last price','last nav','last_price','current price','nav','ltp','close']);
-    const iQty    = col(['qty','quantity','units','unit']);
-    const iSIP    = col(['sip','monthly','contribution']);
+    // Zerodha exact column names (lowercase):
+    // 'symbol', 'isin', 'sector'/'instrument type', 'quantity available',
+    // 'average price', 'previous closing price', 'unrealized p&l'
+    const iName   = col('symbol','scheme','fund name','instrument');
+    const iAvg    = col('average price','avg price','average cost','avg cost','purchase price');
+    const iNav    = col('previous closing price','last price','closing price','current price','nav','ltp','close price');
+    const iQty    = col('quantity available','quantity','qty','units');
+    const iType   = col('instrument type','sector'); // has "{Equity - Small Cap true}" or "ETF"
 
-    if(iName<0||iQty<0) return; // can't identify columns
+    if(iName<0||iQty<0) return;
 
     for(let r=hdrIdx+1;r<rows.length;r++){
       const row=rows[r];
       const rawName=(row[iName]+'').trim();
-      if(!rawName||rawName.toLowerCase()==='total'||rawName.toLowerCase()==='grand total') continue;
+      if(!rawName||rawName===''||rawName==='-') continue;
+      if(/^(total|grand total|summary|invested value|present value|unrealized)/i.test(rawName)) continue;
 
-      const qty     = parseFloat((row[iQty]+'').replace(/,/g,''))||0;
-      const avgCost = iAvg>=0 ? parseFloat((row[iAvg]+'').replace(/[₹,]/g,''))||0 : 0;
-      const lastNav = iNav>=0 ? parseFloat((row[iNav]+'').replace(/[₹,]/g,''))||0 : 0;
-      const sipAmt  = iSIP>=0 ? parseFloat((row[iSIP]+'').replace(/[₹,]/g,''))||0 : 0;
+      const qty     = parseFloat((row[iQty]+'').replace(/[,\s]/g,''))||0;
+      const avgCost = iAvg>=0 ? parseFloat((row[iAvg]+'').replace(/[₹,\s]/g,''))||0 : 0;
+      const lastNav = iNav>=0 ? parseFloat((row[iNav]+'').replace(/[₹,\s]/g,''))||0 : 0;
 
-      if(qty<=0 && avgCost<=0) continue; // empty row
+      if(qty<=0) continue;
 
-      const name      = _cleanName(rawName);
-      const category  = _guessCat(rawName);
-      const bucket    = _guessBucket(rawName);
-      const invested  = Math.round(qty*avgCost);
+      const name     = _cleanName(rawName);
+      if(seen.has(name.toLowerCase())) return; // skip duplicate from Combined sheet
+      seen.add(name.toLowerCase());
+
+      // Use Instrument Type column for smarter category + bucket detection
+      const typeRaw  = iType>=0 ? (row[iType]+'').toLowerCase() : '';
+      const category = _guessCatFromType(rawName, typeRaw);
+      const bucket   = _guessBucketFromType(rawName, typeRaw);
+      const invested = Math.round(qty*avgCost);
       const currentValue = lastNav>0 ? Math.round(qty*lastNav) : invested;
 
-      results.push({name,category,invested,currentValue,sip:sipAmt,bucket,_raw:rawName});
+      results.push({name,category,invested,currentValue,sip:0,bucket});
     }
   });
 
   return results;
+}
+
+// Use Zerodha's Instrument Type field (e.g. "{Debt - Liquid true}", "ETF") for accurate classification
+function _guessCatFromType(name, typeRaw){
+  if(typeRaw==='etf'||/^goldbees|^mon100|bees$|-e$/.test(name.toLowerCase())) return 'ETF';
+  return 'MutualFunds';
+}
+function _guessBucketFromType(name, typeRaw){
+  // typeRaw examples: "{debt - liquid true}", "{hybrid - arbitrage true}", "{equity - mid cap true}"
+  if(/debt.*liquid|overnight|money market/.test(typeRaw)) return 'income';
+  if(/hybrid.*arbitrage|arbitrage/.test(typeRaw)) return 'income';
+  if(/hybrid.*balanced advantage|hybrid.*dynamic asset|baf/.test(typeRaw)) return 'stability';
+  if(/debt(?!.*liquid)|bond|gilt|gsec|short dur|credit risk|banking.*psu|corporate bond/.test(typeRaw)) return 'stability';
+  if(/gold|silver|commodity/.test(typeRaw)||/gold|silver/.test(name.toLowerCase())) return 'stability';
+  if(/nifty next 50|next50/.test(name.toLowerCase())) return 'stability';
+  if(typeRaw==='etf'&&/gold|silver/.test(name.toLowerCase())) return 'stability';
+  // All equity, index funds, elss, small/mid/flexi cap → Return
+  return 'return';
 }
 
 // State for the import sheet
