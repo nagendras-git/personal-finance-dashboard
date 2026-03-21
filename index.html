@@ -2710,8 +2710,8 @@ function _doParseXLSX(arrayBuffer){
       const typeRaw  = iType>=0 ? (row[iType]+'').toLowerCase() : '';
       const category = _guessCatFromType(rawName, typeRaw);
       const bucket   = _guessBucketFromType(rawName, typeRaw);
-      const invested = Math.round(qty*avgCost);
-      const currentValue = lastNav>0 ? Math.round(qty*lastNav) : invested;
+      const invested = qty*avgCost;
+      const currentValue = lastNav>0 ? qty*lastNav : invested;
 
       results.push({name,category,invested,currentValue,sip:0,bucket});
     }
