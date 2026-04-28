@@ -925,6 +925,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
         <div id="dash-cell-liab" style="padding:13px 18px;border-bottom:1px solid var(--border2)">
           <div class="lbl" style="margin-bottom:5px">Liabilities</div>
           <div style="font-size:1.05rem;font-weight:800;color:var(--red);letter-spacing:-0.3px" id="dash-liab-val">₹0</div>
+          <div id="dash-liab-free" style="display:none;font-size:0.68rem;font-weight:700;color:var(--green);margin-top:4px;letter-spacing:0">✦ Zero debt</div>
         </div>
         <div id="dash-cell-sip" style="padding:13px 18px;border-right:1px solid var(--border2)">
           <div class="lbl" style="margin-bottom:5px">SIP / mo</div>
@@ -933,6 +934,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
         <div id="dash-cell-emi" style="padding:13px 18px">
           <div class="lbl" style="margin-bottom:5px">EMI / mo</div>
           <div style="font-size:1.05rem;font-weight:800;color:var(--red);letter-spacing:-0.3px" id="cf-emi">₹0</div>
+          <div id="dash-debtfree-tag" style="display:none;margin-top:5px;font-size:0.68rem;font-weight:700;color:var(--green);letter-spacing:0">🎉 Debt-free!</div>
         </div>
       </div>
     </div>
@@ -961,13 +963,14 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
             </div>
             <!-- Breakdown row -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px" id="dash-sip-cell">
                 <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Invested (SIP)</div>
                 <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--green)" id="dash-inv-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-inv-amt"></div></div>
               </div>
-              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px" id="dash-emi-cell">
                 <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">EMI</div>
-                <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--red)" id="dash-emi-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-emi-amt"></div></div>
+                <div id="dash-emi-vals" style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--red)" id="dash-emi-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-emi-amt"></div></div>
+                <div id="dash-snap-debtfree" style="display:none;font-size:0.82rem;font-weight:800;color:var(--green);letter-spacing:-0.2px">✦ Debt-free!</div>
               </div>
               <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
                 <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Expenses</div>
@@ -1113,7 +1116,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     </div>
 
     <!-- LIABILITIES -->
-    <div style="margin-top:8px">
+    <div style="margin-top:8px" id="invest-liab-wrap">
       <div class="sec-hdr-card" onclick="toggleSec('sec-liab')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Liabilities</span><span class="sec-badge" id="liab-sec-count">0</span></div>
         <div class="sec-hdr-right"><span class="sec-total" style="color:var(--red)" id="liab-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-liab"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
@@ -1123,6 +1126,16 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
         <div id="liabilities-list"></div>
         <div class="add-row" onclick="openSheet('liability')">Add Liability</div>
       </div>
+    </div>
+
+    <!-- DEBT-FREE pill — shown when no liabilities -->
+    <div id="invest-debtfree-pill" style="display:none;margin-top:8px;padding:11px 14px;background:var(--green-bg);border:1px solid rgba(34,197,94,0.18);border-radius:var(--r-lg);align-items:center;gap:10px">
+      <span style="font-size:1.1rem">🎉</span>
+      <div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--green)">Debt-Free</div>
+        <div style="font-size:0.7rem;color:var(--text3);margin-top:1px">No active loans or EMIs</div>
+      </div>
+      <button onclick="openSheet('liability')" style="margin-left:auto;font-size:0.68rem;font-weight:700;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer">Add</button>
     </div>
 
 
@@ -1735,7 +1748,7 @@ function renderSafetyCheck(){
       </div>
       <button onclick="dismissSafetyBanner()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;flex-shrink:0;opacity:0.6" title="Dismiss">✕</button>
     </div>
-    ${gaps.map((g,i)=>`<div onclick="${g.onclick}" style="display:flex;align-items:center;gap:10px;padding:9px 13px;${i<gaps.length-1?'border-bottom:1px solid '+tone.border+';':''}cursor:pointer" ontouchstart="this.style.background='var(--surface2)'" ontouchend="this.style.background=''">
+    ${gaps.map((g,i)=>`<div onclick=${g.onclick} style="display:flex;align-items:center;gap:10px;padding:9px 13px;${i<gaps.length-1?'border-bottom:1px solid '+tone.border+';':''}cursor:pointer" ontouchstart="this.style.background='var(--surface2)'" ontouchend="this.style.background=''">
       <span style="font-size:0.95rem;flex-shrink:0">${g.icon}</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:0.78rem;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:6px">${g.title}<span style="font-size:0.65rem;font-weight:700;color:${g.badgeClr};background:${g.badgeClr==='var(--red)'?'var(--red-bg)':'var(--amber-bg)'};padding:1px 6px;border-radius:99px">${g.badge}</span></div>
@@ -1810,21 +1823,36 @@ function renderDashboard(){
   const emiCell  = document.getElementById('dash-cell-emi');
   const assetsCell = document.getElementById('dash-cell-assets');
   const sipCell  = document.getElementById('dash-cell-sip');
-  if(liabCell) liabCell.style.display = hasLiab ? '' : 'none';
-  if(emiCell)  emiCell.style.display  = hasLiab ? '' : 'none';
+  // Hero card: always show all 4 cells, swap to green messages when zero
+  if(liabCell) liabCell.style.display = '';
+  if(emiCell)  emiCell.style.display  = '';
+  // Liabilities cell
+  const liabFreeTag = document.getElementById('dash-liab-free');
+  const liabValEl   = document.getElementById('dash-liab-val');
+  if(hasLiab) {
+    if(liabFreeTag) liabFreeTag.style.display = 'none';
+    if(liabValEl)   liabValEl.style.display   = '';
+  } else {
+    if(liabFreeTag) liabFreeTag.style.display = '';
+    if(liabValEl)   liabValEl.style.display   = 'none';
+  }
+  // EMI cell
+  const debtFreeTag = document.getElementById('dash-debtfree-tag');
+  const emiValEl    = document.getElementById('cf-emi');
+  if(hasLiab) {
+    if(debtFreeTag) debtFreeTag.style.display = 'none';
+    if(emiValEl)    emiValEl.style.display    = '';
+  } else {
+    if(debtFreeTag) debtFreeTag.style.display = '';
+    if(emiValEl)    emiValEl.style.display    = 'none';
+  }
   // When no liabilities, assets & SIP span full width (remove right border + bottom border on assets)
-  if(assetsCell) {
-    assetsCell.style.borderRight = hasLiab ? '1px solid var(--border2)' : 'none';
-    assetsCell.style.borderBottom = hasLiab ? '1px solid var(--border2)' : 'none';
-    assetsCell.style.gridColumn = hasLiab ? '' : '1 / -1';
-  }
-  if(sipCell) {
-    sipCell.style.borderRight = hasLiab ? '1px solid var(--border2)' : 'none';
-    sipCell.style.gridColumn  = hasLiab ? '' : '1 / -1';
-  }
-  // Also update the Net Wealth label — hide "Assets − Liabilities" pill when no liabilities
+  // All 4 cells always visible — borders always on
+  if(assetsCell) { assetsCell.style.borderRight = '1px solid var(--border2)'; assetsCell.style.borderBottom = '1px solid var(--border2)'; assetsCell.style.gridColumn = ''; }
+  if(sipCell)    { sipCell.style.borderRight    = '1px solid var(--border2)'; sipCell.style.gridColumn = ''; }
+  // Net Wealth subtitle
   const nwPill = document.getElementById('dash-nw-pill');
-  if(nwPill) nwPill.style.display = hasLiab ? '' : 'none';
+  if(nwPill) nwPill.style.display = '';
 
   // Asset Category Breakdown
   const catEl=document.getElementById('dash-asset-cats');
@@ -1879,8 +1907,27 @@ function renderDashboard(){
       set('dash-savings-sub', 'SIP '+fmt(monthlySIP)+' of '+fmt(income)+' income');
       set('dash-inv-pct', sipPct+'%');
       set('dash-inv-amt', fmt(monthlySIP));
-      set('dash-emi-pct', monthlyEMI>0?emiPct+'%':'—');
-      set('dash-emi-amt', monthlyEMI>0?fmt(monthlyEMI):'');
+      // EMI cell: always visible, swap to debt-free message when no EMI
+      const emiCell2 = document.getElementById('dash-emi-cell');
+      const sipCell2 = document.getElementById('dash-sip-cell');
+      const snapDebtFree = document.getElementById('dash-snap-debtfree');
+      const snapEmiVals  = document.getElementById('dash-emi-vals');
+      if(emiCell2) emiCell2.style.display = '';
+      if(sipCell2) sipCell2.style.gridColumn = '';
+      if(monthlyEMI>0){
+        if(snapEmiVals)  snapEmiVals.style.display  = 'flex';
+        if(snapDebtFree) snapDebtFree.style.display = 'none';
+        set('dash-emi-pct', emiPct+'%');
+        set('dash-emi-amt', fmt(monthlyEMI));
+      } else {
+        if(snapEmiVals)  snapEmiVals.style.display  = 'none';
+        if(snapDebtFree) snapDebtFree.style.display = '';
+      }
+      // Liabilities section on Invest page
+      const investLiabWrap = document.getElementById('invest-liab-wrap');
+      const debtFreePill2 = document.getElementById('invest-debtfree-pill');
+      if(investLiabWrap) investLiabWrap.style.display = data.liabilities.length>0 ? '' : 'none';
+      if(debtFreePill2) debtFreePill2.style.display = data.liabilities.length===0 ? 'flex' : 'none';
       set('dash-exp-pct', expenses>0?expPct+'%':'—');
       set('dash-exp-amt', expenses>0?fmt(expenses):'');
       set('dash-free-pct', freePct+'%');
@@ -2149,13 +2196,18 @@ function renderAssets(){
     </div>`;
   }).join('')+'</div>';
 }
-function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`"${a?.name||'This asset'}" will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();closeSheet();renderAssets();renderDashboard();toast('Deleted')})}
+function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`${a?.name||'This asset'} will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();closeSheet();renderAssets();renderDashboard();toast('Deleted')})}
 
 function renderLiabilities(){
   const total=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
   const totalEMI=data.liabilities.reduce((s,l)=>s+Number(l.emi||0),0);
   const h=document.getElementById('liab-total-hdr');const c=document.getElementById('liab-sec-count');const e=document.getElementById('liab-emi-info');
   if(h)h.textContent=fmt(total);if(c)c.textContent=data.liabilities.length;if(e)e.textContent='Monthly EMI: '+fmt(totalEMI);
+  // Show/hide entire liabilities wrapper on Invest page
+  const investLiabWrap=document.getElementById('invest-liab-wrap');
+  const debtFreePill=document.getElementById('invest-debtfree-pill');
+  if(investLiabWrap)investLiabWrap.style.display=data.liabilities.length>0?'':'none';
+  if(debtFreePill)debtFreePill.style.display=data.liabilities.length===0?'flex':'none';
   const totalAssets=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
   updateWealthCard(totalAssets,total);
   const el=document.getElementById('liabilities-list');if(!el)return;
@@ -2178,7 +2230,7 @@ function renderLiabilities(){
     </div>`;
   }).join('')+'</div>';
 }
-function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('Delete Liability?',`"${l?.name||'This'}" will be removed.`,()=>{data.liabilities=data.liabilities.filter(l=>l.id!==id);save();closeSheet();renderLiabilities();renderDashboard();toast('Deleted')})}
+function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('Delete Liability?',`${l?.name||'This'} will be removed.`,()=>{data.liabilities=data.liabilities.filter(l=>l.id!==id);save();closeSheet();renderLiabilities();renderDashboard();toast('Deleted')})}
 
 function renderGoals(){
   const c=document.getElementById('goals-sec-count');if(c)c.textContent=GOAL_PRESETS.length;
@@ -2479,7 +2531,7 @@ function renderKids(){
     </div>`;
   }).join('');
 }
-function delKid(id){const k=data.kids.find(x=>x.id===id);showConfirm('Remove Child?',`"${k?.name||'This child'}" and all phases will be removed.`,()=>{data.kids=data.kids.filter(k=>k.id!==id);save();renderKids();renderDashboard();toast('Removed')})}
+function delKid(id){const k=data.kids.find(x=>x.id===id);showConfirm('Remove Child?',`${k?.name||'This child'} and all phases will be removed.`,()=>{data.kids=data.kids.filter(k=>k.id!==id);save();renderKids();renderDashboard();toast('Removed')})}
 
 function getCheckItems(){
   // Migrate old boolean array to new object format on first load
@@ -2536,7 +2588,7 @@ function renderChecklist(){
   </div>`;
 }
 function toggleCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);if(item){item.done=!item.done;save();renderChecklist();renderDashboard();}}
-function delCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);showConfirm('Remove item?',`"${item?.label||'This item'}" will be removed.`,()=>{data.checkItems=items.filter(x=>x.id!==id);save();renderChecklist();renderDashboard();toast('Removed')});}
+function delCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);showConfirm('Remove item?',`${item?.label||'This item'} will be removed.`,()=>{data.checkItems=items.filter(x=>x.id!==id);save();renderChecklist();renderDashboard();toast('Removed')});}
 function showAddCheckItem(){
   const form=document.getElementById('checklist-add-form');
   const addRow=document.querySelector('#checklist-add-area .add-row');
@@ -2959,13 +3011,13 @@ function sheetAsset(a){
   const cat=a.category||'EPF';
   return`<div class="sheet-hdr"><div class="sheet-title">${a.id?'Edit':'Add'} Asset</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value="${c.v}" ${cat===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
-    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value="${a.name||''}"/></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value=${c.v} ${cat===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value=${a.name||''}/></div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-cur" type="number" placeholder="0" value="${a.currentValue||''}"/></div>
-      <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
+      <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-cur" type="number" placeholder="0" value=${a.currentValue||''}/></div>
+      <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value=${a.invested||''}/></div>
     </div>
-    <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
+    <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value=${a.sip||''}/></div>
     <div class="fg"><label class="fl">Investment Bucket <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">ISR strategy</span></label><select class="fi fi-sel" id="f-bucket">
       <option value="" ${!a.bucket?'selected':''}>Not Assigned</option>
       <option value="income" ${a.bucket==='income'?'selected':''}>🟢 Income (0–3y): Liquid, Arbitrage</option>
@@ -2979,14 +3031,14 @@ function saveAsset(editId){const name=document.getElementById('f-name').value.tr
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-lcat">${LIAB_CATS.map(c=>`<option value="${c.v}" ${l.category===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
-    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-lname" placeholder="e.g. SBI Home Loan" value="${l.name||''}"/></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-lcat">${LIAB_CATS.map(c=>`<option value=${c.v} ${l.category===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-lname" placeholder="e.g. SBI Home Loan" value="${l.name||''}"  /></div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Outstanding (₹)</label><input class="fi" id="f-outstanding" type="number" placeholder="0" value="${l.outstanding||''}"/></div>
-      <div class="fg"><label class="fl">Interest Rate (%)</label><input class="fi" id="f-rate" type="number" step="0.1" placeholder="8.5" value="${l.interestRate||''}"/></div>
+      <div class="fg"><label class="fl">Outstanding (₹)</label><input class="fi" id="f-outstanding" type="number" placeholder="0" value="${l.outstanding||''}" /></div>
+      <div class="fg"><label class="fl">Interest Rate (%)</label><input class="fi" id="f-rate" type="number" step="0.1" placeholder="8.5" value="${l.interestRate||''}" /></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Monthly EMI (₹)</label><input class="fi" id="f-emi" type="number" placeholder="0" value="${l.emi||''}"/></div>
+      <div class="fg"><label class="fl">Monthly EMI (₹)</label><input class="fi" id="f-emi" type="number" placeholder="0" value="${l.emi||''}" /></div>
       <div class="fg"><label class="fl">Loan End Date</label>${calPickerHTML('lend', l.endDate||'')}</div>
     </div>
     <div class="form-actions">${l.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delLiab(\''+l.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveLiab('${l.id||''}')">${l.id?'Update':'Add'}</button></div>
@@ -2997,7 +3049,7 @@ function sheetGoal(pid){
   const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
   const g=data.goals.find(x=>x.type===pr.id)||{};
   const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-  const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.filter(p=>!p.isIns).map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
+  const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.filter(p=>!p.isIns).map(p=>`<option value=${p.id} ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
 
   const linkedIds=g.linkedAssetIds||[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
@@ -3014,21 +3066,21 @@ function sheetGoal(pid){
          <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${g.current>0?fmt(g.current):''}" data-raw="${g.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value=${g.current>0?fmt(g.current):''} data-raw=${g.current||''} onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>`;
 
   return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value=${todayTarget>0?fmt(todayTarget):''} data-raw=${todayTarget||''} onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
       <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-ginfl" type="number" step="0.5" placeholder="7" value="${infl}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value=${g.timePeriod||''} oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-ginfl" type="number" step="0.5" placeholder="7" value=${infl} oninput="updateGoalSIP()"/></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-gret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateGoalSIP()"/></div>
+      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-gret" type="number" step="0.5" placeholder="12" value=${ret} oninput="updateGoalSIP()"/></div>
       ${savedCol}
     </div>
     <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="goal-adj-note">${yrs>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yrs+'y at '+infl+'%':''}</div>
@@ -3094,7 +3146,7 @@ function updateGoalSIP(){
 function delGoal(typeId){
   const g=data.goals.find(x=>x.type===typeId);
   const pr=GOAL_PRESETS.find(p=>p.id===typeId);
-  showConfirm('Remove Goal?',`"${pr?.name||'This goal'}" will be removed.`,()=>{
+  showConfirm('Remove Goal?',`${pr?.name||'This goal'} will be removed.`,()=>{
     data.goals=data.goals.filter(x=>x.type!==typeId);
     save();closeSheet();renderGoals();renderDashboard();toast('Removed');
   });
@@ -3131,13 +3183,13 @@ function sheetInsurance(id){
       <option value="health" ${ins.type==='health'?'selected':''}>Health Insurance</option>
       <option value="term" ${ins.type==='term'?'selected':''}>Term Insurance</option>
     </select></div>
-    <div class="fg"><label class="fl">Policy Name / Provider</label><input class="fi" id="f-ins-name" placeholder="e.g. Star Health Family Floater" value="${ins.policyName||''}"/></div>
+    <div class="fg"><label class="fl">Policy Name / Provider</label><input class="fi" id="f-ins-name" placeholder="e.g. Star Health Family Floater" value=${ins.policyName||''}/></div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Annual Premium (₹)</label><input class="fi" id="f-ins-premium" type="number" placeholder="0" value="${ins.premium||''}"/></div>
-      <div class="fg"><label class="fl">Cover Amount (₹)</label><input class="fi" id="f-ins-cover" type="number" placeholder="e.g. 1000000" value="${ins.coverAmount||''}"/></div>
+      <div class="fg"><label class="fl">Annual Premium (₹)</label><input class="fi" id="f-ins-premium" type="number" placeholder="0" value=${ins.premium||''}/></div>
+      <div class="fg"><label class="fl">Cover Amount (₹)</label><input class="fi" id="f-ins-cover" type="number" placeholder="e.g. 1000000" value=${ins.coverAmount||''}/></div>
     </div>
     <div class="fg"><label class="fl">Policy Expiry Date</label>${calPickerHTML('insexp', ins.expiry||'')}</div>
-    <div class="fg"><label class="fl">Notes</label><input class="fi" id="f-ins-notes" placeholder="Policy number, riders, sub-limits…" value="${ins.notes||''}"/></div>
+    <div class="fg"><label class="fl">Notes</label><input class="fi" id="f-ins-notes" placeholder="Policy number, riders, sub-limits…" value=${ins.notes||''}/></div>
     <div class="form-actions">
       ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="deleteInsurance(\''+ins.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
       <button class="btn btn-primary" onclick="saveInsurance('${ins.id||''}')">${isEdit?'Update':'Add'}</button>
@@ -3165,7 +3217,7 @@ function saveInsurance(editId){
 }
 function deleteInsurance(id){
   const ins=data.insurance.find(x=>x.id===id);
-  showConfirm('Remove Policy?',`"${ins?.policyName||'Policy'}" will be removed.`,()=>{
+  showConfirm('Remove Policy?',`${ins?.policyName||'Policy'} will be removed.`,()=>{
     data.insurance=data.insurance.filter(x=>x.id!==id);
     save();closeSheet();renderGoals();toast('Removed');
   });
@@ -3184,13 +3236,13 @@ function sheetCustomGoal(id){
          <span id="cg-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value=${cg.current||''} oninput="updateCustomSIP()"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'New'} Custom Goal</div>${closeX}</div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-cg-name" placeholder="e.g. Car Purchase, Business Fund…" value="${cg.name||''}"/></div>
+    <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-cg-name" placeholder="e.g. Car Purchase, Business Fund…" value=${cg.name||''}/></div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cg-target" type="number" placeholder="0" value="${cg.target||''}" oninput="updateCustomSIP()"/></div>
-      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-cg-time" type="number" placeholder="3" value="${cg.timePeriod||''}" oninput="updateCustomSIP()"/></div>
+      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cg-target" type="number" placeholder="0" value=${cg.target||''} oninput="updateCustomSIP()"/></div>
+      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-cg-time" type="number" placeholder="3" value=${cg.timePeriod||''} oninput="updateCustomSIP()"/></div>
     </div>
     ${savedField}
     <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
@@ -3251,7 +3303,7 @@ function saveCustomGoal(editId){
 
 function delCustomGoal(id){
   const cg=(data.customGoals||[]).find(x=>x.id===id);
-  showConfirm('Delete Goal?',`"${cg?.name||'This goal'}" will be removed.`,()=>{
+  showConfirm('Delete Goal?',`${cg?.name||'This goal'} will be removed.`,()=>{
     data.customGoals=data.customGoals.filter(x=>x.id!==id);save();closeSheet();renderGoals();renderDashboard();toast('Deleted');
   });
 }
@@ -3262,9 +3314,9 @@ function sheetChild(kid){
   const phasesHtml=KID_PHASES.map(ph=>{const ex=kid?kid.phases.find(p=>p.phaseId===ph.id):null;const on=ex?ex.enabled:true;return`<div class="phase-opt ${on?'on':''}" id="popt-${ph.id}" onclick="togglePhaseOpt('${ph.id}')"><div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ph.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${ph.label}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div><div class="phase-opt-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div></div>`}).join('');
   return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'Add'} Child</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Child's Name</label><input class="fi" id="f-kname" placeholder="e.g. Arjun" value="${kid?kid.name:''}"/></div>
+    <div class="fg"><label class="fl">Child's Name</label><input class="fi" id="f-kname" placeholder="e.g. Arjun" value=${kid?kid.name:''}/></div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Birth Year</label><input class="fi" id="f-kbirth" type="number" placeholder="${year()-5}" min="1990" max="${year()}" value="${kid?kid.birthYear:''}"/></div>
+      <div class="fg"><label class="fl">Birth Year</label><input class="fi" id="f-kbirth" type="number" placeholder=${year()-5} min="1990" max=${year()} value=${kid?kid.birthYear:''}/></div>
       <div class="fg"><label class="fl">Gender</label><div class="gender-row"><div class="gender-opt ${gender==='boy'?'sel-boy':''}" id="gbtn-boy" onclick="selGender('boy')">👦 Boy</div><div class="gender-opt ${gender==='girl'?'sel-girl':''}" id="gbtn-girl" onclick="selGender('girl')">👧 Girl</div></div></div>
     </div>
     <div class="form-sec">Life Phases</div>
@@ -3381,7 +3433,7 @@ function sheetEditPhase(kidId,phaseId){
          <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="text" inputmode="decimal" placeholder="0" value="${ph.current>0?fmt(ph.current):''}" data-raw="${ph.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="text" inputmode="decimal" placeholder="0" value=${ph.current>0?fmt(ph.current):''} data-raw=${ph.current||''} onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title"><span style="display:inline-flex;align-items:center;width:16px;height:16px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,"").replace("</svg>","")}</svg></span> ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
@@ -3389,23 +3441,23 @@ function sheetEditPhase(kidId,phaseId){
       <div><div style="font-weight:700;font-size:0.88rem">${kid.name}</div><div style="font-size:0.7rem;color:var(--text3)">${yl>0?yl+' years to this phase':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="text" inputmode="decimal" placeholder="0" value=${todayTarget>0?fmt(todayTarget):''} data-raw=${todayTarget||''} onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
       <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
-      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-phinfl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-phinfl" type="number" step="0.5" placeholder="10" value=${infl} oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-phret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
+      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-phret" type="number" step="0.5" placeholder="12" value=${ret} oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
       ${savedCol}
     </div>
     <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="ph-adj-note">${yl>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
-    <div id="sip-preview" style="${sip>0?'':'display:none'}" class="sip-callout">
+    <div id="sip-preview" style=${sip>0?'':'display:none'} class="sip-callout">
       <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="ph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
-    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
+    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value=${ph.notes||''}/></div>
     <div class="form-sec">Link Assets</div>
     <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Update</button></div>
@@ -3428,7 +3480,7 @@ function sheetEditCustomPhase(kidId,cpId){
          <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (&#8377;)</label><input class="fi" id="f-cph-current" type="text" inputmode="decimal" placeholder="0" value="${cp.current>0?fmt(cp.current):''}" data-raw="${cp.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (&#8377;)</label><input class="fi" id="f-cph-current" type="text" inputmode="decimal" placeholder="0" value=${cp.current>0?fmt(cp.current):''} data-raw=${cp.current||''} onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
   const assetLinks=data.assets.length?data.assets.map(a=>{const on=linkedIds.includes(a.id);return`<div class="inv-link-item ${on?'on':''}" id="cphal-${a.id}" onclick="toggleCPHAssetLink('${kidId}','${cpId}','${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';
   return`<div class="sheet-hdr"><div class="sheet-title">&#128204; ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
@@ -3437,23 +3489,23 @@ function sheetEditCustomPhase(kidId,cpId){
       <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">Age ${cp.ageStart}&#8211;${cp.ageEnd} &middot; ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="text" inputmode="decimal" placeholder="0" value=${todayTarget>0?fmt(todayTarget):''} data-raw=${todayTarget||''} onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
       <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
-      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-cph-infl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-cph-infl" type="number" step="0.5" placeholder="10" value=${infl} oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-cph-ret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
+      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-cph-ret" type="number" step="0.5" placeholder="12" value=${ret} oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
       ${savedCol}
     </div>
     <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="cph-adj-note">${yl>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today &#8594; '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
-    <div id="cph-sip-box" style="${sip>0?'':'display:none'}" class="sip-callout">
+    <div id="cph-sip-box" style=${sip>0?'':'display:none'} class="sip-callout">
       <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="cph-sip-rate">@ ${ret}% p.a.</span></div>
       <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
     </div>
-    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
+    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value=${esc(cp.notes||'')}/></div>
     <div class="form-sec">Link Assets</div>
     <div id="cph-asset-link-list">${assetLinks}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Update</button></div>
@@ -3586,9 +3638,9 @@ function sheetProfile(){
   const dots=colors.map(c=>`<div class="color-dot ${data.profile.avatarColor===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
   return`<div class="sheet-hdr"><div class="sheet-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>Profile</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Ravi" value="${data.profile.name||''}"/></div>
-    <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value="${data.profile.monthlyIncome||''}"/></div>
-    <div class="fg"><label class="fl">Monthly Expenses (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-pexpenses" type="number" placeholder="e.g. 30000 (rent, bills, groceries)" value="${data.profile.monthlyExpenses||''}"/></div>
+    <div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-pname" placeholder="e.g. Ravi" value=${data.profile.name||''}/></div>
+    <div class="fg"><label class="fl">Monthly Net Income (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-pincome" type="number" placeholder="e.g. 80000" value=${data.profile.monthlyIncome||''}/></div>
+    <div class="fg"><label class="fl">Monthly Expenses (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-pexpenses" type="number" placeholder="e.g. 30000 (rent, bills, groceries)" value=${data.profile.monthlyExpenses||''}/></div>
     <div style="font-size:0.68rem;color:var(--text3);margin:-2px 0 10px;line-height:1.4">Income & expenses power the dashboard snapshot. Leave blank to skip.</div>
     <div class="form-sec">Avatar Color</div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;margin:6px 0 14px">${dots}</div>
