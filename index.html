@@ -2455,7 +2455,7 @@ function renderKids(){
         <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
-          <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+          <div class="phase-age">${k.birthYear+pd.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
         </div>
         <div class="phase-prog">
           <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
@@ -2472,7 +2472,7 @@ function renderKids(){
         <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
         <div class="phase-info">
           <div class="phase-name">${esc(cp.label)}</div>
-          <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+          <div class="phase-age">${k.birthYear+cp.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
         </div>
         <div class="phase-prog">
           <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
@@ -2496,7 +2496,7 @@ function renderKids(){
         <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
         <div class="phase-info">
           <div class="phase-name">${pd.label}</div>
-          <div class="phase-age">Age ${pd.ageStart}–${pd.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+          <div class="phase-age">${k.birthYear+pd.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
           ${ph.target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500"><span style="color:var(--text2)">${fmt(phaseCurrent)}</span> of ${fmt(ph.target)}</div>`:''}
         </div>
         <div class="phase-prog">
@@ -2513,7 +2513,7 @@ function renderKids(){
         <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
         <div class="phase-info">
           <div class="phase-name">${esc(cp.label)}</div>
-          <div class="phase-age">Age ${cp.ageStart}–${cp.ageEnd} · ${yl>0?yl+'y away':yl===0?'Now!':'Passed'}</div>
+          <div class="phase-age">${k.birthYear+cp.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
           ${target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500"><span style="color:var(--text2)">${fmt(current)}</span> of ${fmt(target)}</div>`:''}
         </div>
         <div class="phase-prog">
@@ -3460,14 +3460,14 @@ function sheetEditPhase(kidId,phaseId){
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
       <div style="font-size:1.4rem">${kid.gender==='girl'?'👧':'👦'}</div>
-      <div><div style="font-weight:700;font-size:0.88rem">${kid.name}</div><div style="font-size:0.7rem;color:var(--text3)">${yl>0?yl+' years to this phase':yl===0?'Active now!':'Phase passed'}</div></div>
+      <div><div style="font-weight:700;font-size:0.88rem">${kid.name}</div><div style="font-size:0.7rem;color:var(--text3)">${kid.birthYear+pd.ageStart} · ${yl>0?yl+' years left':yl===0?'Active':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
       <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
+      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs left':yl===0?'Active':'Passed'}</div></div>
       <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-phinfl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
     </div>
     <div class="form-row2">
@@ -3508,14 +3508,14 @@ function sheetEditCustomPhase(kidId,cpId){
   <div class="sheet-body">
     <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
       <div style="font-size:1.4rem">${kid.gender==='girl'?'&#128103;':'&#128102;'}</div>
-      <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">Age ${cp.ageStart}&#8211;${cp.ageEnd} &middot; ${yl>0?yl+' years away':yl===0?'Active now!':'Phase passed'}</div></div>
+      <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">${kid.birthYear+cp.ageStart} · ${yl>0?yl+' years left':yl===0?'Active':'Phase passed'}</div></div>
     </div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
       <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
     <div class="form-row2">
-      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs away':yl===0?'Active now':'Passed'}</div></div>
+      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs left':yl===0?'Active':'Passed'}</div></div>
       <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-cph-infl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
     </div>
     <div class="form-row2">
