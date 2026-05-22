@@ -1032,26 +1032,18 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     <div class="hdr-inner">
       <div class="hdr-left"><div><div class="hdr-greeting">Planning</div><div class="hdr-name">Goals</div></div></div>
       <div class="hdr-right">
-        <button class="hdr-add-btn" id="fab-goals" onclick="toggleQuickAdd()" style="display:flex">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <button class="hdr-add-btn" id="fab-goals" onclick="toggleQuickAdd()" style="display:flex;background:var(--surface2);border:1.5px solid var(--border);box-shadow:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
       </div>
     </div>
   </div>
   <div class="container">
-    <!-- GOAL HEALTH SUMMARY -->
-    <div class="gh-card" style="margin-bottom:12px">
-      <div class="gh-top">
-        <div class="gh-title">Overall Goal Progress</div>
-        <div class="gh-pct" id="gh-pct" style="color:var(--text3)">—</div>
-      </div>
-      <div class="gh-track"><div class="gh-fill" id="gh-fill" style="width:0%;background:var(--green)"></div></div>
-      <div class="gh-meta" id="gh-meta">Set up your goals to track progress</div>
-    </div>
     <div id="kids-section-wrap" style="display:none">
       <div class="sec-hdr-card" onclick="toggleSec('sec-kids')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
         <div class="sec-hdr-right">
+          <span class="sec-total" id="kids-sec-pct" style="display:none;color:var(--blue)"></span>
           <span class="sec-caret" id="caret-sec-kids"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
         </div>
       </div>
@@ -1069,7 +1061,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     <div id="financial-goals-wrap" style="margin-top:8px">
       <div class="sec-hdr-card" onclick="toggleSec('sec-goals')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Savings</span><span class="sec-badge" id="goals-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-goals"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+        <div class="sec-hdr-right"><span class="sec-total" id="goals-sec-pct" style="display:none;color:var(--blue)"></span><span class="sec-caret" id="caret-sec-goals"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-goals"><div id="goals-list"></div></div>
     </div>
@@ -1082,8 +1074,8 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     <div class="hdr-inner">
       <div class="hdr-left"><div><div class="hdr-greeting">Portfolio</div><div class="hdr-name">Invest</div></div></div>
       <div class="hdr-right">
-        <button class="hdr-add-btn" id="fab-invest" onclick="toggleQuickAdd()" style="display:flex">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <button class="hdr-add-btn" id="fab-invest" onclick="toggleQuickAdd()" style="display:flex;background:var(--surface2);border:1.5px solid var(--border);box-shadow:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
       </div>
     </div>
@@ -1130,15 +1122,8 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
     </div>
 
-    <!-- DEBT-FREE pill — shown when no liabilities -->
-    <div id="invest-debtfree-pill" style="display:none;margin-top:8px;padding:11px 14px;background:var(--green-bg);border:1px solid rgba(34,197,94,0.18);border-radius:var(--r-lg);align-items:center;gap:10px">
-      <span style="font-size:1.1rem">🎉</span>
-      <div>
-        <div style="font-size:0.82rem;font-weight:700;color:var(--green)">Debt-Free</div>
-        <div style="font-size:0.7rem;color:var(--text3);margin-top:1px">No active loans or EMIs</div>
-      </div>
-      <button onclick="openSheet('liability')" style="margin-left:auto;font-size:0.68rem;font-weight:700;color:var(--text3);background:transparent;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer">Add</button>
-    </div>
+    <!-- DEBT-FREE pill — hidden, use + button in header to add liability -->
+    <div id="invest-debtfree-pill" style="display:none!important"></div>
 
 
   </div>
@@ -2256,6 +2241,17 @@ function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('De
 
 function renderGoals(){
   const c=document.getElementById('goals-sec-count');if(c)c.textContent=GOAL_PRESETS.length;
+  // Compute overall Savings goals % and show in section header
+  const goalsPctEl=document.getElementById('goals-sec-pct');
+  if(goalsPctEl){
+    const savGoals=GOAL_PRESETS.filter(p=>!p.isIns);
+    const cgs=data.customGoals||[];
+    let gSaved=0,gTarget=0;
+    savGoals.forEach(pr=>{const g=data.goals.find(x=>x.type===pr.id)||{};const t=Number(g.target||0);if(!t)return;gTarget+=t;const lids=g.linkedAssetIds||[];gSaved+=lids.length>0?linkedAssetTotal(lids):Number(g.current||0);});
+    cgs.forEach(cg=>{const t=Number(cg.target||0);if(!t)return;gTarget+=t;const lids=cg.linkedAssetIds||[];gSaved+=lids.length>0?linkedAssetTotal(lids):Number(cg.current||0);});
+    if(gTarget>0){goalsPctEl.textContent=Math.min(100,Math.round(gSaved/gTarget*100))+'%';goalsPctEl.style.display='';}
+    else goalsPctEl.style.display='none';
+  }
   const el=document.getElementById('goals-list');if(!el)return;
 
   // Group: Protection (insurance) vs Savings goals
@@ -2433,6 +2429,18 @@ function renderKids(){
   if(kidsWrap) kidsWrap.style.display=data.kids.length?'':'none';
   if(goalsWrap) goalsWrap.style.marginTop=data.kids.length?'8px':'0';
   if(protWrap) protWrap.style.marginTop=data.kids.length?'8px':'10px';
+  // Compute overall kids education % across all kids and phases
+  const kidsPctEl=document.getElementById('kids-sec-pct');
+  if(kidsPctEl && data.kids.length){
+    let totalSaved=0,totalTarget=0;
+    data.kids.forEach(k=>{
+      const ep=k.phases.filter(p=>p.enabled);
+      ep.forEach(ph=>{const lids=ph.linkedAssetIds||[];totalSaved+=(lids.length>0?linkedAssetTotal(lids):Number(ph.current||0));totalTarget+=Number(ph.target||0);});
+      (k.customPhases||[]).forEach(cp=>{const lids=cp.linkedAssetIds||[];totalSaved+=(lids.length>0?linkedAssetTotal(lids):Number(cp.current||0));totalTarget+=Number(cp.target||0);});
+    });
+    const kp=totalTarget>0?Math.min(100,Math.round(totalSaved/totalTarget*100)):0;
+    kidsPctEl.textContent=kp+'%';kidsPctEl.style.display='';
+  } else if(kidsPctEl){kidsPctEl.style.display='none';}
   const el=document.getElementById('kids-list');if(!el)return;
   if(!data.kids.length){el.innerHTML=`<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg><div class="empty-text" style="margin-bottom:12px">No children added yet</div><button class="btn btn-primary btn-sm" onclick="openSheet('child',null)" style="margin:0 auto">Add Child</button></div>`;return}
   el.innerHTML=data.kids.map(k=>{
