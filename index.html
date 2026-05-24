@@ -283,7 +283,37 @@ body.scroll-locked {
 .goal-saved { font-size:0.88rem; font-weight:700; color:var(--text1) }
 .goal-target { font-size:0.68rem; color:var(--text3) }
 
-/* ── MINI GOAL ── */
+/* ── GOAL COLLAPSIBLE CARD ── */
+.goal-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); overflow:hidden; margin-bottom:8px;
+}
+.goal-card-hdr {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px; cursor:pointer; user-select:none;
+  transition:background 120ms;
+}
+.goal-card-hdr:active { background:var(--surface2) }
+.goal-card-icon {
+  width:34px; height:34px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text2);
+}
+.goal-card-icon svg { width:16px; height:16px; }
+.goal-card-name { font-size:0.88rem; font-weight:700; color:var(--text1); flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.goal-card-meta { display:flex; align-items:center; gap:7px; flex-shrink:0 }
+.goal-card-pct { font-size:0.82rem; font-weight:800; color:var(--blue) }
+.goal-card-caret { color:var(--text3); transition:transform 0.25s var(--ease); display:flex; align-items:center }
+.goal-card-caret svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round }
+.goal-card.open .goal-card-caret { transform:rotate(180deg) }
+.goal-card-body { display:none; border-top:1px solid var(--border2); padding:13px 14px 14px }
+.goal-card.open .goal-card-body { display:block }
+.goal-card-progress { margin-bottom:10px }
+.goal-card-bar-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px }
+.goal-card-saved { font-size:0.92rem; font-weight:700; color:var(--text1) }
+.goal-card-target { font-size:0.72rem; color:var(--text3) }
+.goal-card-actions { display:flex; gap:8px; margin-top:12px }
+
 .mini-goal {
   display:flex; align-items:center; gap:10px; padding:10px 13px;
   cursor:pointer; background:var(--surface); border:1px solid var(--border);
@@ -1039,7 +1069,17 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     </div>
   </div>
   <div class="container">
-    <div id="kids-section-wrap" style="display:none">
+    <div id="emergency-goal-wrap"></div>
+
+    <div id="protection-wrap" style="margin-top:8px">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-protection')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> Protection</span><span class="sec-badge" id="protection-sec-count">0</span></div>
+        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-protection"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      </div>
+      <div class="sec-body closed" id="sec-protection"><div id="protection-list"></div></div>
+    </div>
+
+    <div id="kids-section-wrap" style="display:none;margin-top:8px">
       <div class="sec-hdr-card" onclick="toggleSec('sec-kids')">
         <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
         <div class="sec-hdr-right">
@@ -1050,21 +1090,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div class="sec-body closed" id="sec-kids"><div id="kids-list"></div></div>
     </div>
 
-    <div id="protection-wrap" style="margin-top:10px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-protection')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> Protection</span><span class="sec-badge" id="protection-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-protection"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
-      </div>
-      <div class="sec-body closed" id="sec-protection"><div id="protection-list"></div></div>
-    </div>
-
-    <div id="financial-goals-wrap" style="margin-top:8px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-goals')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Savings</span><span class="sec-badge" id="goals-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" id="goals-sec-pct" style="display:none;color:var(--blue)"></span><span class="sec-caret" id="caret-sec-goals"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
-      </div>
-      <div class="sec-body closed" id="sec-goals"><div id="goals-list"></div></div>
-    </div>
+    <div id="individual-goals-wrap" style="margin-top:8px"></div>
   </div>
 </div>
 
@@ -1369,12 +1395,12 @@ const GOAL_PRESETS = [
   {id:'house', name:'House Purchase',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="M15 5l-9.4 9.4"/><path d="M15 5h4v4"/><path d="M21 3l-6 6"/></svg>`,
    color:'#34d399', light:'rgba(52,211,153,0.1)', isIns:false},
-  {id:'vacation', name:'Vacation',
-   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>`,
-   color:'#fb923c', light:'rgba(251,146,60,0.1)', isIns:false},
   {id:'retirement', name:'Retirement',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M4.93 4.93l2.83 2.83M2 12h4M4.93 19.07l2.83-2.83M12 22v-4M19.07 19.07l-2.83-2.83M22 12h-4M19.07 4.93l-2.83 2.83"/><circle cx="12" cy="12" r="4"/></svg>`,
    color:'#fbbf24', light:'rgba(251,191,36,0.1)', isIns:false},
+  {id:'vacation', name:'Vacation',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>`,
+   color:'#fb923c', light:'rgba(251,146,60,0.1)', isIns:false},
 ];
 const KID_PHASES = [
   {id:'playschool',  label:'Play School',    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><line x1="16" y1="11" x2="22" y2="11"/><line x1="19" y1="8" x2="19" y2="14"/></svg>', ageStart:2.5,ageEnd:5,  color:'#fb923c'},
@@ -2240,19 +2266,8 @@ function renderLiabilities(){
 function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('Delete Liability?',`${l?.name||'This'} will be removed.`,()=>{data.liabilities=data.liabilities.filter(l=>l.id!==id);save();closeSheet();renderLiabilities();renderDashboard();toast('Deleted')})}
 
 function renderGoals(){
-  const c=document.getElementById('goals-sec-count');if(c)c.textContent=GOAL_PRESETS.length;
-  // Compute overall Savings goals % and show in section header
-  const goalsPctEl=document.getElementById('goals-sec-pct');
-  if(goalsPctEl){
-    const savGoals=GOAL_PRESETS.filter(p=>!p.isIns);
-    const cgs=data.customGoals||[];
-    let gSaved=0,gTarget=0;
-    savGoals.forEach(pr=>{const g=data.goals.find(x=>x.type===pr.id)||{};const t=Number(g.target||0);if(!t)return;gTarget+=t;const lids=g.linkedAssetIds||[];gSaved+=lids.length>0?linkedAssetTotal(lids):Number(g.current||0);});
-    cgs.forEach(cg=>{const t=Number(cg.target||0);if(!t)return;gTarget+=t;const lids=cg.linkedAssetIds||[];gSaved+=lids.length>0?linkedAssetTotal(lids):Number(cg.current||0);});
-    if(gTarget>0){goalsPctEl.textContent=Math.min(100,Math.round(gSaved/gTarget*100))+'%';goalsPctEl.style.display='';}
-    else goalsPctEl.style.display='none';
-  }
-  const el=document.getElementById('goals-list');if(!el)return;
+  const el=document.getElementById('individual-goals-wrap');if(!el)return;
+  const emergencyEl=document.getElementById('emergency-goal-wrap');
 
   // Group: Protection (insurance) vs Savings goals
   const savingsGoals = GOAL_PRESETS.filter(p=>!p.isIns);
@@ -2334,23 +2349,46 @@ function renderGoals(){
     const linkedIds=g.linkedAssetIds||[];
     const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(g.current||0);
     const p=pct(current,target);
-    const ret=g.expectedReturn||12;
+    const cardId='goal-card-'+pr.id;
+    const isOpen=localStorage.getItem('goal_open_'+pr.id)==='1';
+
     let pCls='pill-muted',pTxt='Not Set';
     if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
-    const autoTag=linkedIds.length>0?`<span style="font-size:0.84rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
-    const inflTag=(target>todayTarget&&todayTarget>0)?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">(${fmt(todayTarget)} today)</span>`:'';
-    return`<div class="goal-row" onclick="openSheet('goal','${pr.id}')">
-      ${goalIconBox(pr)}
-      <div class="goal-body">
-        <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#3B82F6;width:${p}%"></div></div>
-        <div class="goal-amounts">
-          <span class="goal-saved">${fmt(current)}${autoTag}</span>
-          <span class="goal-target">${target>0?'of '+fmt(target)+inflTag+(g.timePeriod?' · '+g.timePeriod+'y':''):'Tap to set'}</span>
-          <span class="goal-pct" style="color:#3B82F6">${p}%</span>
+
+    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
+    const inflTag=(target>todayTarget&&todayTarget>0)?`<span style="font-size:0.72rem;color:var(--text3)"> (${fmt(todayTarget)} today)</span>`:'';
+    const retNote=g.expectedReturn&&g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:6px">📈 ${g.timePeriod}y at ${g.expectedReturn||12}% p.a. — need ${fmt(Math.max(0,(target-current)/g.timePeriod/12))} SIP est.</div>`:'';
+    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
+    const timeNote=g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${g.timePeriod} year${Number(g.timePeriod)!==1?'s':''} timeline</div>`:'';
+
+    return`<div class="goal-card${isOpen?' open':''}" id="${cardId}">
+      <div class="goal-card-hdr" onclick="toggleGoalCard('${pr.id}')">
+        <div class="goal-card-icon" style="background:${pr.light||'var(--surface2)'};border:1px solid ${pr.light||'var(--border)'}">${pr.icon.replace('stroke="currentColor"','stroke="'+pr.color+'"')}</div>
+        <div class="goal-card-name">${pr.name}</div>
+        <div class="goal-card-meta">
+          <span class="pill ${pCls}">${pTxt}</span>
+          ${target>0?`<span class="goal-card-pct">${p}%</span>`:''}
+          <div class="goal-card-caret"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
         </div>
       </div>
-      ${chevronSvg}
+      <div class="goal-card-body">
+        ${target>0?`
+        <div class="goal-card-progress">
+          <div class="goal-card-bar-row">
+            <span class="goal-card-saved">${fmt(current)}${autoTag}</span>
+            <span class="goal-card-target">of ${fmt(target)}${inflTag}</span>
+          </div>
+          <div class="prog-track"><div class="prog-fill" style="background:${pr.color||'#3B82F6'};width:${p}%"></div></div>
+        </div>
+        ${timeNote}${linkedNote}${retNote}
+        `:`<div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet. Tap Edit to set your goal.</div>`}
+        <div class="goal-card-actions">
+          <button class="btn btn-primary btn-sm" style="flex:1;background:${pr.color||'#3B82F6'}" onclick="openSheet('goal','${pr.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Goal
+          </button>
+        </div>
+      </div>
     </div>`;
   }
 
@@ -2361,22 +2399,48 @@ function renderGoals(){
     const linkedIds=cg.linkedAssetIds||[];
     const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(cg.current||0);
     const p=pct(current,target);
-    const customIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    const cardId='goal-card-cg-'+cg.id;
+    const isOpen=localStorage.getItem('goal_open_cg_'+cg.id)==='1';
     let pCls='pill-muted',pTxt='Not Set';
     if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
-    const autoTag=linkedIds.length>0?`<span style="font-size:0.84rem;color:var(--text3);margin-left:4px">· auto</span>`:'';
-    return`<div class="goal-row" onclick="openSheet('customGoal','${cg.id}')">
-      <div class="goal-icon" style="background:rgba(167,139,250,0.12);color:#a78bfa"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-      <div class="goal-body">
-        <div class="goal-top"><span class="goal-name">${cg.name}</span><span class="pill ${pCls}">${pTxt}</span></div>
-        <div class="prog-track" style="margin:6px 0 4px"><div class="prog-fill" style="background:#3B82F6;width:${p}%"></div></div>
-        <div class="goal-amounts">
-          <span class="goal-saved">${fmt(current)}${autoTag}</span>
-          <span class="goal-target">${target>0?'of '+fmt(target)+(cg.timePeriod?' · '+cg.timePeriod+'y':''):'Tap to set'}</span>
-          <span class="goal-pct" style="color:#3B82F6">${p}%</span>
+    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
+    const timeNote=cg.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${cg.timePeriod} year${Number(cg.timePeriod)!==1?'s':''} timeline</div>`:'';
+    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
+
+    return`<div class="goal-card${isOpen?' open':''}" id="${cardId}" style="border-left:3px solid rgba(167,139,250,0.5)">
+      <div class="goal-card-hdr" onclick="toggleGoalCardCg('${cg.id}')">
+        <div class="goal-card-icon" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="goal-card-name">${esc(cg.name)}</div>
+        <div class="goal-card-meta">
+          <span class="pill ${pCls}">${pTxt}</span>
+          ${target>0?`<span class="goal-card-pct">${p}%</span>`:''}
+          <div class="goal-card-caret"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
         </div>
       </div>
-      <button class="btn-del" style="align-self:center;flex-shrink:0;margin-left:6px" onclick="event.stopPropagation();delCustomGoal('${cg.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <div class="goal-card-body">
+        ${target>0?`
+        <div class="goal-card-progress">
+          <div class="goal-card-bar-row">
+            <span class="goal-card-saved">${fmt(current)}${autoTag}</span>
+            <span class="goal-card-target">of ${fmt(target)}</span>
+          </div>
+          <div class="prog-track"><div class="prog-fill" style="background:#a78bfa;width:${p}%"></div></div>
+        </div>
+        ${timeNote}${linkedNote}
+        `:`<div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet. Tap Edit to set your goal.</div>`}
+        <div class="goal-card-actions">
+          <button class="btn btn-primary btn-sm" style="flex:1;background:#a78bfa" onclick="openSheet('customGoal','${cg.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Goal
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="delCustomGoal('${cg.id}')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+            Delete
+          </button>
+        </div>
+      </div>
     </div>`;
   }
 
@@ -2388,17 +2452,148 @@ function renderGoals(){
   const protBadge=document.getElementById('protection-sec-count');
   if(protBadge) protBadge.textContent=insCount>0?insCount+' polic'+(insCount===1?'y':'ies'):'0';
 
-  // Goals section badge
-  const cEl=document.getElementById('goals-sec-count');
-  if(cEl) cEl.textContent=savingsCount;
+  // Build individual collapsible sections for each savings goal
+  function goalSection(pr){
+    const g=data.goals.find(x=>x.type===pr.id)||{};
+    const target=Number(g.target||0);
+    const linkedIds=g.linkedAssetIds||[];
+    const current=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
+    const p=pct(current,target);
+    const secId='sec-goal-'+pr.id;
+    const isOpen=localStorage.getItem('goal_sec_open_'+pr.id)==='1';
 
-  const hasAnyGoalData = savingsGoals.some(pr=>{const g=data.goals.find(x=>x.type===pr.id);return g&&(g.target||g.current);}) || customGoals.length>0 || insCount>0;
+    let pCls='pill-muted',pTxt='Not Set';
+    if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
 
-  const onboardingHint = !hasAnyGoalData ? `<div style="text-align:center;padding:20px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:10px">
-    <div style="font-size:1.4rem;margin-bottom:8px;opacity:0.5">🎯</div>
-    <div style="font-size:0.86rem;font-weight:700;color:var(--text1);margin-bottom:4px">Set your first goal</div>
-    <div style="font-size:0.75rem;color:var(--text3);line-height:1.5">Tap any goal below to set a target amount.<br>We'll calculate the SIP you need to get there.</div>
-  </div>` : '';
+    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:'';
+
+    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
+    const todayTarget=Number(g.todayTarget||g.target||0);
+    const inflTag=(target>todayTarget&&todayTarget>0)?`<span style="font-size:0.72rem;color:var(--text3)"> (${fmt(todayTarget)} today)</span>`:'';
+    const retNote=g.expectedReturn&&g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:6px">📈 ${g.timePeriod}y at ${g.expectedReturn||12}% p.a. — need ${fmt(Math.max(0,(target-current)/g.timePeriod/12))} SIP est.</div>`:'';
+    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
+    const timeNote=g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${g.timePeriod} year${Number(g.timePeriod)!==1?'s':''} timeline</div>`:'';
+
+    const bodyContent=target>0?`
+      <div style="padding:12px 14px 4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:0.88rem;font-weight:700;color:var(--text1)">${fmt(current)}${autoTag}</span>
+          <span style="font-size:0.68rem;color:var(--text3)">of ${fmt(target)}${inflTag}</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>
+        ${timeNote}${linkedNote}${retNote}
+      </div>
+      <div style="padding:8px 14px 12px;border-top:1px solid var(--border2);margin-top:8px">
+        <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="openSheet('goal','${pr.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Goal
+        </button>
+      </div>
+    `:`<div style="padding:12px 14px">
+      <div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet. Tap to set your goal.</div>
+      <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="openSheet('goal','${pr.id}')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Set Goal
+      </button>
+    </div>`;
+
+    return`<div style="margin-bottom:8px">
+      <div class="sec-hdr-card" onclick="toggleGoalSec('${pr.id}')">
+        <div class="sec-hdr-left">
+          <span class="sec-hdr-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>
+            ${pr.name}
+          </span>
+          <span class="pill ${pCls}" style="margin-left:6px">${pTxt}</span>
+        </div>
+        <div class="sec-hdr-right">
+          ${pctBadge}
+          <span class="sec-caret${isOpen?' open':''}" id="caret-goal-sec-${pr.id}"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+      <div class="sec-body${isOpen?'':' closed'}" id="${secId}">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:4px">
+          ${bodyContent}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function customGoalSection(cg){
+    const target=Number(cg.target||0);
+    const linkedIds=cg.linkedAssetIds||[];
+    const current=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
+    const p=pct(current,target);
+    const secId='sec-goal-cg-'+cg.id;
+    const isOpen=localStorage.getItem('goal_sec_open_cg_'+cg.id)==='1';
+    let pCls='pill-muted',pTxt='Not Set';
+    if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
+    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:'';
+    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
+    const timeNote=cg.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${cg.timePeriod} year${Number(cg.timePeriod)!==1?'s':''} timeline</div>`:'';
+    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
+
+    const bodyContent=target>0?`
+      <div style="padding:12px 14px 4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:0.88rem;font-weight:700;color:var(--text1)">${fmt(current)}${autoTag}</span>
+          <span style="font-size:0.68rem;color:var(--text3)">of ${fmt(target)}</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>
+        ${timeNote}${linkedNote}
+      </div>
+      <div style="padding:8px 14px 12px;border-top:1px solid var(--border2);margin-top:8px;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="openSheet('customGoal','${cg.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit
+        </button>
+        <button class="btn btn-danger btn-sm" style="justify-content:center" onclick="delCustomGoal('${cg.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          Delete
+        </button>
+      </div>
+    `:`<div style="padding:12px 14px">
+      <div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet.</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="openSheet('customGoal','${cg.id}')">Set Goal</button>
+        <button class="btn btn-danger btn-sm" style="justify-content:center" onclick="delCustomGoal('${cg.id}')">Delete</button>
+      </div>
+    </div>`;
+
+    return`<div style="margin-bottom:8px">
+      <div class="sec-hdr-card" onclick="toggleGoalSecCg('${cg.id}')">
+        <div class="sec-hdr-left">
+          <span class="sec-hdr-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ${esc(cg.name)}
+          </span>
+          <span class="pill ${pCls}" style="margin-left:6px">${pTxt}</span>
+        </div>
+        <div class="sec-hdr-right">
+          ${pctBadge}
+          <span class="sec-caret${isOpen?' open':''}" id="caret-goal-sec-cg-${cg.id}"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+      <div class="sec-body${isOpen?'':' closed'}" id="${secId}">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:4px">
+          ${bodyContent}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Render emergency fund into its own dedicated slot (top of page)
+  const emergencyPreset = savingsGoals.find(pr=>pr.id==='emergency');
+  const nonEmergencyGoals = savingsGoals.filter(pr=>pr.id!=='emergency');
+
+  if(emergencyEl && emergencyPreset) {
+    emergencyEl.innerHTML = goalSection(emergencyPreset);
+  }
+
+  el.innerHTML =
+    nonEmergencyGoals.map(goalSection).join('') +
+    (customGoals.length ? customGoals.map(customGoalSection).join('') : '') +
+    `<button class="add-row" style="margin-top:2px;width:100%;text-align:center" onclick="openSheet('customGoal',null)">+ Add Custom Goal</button>`;
 
   // Render Protection list
   const protEl=document.getElementById('protection-list');
@@ -2409,26 +2604,15 @@ function renderGoals(){
       '</div>' +
       `<div class="add-row" style="margin-bottom:6px" onclick="openSheet('insurance',null)">Add Policy</div>`;
   }
-
-  // Render Goals list
-  el.innerHTML =
-    onboardingHint +
-    '<div class="row-list-wrap" style="margin-bottom:8px">' +
-    savingsGoals.map(savingsRow).join('') +
-    (customGoals.length ? customGoals.map(customRow).join('') : '') +
-    '</div>' +
-    `<div class="add-row" style="margin-top:6px" onclick="openSheet('customGoal',null)">Add Custom Goal</div>`;
 }
 
 function renderKids(){
   const c=document.getElementById('kids-sec-count');if(c)c.textContent=data.kids.length;
   // Show/hide Kids Education section based on whether kids exist
   const kidsWrap=document.getElementById('kids-section-wrap');
-  const goalsWrap=document.getElementById('financial-goals-wrap');
+  const goalsWrap=document.getElementById('individual-goals-wrap');
   const protWrap=document.getElementById('protection-wrap');
   if(kidsWrap) kidsWrap.style.display=data.kids.length?'':'none';
-  if(goalsWrap) goalsWrap.style.marginTop=data.kids.length?'8px':'0';
-  if(protWrap) protWrap.style.marginTop=data.kids.length?'8px':'10px';
   // Compute overall kids education % across all kids and phases
   const kidsPctEl=document.getElementById('kids-sec-pct');
   if(kidsPctEl && data.kids.length){
@@ -3689,6 +3873,32 @@ function toggleSec(id){
   const body=document.getElementById(id);if(!body)return;
   const open=!body.classList.contains('closed');body.classList.toggle('closed',open);
   const caret=document.getElementById('caret-'+id);if(caret)caret.classList.toggle('open',!open);
+}
+
+function toggleGoalSec(presetId){
+  const secId='sec-goal-'+presetId;
+  const body=document.getElementById(secId);if(!body)return;
+  const open=!body.classList.contains('closed');body.classList.toggle('closed',open);
+  const caret=document.getElementById('caret-goal-sec-'+presetId);if(caret)caret.classList.toggle('open',!open);
+  localStorage.setItem('goal_sec_open_'+presetId,open?'0':'1');
+}
+function toggleGoalSecCg(cgId){
+  const secId='sec-goal-cg-'+cgId;
+  const body=document.getElementById(secId);if(!body)return;
+  const open=!body.classList.contains('closed');body.classList.toggle('closed',open);
+  const caret=document.getElementById('caret-goal-sec-cg-'+cgId);if(caret)caret.classList.toggle('open',!open);
+  localStorage.setItem('goal_sec_open_cg_'+cgId,open?'0':'1');
+}
+
+function toggleGoalCard(presetId){
+  const card=document.getElementById('goal-card-'+presetId);if(!card)return;
+  const isOpen=card.classList.toggle('open');
+  localStorage.setItem('goal_open_'+presetId, isOpen?'1':'0');
+}
+function toggleGoalCardCg(cgId){
+  const card=document.getElementById('goal-card-cg-'+cgId);if(!card)return;
+  const isOpen=card.classList.toggle('open');
+  localStorage.setItem('goal_open_cg_'+cgId, isOpen?'1':'0');
 }
 
 function setTheme(theme){
