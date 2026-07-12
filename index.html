@@ -227,6 +227,7 @@ body.scroll-locked {
 .sec-caret { color:var(--text3); transition:transform 0.25s var(--ease); display:flex; align-items:center; }
 .sec-caret svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
 .sec-caret.open { transform:rotate(180deg) }
+.sec-caret.right { transform:rotate(-90deg) }
 .sec-body { overflow:hidden; max-height:5000px; transition:max-height 0.32s var(--ease),opacity 0.2s ease; opacity:1 }
 .sec-body.closed { max-height:0; opacity:0; pointer-events:none }
 
@@ -1000,17 +1001,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div class="sec-body closed" id="sec-protection"><div id="protection-list"></div></div>
     </div>
 
-    <div id="kids-section-wrap" style="display:none;margin-top:8px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-kids')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg> Kids Education</span><span class="sec-badge" id="kids-sec-count">0</span></div>
-        <div class="sec-hdr-right">
-          <span class="sec-total" id="kids-sec-pct" style="display:none;color:var(--blue)"></span>
-          <span class="sec-caret" id="caret-sec-kids"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
-      </div>
-      <div class="sec-body closed" id="sec-kids"><div id="kids-list"></div></div>
-    </div>
-
     <div id="individual-goals-wrap" style="margin-top:8px"></div>
   </div>
 </div>
@@ -1237,9 +1227,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
       <div><div class="qa-action-label">Update Preset Goal</div><div class="qa-action-sub">L1/L2/L3, Retirement…</div></div>
     </div>
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('child',null)" style="border-color:var(--border)">
-      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
-      <div><div class="qa-action-label">Add Child</div><div class="qa-action-sub">Education planning…</div></div>
     </div>
   </div>
 </div>
@@ -1314,6 +1301,9 @@ const GOAL_PRESETS = [
   {id:'l3', name:'L3 Deep Buffer',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M8 11h8M8 15h8"/></svg>`,
    color:'#a78bfa', light:'rgba(167,139,250,0.1)', isIns:false, sub:'2+ years · BAF'},
+  {id:'education', name:"Son's Education",
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 12 15 2 8.5 12 2"/><path d="M7 11.5v5c0 2 2 3.5 5 3.5s5-1.5 5-3.5v-5"/></svg>`,
+   color:'#34d399', light:'rgba(52,211,153,0.1)', isIns:false},
   {id:'health_ins', name:'Health Insurance',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
    color:'#4ade80', light:'rgba(74,222,128,0.1)', isIns:true},
@@ -1330,14 +1320,6 @@ const GOAL_PRESETS = [
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 00-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>`,
    color:'#fb923c', light:'rgba(251,146,60,0.1)', isIns:false},
 ];
-const KID_PHASES = [
-  {id:'playschool',  label:'Play School',    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><line x1="16" y1="11" x2="22" y2="11"/><line x1="19" y1="8" x2="19" y2="14"/></svg>', ageStart:2.5,ageEnd:5,  color:'#fb923c'},
-  {id:'primary',     label:'Primary School', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>', ageStart:6,  ageEnd:15, color:'#34d399'},
-  {id:'intermediate',label:'Intermediate',   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="13" y2="11"/></svg>', ageStart:15, ageEnd:17, color:'#38bdf8'},
-  {id:'graduation',  label:'Graduation',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 12 15 2 8.5 12 2"/><path d="M7 11.5v5c0 2 2 3.5 5 3.5s5-1.5 5-3.5v-5"/><line x1="22" y1="8.5" x2="22" y2="14"/></svg>', ageStart:17, ageEnd:21, color:'#818cf8'},
-  {id:'higher',      label:'Higher Studies', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>', ageStart:21, ageEnd:23, color:'#a78bfa'},
-  {id:'marriage',    label:'Marriage',       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>', ageStart:25, ageEnd:30, color:'#f472b6'},
-];
 const CHECKLIST_ITEMS = [
   {label:'L1 Instant Cash filled',     desc:'4 months of expenses in bank savings'},
   {label:'L2 Quick Liquid filled',     desc:'8 months in arbitrage fund'},
@@ -1351,7 +1333,7 @@ const CHECKLIST_ITEMS = [
 ];
 let data = {
   profile:{name:'', avatarColor:'#6366f1'},
-  assets:[], liabilities:[], goals:[], kids:[], customGoals:[],
+  assets:[], liabilities:[], goals:[], customGoals:[],
   insurance:[],
   checkItems:[]
 };
@@ -1540,12 +1522,24 @@ function load(){
     save();
   }
   if(!data.customGoals)data.customGoals=[];
+  // Migration: kids phases removed — fold into single "Son's Education" goal
+  if(data.kids&&data.kids.length){
+    let eduSaved=0,eduTarget=0;
+    data.kids.forEach(k=>{
+      (k.phases||[]).forEach(p=>{if(p.enabled!==false){eduSaved+=Number(p.current||0);eduTarget+=Number(p.target||0)}});
+      (k.customPhases||[]).forEach(cp=>{eduSaved+=Number(cp.current||0);eduTarget+=Number(cp.target||0)});
+    });
+    if(!data.goals.some(g=>g.type==='education')){
+      data.goals.push({id:uid(),type:'education',name:"Son's Education",target:eduTarget||3000000,current:eduSaved});
+    }
+    delete data.kids;save();
+  }
+  if(data.kids)delete data.kids;
   // Migration: asset-linking removed — freeze linked totals into manual 'Saved' values
   const _unlink=(o)=>{if(o&&o.linkedAssetIds&&o.linkedAssetIds.length){o.current=linkedAssetTotal(o.linkedAssetIds);delete o.linkedAssetIds;return true}if(o&&o.linkedAssetIds)delete o.linkedAssetIds;return false};
   let _changed=false;
   data.goals.forEach(g=>{if(_unlink(g))_changed=true});
   (data.customGoals||[]).forEach(cg=>{if(_unlink(cg))_changed=true});
-  (data.kids||[]).forEach(k=>{(k.phases||[]).forEach(p=>{if(_unlink(p))_changed=true});(k.customPhases||[]).forEach(cp=>{if(_unlink(cp))_changed=true})});
   if(_changed)save();
   if(!data.insurance)data.insurance=[];
   // Migration: split old single 'emergency' goal into L1/L2/L3 layers
@@ -1748,7 +1742,7 @@ function navigate(page,btn){
 }
 function renderPage(p){
   if(p==='dashboard')renderDashboard();
-  if(p==='goals'){renderKids();renderGoals();renderGoalHealth();}
+  if(p==='goals'){renderGoals();renderGoalHealth();}
   if(p==='investments'){renderAssets();renderLiabilities()}
   if(p==='more'){renderChecklist()}
 }
@@ -2156,27 +2150,17 @@ function renderGoals(){
   const protBadge=document.getElementById('protection-sec-count');
   if(protBadge) protBadge.textContent=insCount>0?insCount+' polic'+(insCount===1?'y':'ies'):'0';
 
-  // Simple goal row: tap anywhere to open the edit form
+  // Simple goal row: single line, tap anywhere to open the edit form
   function goalSection(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
     const target=Number(g.target||0);
     const current=Number(g.current||0);
     const p=pct(current,target);
     const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:`<span style="font-size:0.78rem;color:var(--text3)">—</span>`;
-    const amounts=target>0?`<div style="font-size:0.68rem;color:var(--text3);margin-top:3px">${fmt(current)} of ${fmt(target)}</div>`:'';
-    const bar=target>0?`<div class="prog-track" style="margin-top:6px"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>`:'';
-    return`<div class="sec-hdr-card" style="margin-bottom:8px;display:block" onclick="openSheet('goal','${pr.id}')">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <span class="sec-hdr-title">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>
-          ${pr.name}${pr.sub?`<span style="font-size:0.66rem;color:var(--text3);font-weight:500;margin-left:4px">· ${pr.sub}</span>`:''}
-        </span>
-        <span style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-          ${pctBadge}
-          <span class="sec-caret" style="transform:rotate(-90deg)"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </span>
-      </div>
-      ${amounts}${bar}
+    const amt=target>0?`<span class="sec-badge">${fmt(current)} / ${fmt(target)}</span>`:'';
+    return`<div class="sec-hdr-card" style="margin-bottom:8px" onclick="openSheet('goal','${pr.id}')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg> ${pr.name}</span>${amt}</div>
+      <div class="sec-hdr-right">${pctBadge}<span class="sec-caret right"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
     </div>`;
   }
 
@@ -2185,20 +2169,10 @@ function renderGoals(){
     const current=Number(cg.current||0);
     const p=pct(current,target);
     const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:`<span style="font-size:0.78rem;color:var(--text3)">—</span>`;
-    const amounts=target>0?`<div style="font-size:0.68rem;color:var(--text3);margin-top:3px">${fmt(current)} of ${fmt(target)}</div>`:'';
-    const bar=target>0?`<div class="prog-track" style="margin-top:6px"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>`:'';
-    return`<div class="sec-hdr-card" style="margin-bottom:8px;display:block" onclick="openSheet('customGoal','${cg.id}')">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-        <span class="sec-hdr-title">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
-          ${esc(cg.name)}
-        </span>
-        <span style="display:flex;align-items:center;gap:6px;flex-shrink:0">
-          ${pctBadge}
-          <span class="sec-caret" style="transform:rotate(-90deg)"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </span>
-      </div>
-      ${amounts}${bar}
+    const amt=target>0?`<span class="sec-badge">${fmt(current)} / ${fmt(target)}</span>`:'';
+    return`<div class="sec-hdr-card" style="margin-bottom:8px" onclick="openSheet('customGoal','${cg.id}')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg> ${esc(cg.name)}</span>${amt}</div>
+      <div class="sec-hdr-right">${pctBadge}<span class="sec-caret right"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
     </div>`;
   }
 
@@ -2215,17 +2189,12 @@ function renderGoals(){
     const fP=pct(fCur,fTgt);
     emergencyEl.innerHTML = `<div style="margin-bottom:8px">
       <div class="sec-hdr-card" onclick="toggleSec('sec-emergency')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title">🛡️ Emergency Fund</span></div>
-        <div class="sec-hdr-right">
-          <span style="font-size:0.84rem;font-weight:700;color:${fP>=100?'var(--green)':'var(--blue)'}">${fP}%</span>
-          <span class="sec-caret open" id="caret-sec-emergency"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Emergency Fund</span></div>
+        <div class="sec-hdr-right"><span style="font-size:0.84rem;font-weight:700;color:${fP>=100?'var(--green)':'var(--blue)'}">${fP}%</span><span class="sec-caret open" id="caret-sec-emergency"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body" id="sec-emergency">
-        <div style="padding:2px 2px 0">
-          <div style="font-size:0.72rem;color:var(--text3);margin:4px 2px 10px">12-month safety net (L1+L2): ${fmt(fCur)} of ${fmt(fTgt)} · ${fP>=100?'Complete — restart core SIPs':'Restart core SIPs at 100%'}</div>
-          ${layerPresets.map(goalSection).join('')}
-        </div>
+        <div style="font-size:0.7rem;color:var(--text3);margin:2px 4px 8px">12-month safety net (L1+L2): ${fmt(fCur)} of ${fmt(fTgt)} · ${fP>=100?'Complete — restart core SIPs':'Restart core SIPs at 100%'}</div>
+        ${layerPresets.map(goalSection).join('')}
       </div>
     </div>`;
   }
@@ -2246,176 +2215,6 @@ function renderGoals(){
   }
 }
 
-function renderKids(){
-  const c=document.getElementById('kids-sec-count');if(c)c.textContent=data.kids.length;
-  // Show/hide Kids Education section based on whether kids exist
-  const kidsWrap=document.getElementById('kids-section-wrap');
-  const goalsWrap=document.getElementById('individual-goals-wrap');
-  const protWrap=document.getElementById('protection-wrap');
-  if(kidsWrap) kidsWrap.style.display=data.kids.length?'':'none';
-  // Compute overall kids education % across all kids and phases
-  const kidsPctEl=document.getElementById('kids-sec-pct');
-  if(kidsPctEl && data.kids.length){
-    let totalSaved=0,totalTarget=0;
-    data.kids.forEach(k=>{
-      const ep=k.phases.filter(p=>p.enabled);
-      ep.forEach(ph=>{const lids=ph.linkedAssetIds||[];totalSaved+=(lids.length>0?linkedAssetTotal(lids):Number(ph.current||0));totalTarget+=Number(ph.target||0);});
-      (k.customPhases||[]).forEach(cp=>{const lids=cp.linkedAssetIds||[];totalSaved+=(lids.length>0?linkedAssetTotal(lids):Number(cp.current||0));totalTarget+=Number(cp.target||0);});
-    });
-    const kp=totalTarget>0?Math.min(100,Math.round(totalSaved/totalTarget*100)):0;
-    kidsPctEl.textContent=kp+'%';kidsPctEl.style.display='';
-  } else if(kidsPctEl){kidsPctEl.style.display='none';}
-  const el=document.getElementById('kids-list');if(!el)return;
-  if(!data.kids.length){el.innerHTML=`<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg><div class="empty-text" style="margin-bottom:12px">No children added yet</div><button class="btn btn-primary btn-sm" onclick="openSheet('child',null)" style="margin:0 auto">Add Child</button></div>`;return}
-  el.innerHTML=data.kids.map(k=>{
-    const ep=k.phases.filter(p=>p.enabled);
-    // Auto-derive each phase current from linked assets
-    const ks=ep.reduce((s,p)=>{const linkedIds=p.linkedAssetIds||[];return s+(linkedIds.length>0?linkedAssetTotal(linkedIds):Number(p.current||0))},0)
-      + (k.customPhases||[]).reduce((s,cp)=>{const lids=cp.linkedAssetIds||[];return s+(lids.length>0?linkedAssetTotal(lids):Number(cp.current||0))},0);
-    const kt=ep.reduce((s,p)=>s+Number(p.target||0),0)
-      + (k.customPhases||[]).reduce((s,cp)=>s+Number(cp.target||0),0);
-    const kp=pct(ks,kt);
-    // Build phase rows in KID_PHASES definition order (Pre-Primary first, Marriage last)
-    const stdPhaseRows=KID_PHASES.map(pd=>{
-      const ph=k.phases.find(p=>p.phaseId===pd.id&&p.enabled);
-      if(!ph)return'';
-      const linkedIds=ph.linkedAssetIds||[];
-      const phaseCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
-      const p=pct(phaseCurrent,ph.target||0);
-      const yl=yearsUntil(k.birthYear,pd.ageStart);
-      return`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
-        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
-        <div class="phase-info">
-          <div class="phase-name">${pd.label}</div>
-          <div class="phase-age">${k.birthYear+pd.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
-        </div>
-        <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;width:${p}%"></div></div>
-        </div>
-      </div>`;
-    }).join('');
-    // Custom phases rows
-    const customPhaseRows=(k.customPhases||[]).map(cp=>{
-      const lids=cp.linkedAssetIds||[];const current=lids.length>0?linkedAssetTotal(lids):Number(cp.current||0);const target=Number(cp.target||0);
-      const p=pct(current,target);
-      const yl=yearsUntil(k.birthYear,cp.ageStart);
-      return`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
-        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
-        <div class="phase-info">
-          <div class="phase-name">${esc(cp.label)}</div>
-          <div class="phase-age">${k.birthYear+cp.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
-        </div>
-        <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;width:${p}%"></div></div>
-        </div>
-      </div>`;
-    }).join('');
-    // Interleave and sort all phase rows by ageStart
-    const allPhases = [
-      ...KID_PHASES.filter(pd=>k.phases.find(p=>p.phaseId===pd.id&&p.enabled)).map(pd=>({ageStart:pd.ageStart, html:stdPhaseRows.split('</div></div></div>')[KID_PHASES.filter(x=>k.phases.find(p=>p.phaseId===x.id&&p.enabled)).indexOf(pd)]})),
-    ];
-    // Simpler: rebuild sorted combined list
-    const stdPhasesSorted = KID_PHASES.map(pd=>{
-      const ph=k.phases.find(p=>p.phaseId===pd.id&&p.enabled);
-      if(!ph)return null;
-      const linkedIds=ph.linkedAssetIds||[];
-      const phaseCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
-      const p=pct(phaseCurrent,ph.target||0);
-      const yl=yearsUntil(k.birthYear,pd.ageStart);
-      return {ageStart:pd.ageStart, html:`<div class="phase-row" onclick="openSheet('phase','${k.id}','${ph.phaseId}')">
-        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
-        <div class="phase-info">
-          <div class="phase-name">${pd.label}</div>
-          <div class="phase-age">${k.birthYear+pd.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
-          ${ph.target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500"><span style="color:var(--text2)">${fmt(phaseCurrent)}</span> of ${fmt(ph.target)}</div>`:''}
-        </div>
-        <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;width:${p}%"></div></div>
-        </div>
-      </div>`};
-    }).filter(Boolean);
-    const customPhasesSorted = (k.customPhases||[]).map(cp=>{
-      const lids=cp.linkedAssetIds||[];const current=lids.length>0?linkedAssetTotal(lids):Number(cp.current||0);const target=Number(cp.target||0);
-      const p=pct(current,target);
-      const yl=yearsUntil(k.birthYear,cp.ageStart);
-      return {ageStart:cp.ageStart, html:`<div class="phase-row" onclick="openSheet('customPhase','${k.id}','${cp.id}')">
-        <div class="phase-ico" style="width:34px;height:34px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div>
-        <div class="phase-info">
-          <div class="phase-name">${esc(cp.label)}</div>
-          <div class="phase-age">${k.birthYear+cp.ageStart} · ${yl>0?yl+'y left':yl===0?'Active':'Passed'}</div>
-          ${target>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:3px;font-weight:500"><span style="color:var(--text2)">${fmt(current)}</span> of ${fmt(target)}</div>`:''}
-        </div>
-        <div class="phase-prog">
-          <div style="font-family:var(--mono);font-size:0.88rem;font-weight:700;text-align:right;color:#3B82F6;margin-bottom:3px">${p}%</div>
-          <div class="prog-track"><div class="prog-fill" style="background:#3B82F6;width:${p}%"></div></div>
-        </div>
-      </div>`};
-    });
-    const phaseRows=[...stdPhasesSorted,...customPhasesSorted].sort((a,b)=>a.ageStart-b.ageStart).map(x=>x.html).join('');
-    return`<div class="child-card">
-      <div class="child-hdr" onclick="this.parentElement.querySelector('.child-phases').classList.toggle('closed')">
-        <div class="child-avatar" style="background:var(--surface2);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
-        <div style="flex:1">
-          <div class="child-name">${k.name}</div>
-          <div class="child-meta" style="display:none"></div>
-        </div>
-        <div style="display:flex;gap:5px">
-          <button class="btn-circle" onclick="event.stopPropagation();openSheet('managePhases','${k.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
-          <button class="btn-circle" onclick="event.stopPropagation();openSheet('child',data.kids.find(x=>x.id==='${k.id}'))"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-          <button class="btn-del" onclick="event.stopPropagation();delKid('${k.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-        </div>
-      </div>
-      <div class="child-phases">${phaseRows}</div>
-    </div>`;
-  }).join('') + `<div class="add-row" style="margin-top:6px" onclick="openSheet('child',null)">Add Child</div>`;
-  // render dashboard kids mini
-  const dkEl=document.getElementById('dash-kids-mini');
-  if(dkEl)dkEl.innerHTML=data.kids.map(k=>{
-    const ep=k.phases.filter(p=>p.enabled);
-    const ks=ep.reduce((s,p)=>{const linkedIds=p.linkedAssetIds||[];return s+(linkedIds.length>0?linkedAssetTotal(linkedIds):Number(p.current||0))},0);const kt=ep.reduce((s,p)=>s+Number(p.target||0),0);const kp=pct(ks,kt);
-    return`<div class="mini-goal" onclick="navigate('goals',document.querySelectorAll('.tab-item')[1])">
-      <span class="mini-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.65"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></span>
-      <div class="mini-body"><span class="mini-name">${k.name} · Age ${age(k.birthYear)}</span>
-        <div class="mini-prog"><div class="mini-fill" style="background:#3B82F6;width:${kp}%"></div></div>
-      </div>
-      <div class="mini-pct" style="color:#3B82F6">${kp}%</div>
-    </div>`;
-  }).join('');
-}
-function delKid(id){const k=data.kids.find(x=>x.id===id);showConfirm('Remove Child?',`${k?.name||'This child'} and all phases will be removed.`,()=>{data.kids=data.kids.filter(k=>k.id!==id);save();renderKids();renderDashboard();toast('Removed')})}
-
-function getCheckItems(){
-  // Migrate old boolean array to new object format on first load
-  if(!data.checkItems||!data.checkItems.length){
-    const oldBools=data.checklist||[];
-    data.checkItems=CHECKLIST_ITEMS.map((item,i)=>({
-      id:'ci_'+i, label:item.label, desc:item.desc, done:!!oldBools[i], custom:false
-    }));
-    save();
-  }
-  // Migration: remove obsolete default items (old ISR buckets, old emergency item)
-  const defaultLabels=CHECKLIST_ITEMS.map(i=>i.label);
-  const before=data.checkItems.length;
-  data.checkItems=data.checkItems.filter(ci=>ci.custom||defaultLabels.includes(ci.label));
-  if(data.checkItems.length!==before)save();
-  // Migration: add new default items that don't exist yet
-  CHECKLIST_ITEMS.forEach((item,i)=>{
-    const exists=data.checkItems.some(ci=>ci.label===item.label);
-    if(!exists){
-      data.checkItems.push({id:'ci_'+Date.now()+'_'+i, label:item.label, desc:item.desc, done:false, custom:false});
-      save();
-    }
-  });
-  // Keep checklist in canonical order (defaults first, customs after)
-  data.checkItems.sort((a,b)=>{
-    const ia=defaultLabels.indexOf(a.label), ib=defaultLabels.indexOf(b.label);
-    return (ia===-1?999:ia)-(ib===-1?999:ib);
-  });
-  return data.checkItems;
-}
 function renderChecklist(){
   const items=getCheckItems();
   const done=items.filter(x=>x.done).length;
@@ -2450,6 +2249,32 @@ function renderChecklist(){
       </div>
     </div>
   </div>`;
+}
+function getCheckItems(){
+  // Migrate old boolean array to new object format on first load
+  if(!data.checkItems||!data.checkItems.length){
+    const oldBools=data.checklist||[];
+    data.checkItems=CHECKLIST_ITEMS.map((item,i)=>({
+      id:'ci_'+i, label:item.label, desc:item.desc, done:!!oldBools[i], custom:false
+    }));
+    save();
+  }
+  // Remove obsolete default items, add new defaults, keep canonical order
+  const defaultLabels=CHECKLIST_ITEMS.map(i=>i.label);
+  const before=data.checkItems.length;
+  data.checkItems=data.checkItems.filter(ci=>ci.custom||defaultLabels.includes(ci.label));
+  if(data.checkItems.length!==before)save();
+  CHECKLIST_ITEMS.forEach((item,i)=>{
+    if(!data.checkItems.some(ci=>ci.label===item.label)){
+      data.checkItems.push({id:'ci_'+Date.now()+'_'+i, label:item.label, desc:item.desc, done:false, custom:false});
+      save();
+    }
+  });
+  data.checkItems.sort((a,b)=>{
+    const ia=defaultLabels.indexOf(a.label), ib=defaultLabels.indexOf(b.label);
+    return (ia===-1?999:ia)-(ib===-1?999:ib);
+  });
+  return data.checkItems;
 }
 function toggleCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);if(item){item.done=!item.done;save();renderChecklist();renderDashboard();}}
 function delCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);showConfirm('Remove item?',`${item?.label||'This item'} will be removed.`,()=>{data.checkItems=items.filter(x=>x.id!==id);save();renderChecklist();renderDashboard();toast('Removed')});}
@@ -2488,12 +2313,8 @@ function openSheet(type,arg,arg2){
   else if(type==='importMF')html=sheetImportMF();
   else if(type==='liability')html=sheetLiability(arg||{});
   else if(type==='goal')html=sheetGoal(arg||'l1');
-  else if(type==='child')html=sheetChild(arg||null);
-  else if(type==='managePhases')html=sheetManagePhases(arg);
-  else if(type==='phase')html=sheetEditPhase(arg,arg2);
   else if(type==='customGoal')html=sheetCustomGoal(arg||null);
   else if(type==='insurance')html=sheetInsurance(arg||null);
-  else if(type==='customPhase')html=sheetEditCustomPhase(arg,arg2);
   else if(type==='profile')html=sheetProfile();
   document.getElementById('sheet-content').innerHTML=html;
   document.getElementById('sheet-overlay').classList.add('open');
@@ -3017,279 +2838,8 @@ function delCustomGoal(id){
 }
 
 
-function sheetChild(kid){
-  const isEdit=!!kid;const gender=kid?kid.gender:'boy';
-  const phasesHtml=KID_PHASES.map(ph=>{const ex=kid?kid.phases.find(p=>p.phaseId===ph.id):null;const on=ex?ex.enabled:true;return`<div class="phase-opt ${on?'on':''}" id="popt-${ph.id}" onclick="togglePhaseOpt('${ph.id}')"><div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ph.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${ph.label}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div><div class="phase-opt-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div></div>`}).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'Add'} Child</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-  <div class="sheet-body">
-    <div class="fg"><label class="fl">Child's Name</label><input class="fi" id="f-kname" placeholder="e.g. Arjun" value="${kid?kid.name:''}"/></div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Birth Year</label><input class="fi" id="f-kbirth" type="number" placeholder="${year()-5}" min="1990" max="${year()}" value="${kid?kid.birthYear:''}"/></div>
-      <div class="fg"><label class="fl">Gender</label><div class="gender-row"><div class="gender-opt ${gender==='boy'?'sel-boy':''}" id="gbtn-boy" onclick="selGender('boy')">👦 Boy</div><div class="gender-opt ${gender==='girl'?'sel-girl':''}" id="gbtn-girl" onclick="selGender('girl')">👧 Girl</div></div></div>
-    </div>
-    <div class="form-sec">Life Phases</div>
-    <div class="phase-opts">${phasesHtml}</div>
-    ${isEdit?`<div class="form-sec" style="margin-top:10px">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">&mdash; manage via gear icon</span></div><div class="phase-opts">${(kid&&kid.customPhases&&kid.customPhases.length)?kid.customPhases.map(cp=>`<div class="phase-opt on custom"><div style="font-size:0.88rem">📌</div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><div class="phase-opt-check"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>`).join(""):'<div style="font-size:0.62rem;color:var(--text3);padding:4px 2px">No custom phases yet.</div>'}</div>`:""}
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveChild('${kid?kid.id:''}')">${isEdit?'Update':'Add'}</button></div>
-  </div>`}
-function togglePhaseOpt(id){const el=document.getElementById('popt-'+id);const on=el.classList.toggle('on');el.querySelector('.phase-opt-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':""}
-function selGender(g){document.getElementById('gbtn-boy').className='gender-opt'+(g==='boy'?' sel-boy':'');document.getElementById('gbtn-girl').className='gender-opt'+(g==='girl'?' sel-girl':'')}
-function saveChild(editId){
-  const name=document.getElementById('f-kname').value.trim();const birthYear=Number(document.getElementById('f-kbirth').value);const gender=document.querySelector('.gender-opt.sel-girl')?'girl':'boy';
-  if(!name){toast("Enter child's name");return}if(!birthYear||birthYear<1990||birthYear>year()){toast('Enter a valid birth year');return}
-  const enabledIds=KID_PHASES.filter(ph=>document.getElementById('popt-'+ph.id)?.classList.contains('on')).map(ph=>ph.id);
-  if(editId){const kid=data.kids.find(k=>k.id===editId);if(!kid)return;kid.name=name;kid.birthYear=birthYear;kid.gender=gender;KID_PHASES.forEach(ph=>{let ex=kid.phases.find(p=>p.phaseId===ph.id);if(!ex){ex={phaseId:ph.id,enabled:false,target:0,current:0,linkedInvestmentIds:[],notes:''};kid.phases.push(ex)}ex.enabled=enabledIds.includes(ph.id)})}
-  else{const phases=KID_PHASES.map(ph=>({phaseId:ph.id,enabled:enabledIds.includes(ph.id),target:0,current:0,linkedInvestmentIds:[],notes:''}));data.kids.push({id:uid(),name,gender,birthYear,phases})}
-  save();closeSheet();renderKids();renderGoals();renderDashboard();toast(editId?'Updated ✓':'Added ✓');
-}
 
-function sheetManagePhases(kidId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';
-  if(!kid.customPhases)kid.customPhases=[];
-  const stdHtml=KID_PHASES.map(ph=>{
-    const ex=kid.phases.find(p=>p.phaseId===ph.id)||{};const on=ex.enabled||false;
-    return`<div class="phase-opt ${on?'on':''}" id="mpopt-${ph.id}" onclick="toggleMPhaseOpt('${ph.id}')">
-      <div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ph.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
-      <div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${ph.label}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${ph.ageStart}–${ph.ageEnd}</div></div>
-      <div class="phase-opt-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-    </div>`;
-  }).join('');
-  const customHtml=kid.customPhases.map(cp=>{
-    return`<div class="phase-opt on custom" id="mpopt-custom-${cp.id}">
-      <div style="font-size:0.88rem">📌</div>
-      <div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div>
-      <button class="btn-del" aria-label="Delete custom phase" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>`;
-  }).join('');
-  return`<div class="sheet-hdr"><div class="sheet-title">⚙ ${esc(kid.name)}'s Phases</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-  <div class="sheet-body">
-    <div class="form-sec" style="margin-top:0">Standard Phases</div>
-    <div class="phase-opts">${stdHtml}</div>
-    <div class="form-sec">Custom Phases <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--text3)">e.g. Coaching, Exchange Program</span></div>
-    <div class="phase-opts" id="custom-phase-list">${customHtml||'<div style="font-size:0.62rem;color:var(--text3);padding:4px 2px">No custom phases yet.</div>'}</div>
-    <div style="display:grid;grid-template-columns:1fr 64px 64px auto;gap:5px;margin-top:8px">
-      <div style="font-size:0.62rem;color:var(--text3);font-weight:600;padding:0 2px">Phase Name</div>
-      <div style="font-size:0.62rem;color:var(--text3);font-weight:600;text-align:center">From Age</div>
-      <div style="font-size:0.62rem;color:var(--text3);font-weight:600;text-align:center">To Age</div>
-      <div></div>
-      <input class="fi" id="cp-name" placeholder="e.g. Coaching" style="padding:8px 9px;font-size:0.82rem"/>
-      <input class="fi" id="cp-age-start" type="number" min="0" max="35" placeholder="0" inputmode="numeric" style="padding:8px 6px;font-size:0.82rem;text-align:center"/>
-      <input class="fi" id="cp-age-end" type="number" min="0" max="40" placeholder="0" inputmode="numeric" style="padding:8px 6px;font-size:0.82rem;text-align:center"/>
-      <button class="btn btn-ghost btn-sm" onclick="addCustomPhaseInSheet('${kidId}')" style="white-space:nowrap;padding:8px 10px;font-size:0.82rem;align-self:end">Add</button>
-    </div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveManagePhases('${kidId}')">Save</button></div>
-  </div>`}
-function toggleMPhaseOpt(id){const el=document.getElementById('mpopt-'+id);const on=el.classList.toggle('on');el.querySelector('.phase-opt-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':""}
-function addCustomPhaseInSheet(kidId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
-  if(!kid.customPhases)kid.customPhases=[];
-  const name=document.getElementById('cp-name').value.trim();
-  const s=Number(document.getElementById('cp-age-start').value||0);
-  const e=Number(document.getElementById('cp-age-end').value||0);
-  if(!name){toast('Enter a phase name');return}
-  if(s<0||e<s){toast('Check the age range');return}
-  const cp={id:uid(),label:name,ageStart:s,ageEnd:e};
-  kid.customPhases.push(cp);
-  // Refresh sheet in-place
-  const listEl=document.getElementById('custom-phase-list');
-  if(listEl){
-    const div=document.createElement('div');
-    div.className='phase-opt on custom';div.id='mpopt-custom-'+cp.id;
-    div.innerHTML=`<div style="color:var(--text2);opacity:0.7;display:flex;align-items:center;justify-content:center;width:18px;height:18px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg></div><div style="flex:1"><div style="font-size:0.93rem;font-weight:600">${esc(cp.label)}</div><div style="font-size:0.86rem;color:var(--text3)">Age ${cp.ageStart}–${cp.ageEnd}</div></div><button class="btn-del" style="width:22px;height:22px;flex-shrink:0" onclick="event.stopPropagation();deleteCustomPhaseInSheet('${kidId}','${cp.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-    // Remove "No custom phases" placeholder if present
-    listEl.querySelectorAll('div:not(.phase-opt)').forEach(el=>el.remove());
-    listEl.appendChild(div);
-  }
-  document.getElementById('cp-name').value='';
-  document.getElementById('cp-age-start').value='';
-  document.getElementById('cp-age-end').value='';
-  toast('Phase added. Tap Save to confirm');
-}
-function deleteCustomPhaseInSheet(kidId,cpId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid||!kid.customPhases)return;
-  kid.customPhases=kid.customPhases.filter(p=>p.id!==cpId);
-  const el=document.getElementById('mpopt-custom-'+cpId);if(el)el.remove();
-  toast('Removed. Tap Save to confirm');
-}
-function saveManagePhases(kidId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
-  KID_PHASES.forEach(ph=>{
-    const on=document.getElementById('mpopt-'+ph.id)?.classList.contains('on');
-    let ex=kid.phases.find(p=>p.phaseId===ph.id);
-    if(!ex){ex={phaseId:ph.id,enabled:false,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ex)}
-    ex.enabled=!!on;
-  });
-  save();closeSheet();renderKids();toast('Updated ✓');
-}
 
-function sheetEditPhase(kidId,phaseId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';const pd=KID_PHASES.find(p=>p.id===phaseId);if(!pd)return'';
-  const ph=kid.phases.find(p=>p.phaseId===phaseId)||{target:0,current:0,linkedAssetIds:[],notes:''};
-  const yl=yearsUntil(kid.birthYear,pd.ageStart);
-  const linkedIds=ph.linkedAssetIds||[];
-  const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(ph.current||0);
-  const infl=ph.inflationRate!=null?ph.inflationRate:10;
-  const ret=ph.expectedReturn!=null?ph.expectedReturn:12;
-  const todayTarget=Number(ph.todayTarget||ph.target||0);
-  const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
-  const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
-  const savedCol=linkedIds.length>0
-    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
-         <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
-         <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
-       </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-phc" type="text" inputmode="decimal" placeholder="0" value="${ph.current>0?fmt(ph.current):''}" data-raw="${ph.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>`;
-  return`<div class="sheet-hdr"><div class="sheet-title"><span style="display:inline-flex;align-items:center;width:16px;height:16px;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${pd.icon.replace(/<svg[^>]*>/,"").replace("</svg>","")}</svg></span> ${pd.label}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-  <div class="sheet-body">
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
-      <div style="font-size:1.4rem">${kid.gender==='girl'?'👧':'👦'}</div>
-      <div><div style="font-weight:700;font-size:0.88rem">${kid.name}</div><div style="font-size:0.7rem;color:var(--text3)">${kid.birthYear+pd.ageStart} · ${yl>0?yl+' years left':yl===0?'Active':'Phase passed'}</div></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-pht" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="ph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs left':yl===0?'Active':'Passed'}</div></div>
-      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-phinfl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-phret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateSIPLive('${kidId}','${phaseId}')"/></div>
-      ${savedCol}
-    </div>
-    <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="ph-adj-note">${yl>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
-    <div id="sip-preview" style=${sip>0?'':'display:none'} class="sip-callout">
-      <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="ph-sip-rate">@ ${ret}% p.a.</span></div>
-      <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
-    </div>
-    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Update</button></div>
-  </div>`}
-function sheetEditCustomPhase(kidId,cpId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return'';
-  if(!kid.customPhases)kid.customPhases=[];
-  const cp=kid.customPhases.find(p=>p.id===cpId);if(!cp)return'';
-  const yl=yearsUntil(kid.birthYear,cp.ageStart);
-  const linkedIds=cp.linkedAssetIds||[];
-  const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cp.current||0);
-  const infl=cp.inflationRate!=null?cp.inflationRate:10;
-  const ret=cp.expectedReturn!=null?cp.expectedReturn:12;
-  const todayTarget=Number(cp.todayTarget||cp.target||0);
-  const adjTarget=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
-  const sip=adjTarget>0&&yl>0?sipNeeded(adjTarget,autoCurrent,yl,ret/100):0;
-  const savedCol=linkedIds.length>0
-    ?`<div class="fg"><label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; linked</span></label>
-       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
-         <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
-         <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
-       </div></div>`
-    :`<div class="fg"><label class="fl">Saved (&#8377;)</label><input class="fi" id="f-cph-current" type="text" inputmode="decimal" placeholder="0" value="${cp.current>0?fmt(cp.current):''}" data-raw="${cp.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>`;
-  const assetLinks=data.assets.length?data.assets.map(a=>{const on=linkedIds.includes(a.id);return`<div class="inv-link-item ${on?'on':''}" id="cphal-${a.id}" onclick="toggleCPHAssetLink('${kidId}','${cpId}','${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';
-  return`<div class="sheet-hdr"><div class="sheet-title">&#128204; ${esc(cp.label)}</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-  <div class="sheet-body">
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--border2)">
-      <div style="font-size:1.4rem">${kid.gender==='girl'?'&#128103;':'&#128102;'}</div>
-      <div><div style="font-weight:700;font-size:0.88rem">${esc(kid.name)}</div><div style="font-size:0.7rem;color:var(--text3)">${kid.birthYear+cp.ageStart} · ${yl>0?yl+' years left':yl===0?'Active':'Phase passed'}</div></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (&#8377;)</label><input class="fi" id="f-cph-target" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="cph-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Time Period</label><div class="fi" style="cursor:default;color:var(--text2);font-weight:600">${yl>0?yl+' yrs left':yl===0?'Active':'Passed'}</div></div>
-      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-cph-infl" type="number" step="0.5" placeholder="10" value="${infl}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-cph-ret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateCustomPhaseSIP('${kidId}','${cpId}')"/></div>
-      ${savedCol}
-    </div>
-    <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="cph-adj-note">${yl>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today &#8594; '+fmt(adjTarget)+' in '+yl+'y at '+infl+'%':''}</div>
-    <div id="cph-sip-box" style=${sip>0?'':'display:none'} class="sip-callout">
-      <div class="sip-label">Monthly SIP Needed <span style="font-weight:500;opacity:0.7" id="cph-sip-rate">@ ${ret}% p.a.</span></div>
-      <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
-    </div>
-    <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
-    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Update</button></div>
-  </div>`
-}
-function updateCustomPhaseSIP(kidId,cpId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
-  const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
-  const todayT=rawVal('f-cph-target');
-  const infl=Number(document.getElementById('f-cph-infl')?.value||10);
-  const ret=Number(document.getElementById('f-cph-ret')?.value||12);
-  const checkedIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cphal-',''));
-  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):rawVal('f-cph-current');
-  const yl=yearsUntil(kid.birthYear,cp.ageStart);
-  const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
-  // Update inline Future Cost field
-  const adjVal=document.getElementById('cph-adj-val');
-  const adjNote=document.getElementById('cph-adj-note');
-  if(adjVal)adjVal.textContent=adjT>0?fmt(adjT):'—';
-  if(adjNote)adjNote.textContent=(yl>0&&adjT>todayT&&todayT>0)?fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%':'';
-  // Update SIP rate label
-  const rateEl=document.getElementById('cph-sip-rate');
-  if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
-  const box=document.getElementById('cph-sip-box');
-  const valEl=document.getElementById('cph-sip-val');
-  if(adjT>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,yl,ret/100));}
-  else{if(box)box.style.display='none';}
-}
-function saveCustomPhase(kidId,cpId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
-  const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
-  const todayTarget=rawVal('f-cph-target');
-  const infl=Number(document.getElementById('f-cph-infl')?.value||10);
-  const ret=Number(document.getElementById('f-cph-ret')?.value||12);
-  const yl=yearsUntil(kid.birthYear,cp.ageStart);
-  cp.todayTarget=todayTarget;
-  cp.target=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
-  cp.inflationRate=infl;
-  cp.expectedReturn=ret;
-  cp.current=rawVal('f-cph-current');
-  cp.notes=document.getElementById('f-cph-notes')?.value?.trim()||'';
-  save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
-}
-function toggleInvLink(invId){const el=document.getElementById('il-'+invId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':""}
-function updateSIPLive(kidId,phaseId){
-  const kid=data.kids.find(k=>k.id===kidId);const pd=KID_PHASES.find(p=>p.id===phaseId);if(!kid||!pd)return;
-  const todayT=rawVal('f-pht');
-  const infl=Number(document.getElementById('f-phinfl')?.value||10);
-  const ret=Number(document.getElementById('f-phret')?.value||12);
-  const checkedIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('pal-',''));
-  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):rawVal('f-phc');
-  const yl=yearsUntil(kid.birthYear,pd.ageStart);
-  const adjT=yl>0?Math.round(inflAdj(todayT,yl,infl/100)):todayT;
-  // Update inline Future Cost field
-  const adjVal=document.getElementById('ph-adj-val');
-  const adjNote=document.getElementById('ph-adj-note');
-  if(adjVal)adjVal.textContent=adjT>0?fmt(adjT):'—';
-  if(adjNote)adjNote.textContent=(yl>0&&adjT>todayT&&todayT>0)?fmt(todayT)+' today → '+fmt(adjT)+' in '+yl+'y at '+infl+'%':'';
-  // Update SIP rate label
-  const rateEl=document.getElementById('ph-sip-rate');
-  if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
-  const box=document.getElementById('sip-preview');const valEl=document.getElementById('sip-val');
-  if(adjT>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,yl,ret/100));}else{if(box)box.style.display='none';}
-}
-function savePhase(kidId,phaseId){
-  const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
-  let ph=kid.phases.find(p=>p.phaseId===phaseId);
-  if(!ph){ph={phaseId,enabled:true,target:0,current:0,linkedAssetIds:[],notes:''};kid.phases.push(ph)}
-  const todayTarget=rawVal('f-pht');
-  const infl=Number(document.getElementById('f-phinfl')?.value||10);
-  const ret=Number(document.getElementById('f-phret')?.value||12);
-  const yl=yearsUntil(kid.birthYear,KID_PHASES.find(p=>p.id===phaseId)?.ageStart||0);
-  ph.todayTarget=todayTarget;
-  ph.target=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
-  ph.inflationRate=infl;
-  ph.expectedReturn=ret;
-  ph.notes=document.getElementById('f-phn').value.trim();
-  ph.current=rawVal('f-phc');
-  save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
-}
 
 function sheetProfile(){
   const colors=['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981','#3b82f6','#ef4444','#f97316'];
@@ -3390,48 +2940,55 @@ function exportData(){
   dismissBackupBanner();
   toast('Exported ✓');
 }
-function importData(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{try{data={...data,...JSON.parse(ev.target.result)};save();renderDashboard();renderProfile();toast('Imported ✓')}catch(e){toast('Invalid JSON')}};r.readAsText(file);e.target.value=''}
-function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const c=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;data={profile:{name:n,avatarColor:c,monthlyIncome:inc,monthlyExpenses:exp},assets:[],liabilities:[],goals:[],kids:[],customGoals:[],insurance:[],checkItems:[]};save();renderDashboard();renderProfile();toast('Data reset')})}
+
+function resetData(){showConfirm('Reset All Data?','Every asset, liability, goal and investment will be wiped.',()=>{const n=data.profile.name;const cl=data.profile.avatarColor;const inc=data.profile.monthlyIncome;const exp=data.profile.monthlyExpenses;data={profile:{name:n,avatarColor:cl,monthlyIncome:inc,monthlyExpenses:exp},assets:[],liabilities:[],goals:[],customGoals:[],insurance:[],checkItems:[]};save();renderDashboard();renderGoals();renderAssets();renderLiabilities();renderProfile();toast('Data reset')})}
 
 function loadSampleData(){
-  showConfirm('Load Sample Data?','This will overwrite all current data with demo data.',()=>{
-  const now=year();
+  showConfirm('Load My Plan?','This will replace current data with your budget plan starting point.',()=>{
+  data.profile.monthlyIncome=207166;
+  data.profile.monthlyExpenses=85260;
   data.assets=[
-    {id:uid(),category:'EPF',       name:'Employee PF',          currentValue:850000,  invested:700000,  sip:0},
-    {id:uid(),category:'PPF',       name:'PPF Account',          currentValue:420000,  invested:380000,  sip:0},
-    {id:uid(),category:'MutualFunds',name:'Parag Parikh Flexi Cap',currentValue:650000, invested:480000,  sip:10000},
-    {id:uid(),category:'MutualFunds',name:'Nifty 50 Index Fund',  currentValue:320000,  invested:240000,  sip:5000},
-    {id:uid(),category:'ETF',       name:'Gold ETF',              currentValue:95000,   invested:80000,   sip:2000},
-    {id:uid(),category:'Gold',      name:'Sovereign Gold Bond',   currentValue:180000,  invested:150000,  sip:1000},
-    {id:uid(),category:'FD',        name:'SBI Fixed Deposit',     currentValue:200000,  invested:200000,  sip:0},
-    {id:uid(),category:'RealEstate',name:'Home (Market Value)',   currentValue:8500000, invested:6500000, sip:0},
+    {id:uid(),category:'Savings',   name:'IDFC First Bank (L1)',       currentValue:280000, invested:280000, sip:0},
+    {id:uid(),category:'MutualFunds',name:'Kotak Arbitrage Fund (L2)', currentValue:10000,  invested:10000,  sip:100000},
+    {id:uid(),category:'MutualFunds',name:'HDFC Balanced Advantage (L3)',currentValue:153000,invested:144000,sip:5000},
+    {id:uid(),category:'MutualFunds',name:'Parag Parikh Flexi Cap',    currentValue:200000, invested:200000, sip:0},
+    {id:uid(),category:'MutualFunds',name:'HDFC Mid Cap',              currentValue:200000, invested:190000, sip:0},
+    {id:uid(),category:'MutualFunds',name:'Bandhan Small Cap',         currentValue:200000, invested:175000, sip:0},
+    {id:uid(),category:'ETF',       name:'GOLDBEES',                   currentValue:120000, invested:122000, sip:0},
+    {id:uid(),category:'ETF',       name:'MON100',                     currentValue:29000,  invested:20000,  sip:5000},
+    {id:uid(),category:'PPF',       name:'PPF Account',                currentValue:50000,  invested:50000,  sip:12500},
+    {id:uid(),category:'EPF',       name:'EPF / EPFO',                 currentValue:0,      invested:0,      sip:21850},
   ];
-  data.liabilities=[
-    {id:uid(),category:'HomeLoan',  name:'SBI Home Loan',   outstanding:3200000,interestRate:8.5, emi:28500},
-    {id:uid(),category:'CreditCard',name:'HDFC Credit Card',outstanding:45000,  interestRate:36,  emi:45000},
-  ];
+  data.liabilities=[];
   data.goals=[
-    {id:uid(),type:'l1', name:'L1 Instant Cash',  target:330000,  current:280000,timePeriod:'1'},
-    {id:uid(),type:'l2', name:'L2 Quick Liquid',  target:660000,  current:5000,  timePeriod:'1'},
-    {id:uid(),type:'l3', name:'L3 Deep Buffer',   target:2000000, current:150000,timePeriod:'5'},
-    {id:uid(),type:'retirement',name:'Retirement',      target:30000000,current:1470000,timePeriod:'25'},
-    {id:uid(),type:'vacation',  name:'Vacation',        target:200000,  current:85000, timePeriod:'2'},
+    {id:uid(),type:'l1',       name:'L1 Instant Cash', target:341000,  current:280000},
+    {id:uid(),type:'l2',       name:'L2 Quick Liquid', target:682000,  current:10000},
+    {id:uid(),type:'l3',       name:'L3 Deep Buffer',  target:2000000, current:153000},
+    {id:uid(),type:'education',name:"Son's Education", target:3000000, current:0},
+    {id:uid(),type:'retirement',name:'Retirement',     target:30000000,current:0},
   ];
   data.insurance=[
-    {id:uid(),type:'health',policyName:'Star Health Family Floater',premium:25000,coverAmount:1000000,expiry:'15-03-2026',notes:'Family floater - 4 members'},
-    {id:uid(),type:'term',policyName:'LIC Tech Term',premium:12000,coverAmount:10000000,expiry:'01-01-2050',notes:'1Cr cover till age 60'},
+    {id:uid(),type:'term',  policyName:'Term Insurance',           premium:58416,coverAmount:50000000,expiry:'27-07-2055',notes:'₹5 Cr cover'},
+    {id:uid(),type:'health',policyName:'Corporate Health + Top-up',premium:0,    coverAmount:10000000,expiry:'',notes:'₹10L base + ₹90L super top-up'},
   ];
-  data.kids=[{id:uid(),name:'Arjun',gender:'boy',birthYear:now-7,phases:[
-    {phaseId:'primary',    enabled:true, target:300000, current:80000, linkedAssetIds:[],notes:''},
-    {phaseId:'graduation', enabled:true, target:1500000,current:50000, linkedAssetIds:[],notes:'IIT/NIT'},
-    {phaseId:'higher',     enabled:true, target:3000000,current:10000, linkedAssetIds:[],notes:'MBA/MS'},
-    {phaseId:'marriage',   enabled:true, target:2000000,current:0,     linkedAssetIds:[],notes:''},
-    {phaseId:'intermediate',enabled:false,target:0,     current:0,     linkedAssetIds:[],notes:''},
-  ]}];
-  // checkItems migrated on load
-  if(data.investments)delete data.investments;
-  save();renderDashboard();renderKids();renderGoals();renderProfile();toast('Sample data loaded ✓');
+  save();renderDashboard();renderGoals();renderProfile();toast('Your plan loaded ✓');
   },'Proceed',false);
+}
+
+function importData(ev){
+  const file=ev.target.files&&ev.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const d=JSON.parse(reader.result);
+      if(!d||typeof d!=='object'||!d.profile){toast('Invalid backup file');return}
+      data={profile:d.profile||{name:'',avatarColor:'#6366f1'},assets:d.assets||[],liabilities:d.liabilities||[],goals:d.goals||[],customGoals:d.customGoals||[],insurance:d.insurance||[],checkItems:d.checkItems||[]};
+      save();load();renderDashboard();renderGoals();renderAssets();renderLiabilities();renderProfile();toast('Imported ✓');
+    }catch(e){toast('Could not read file')}
+  };
+  reader.readAsText(file);
+  ev.target.value='';
 }
 
 function toggleQuickAdd(){
@@ -3469,7 +3026,7 @@ function init(){
       {id:uid(),category:'MutualFunds',name:'Nifty 50 Index Fund',  currentValue:320000, invested:240000, sip:5000},
     ];
     data.liabilities=[{id:uid(),category:'HomeLoan',name:'SBI Home Loan',outstanding:3200000,interestRate:8.5,emi:28500}];
-    data.goals=[{id:uid(),type:'l1',name:'L1 Instant Cash',target:330000,current:0,timePeriod:'1'},{id:uid(),type:'l2',name:'L2 Quick Liquid',target:660000,current:0,timePeriod:'1'},{id:uid(),type:'l3',name:'L3 Deep Buffer',target:2000000,current:0,timePeriod:'5'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
+    data.goals=[{id:uid(),type:'l1',name:'L1 Instant Cash',target:341000,current:0},{id:uid(),type:'l2',name:'L2 Quick Liquid',target:682000,current:0},{id:uid(),type:'l3',name:'L3 Deep Buffer',target:2000000,current:0},{id:uid(),type:'education',name:"Son's Education",target:3000000,current:0},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:0}];
     data.profile.name='';save();
   }
   renderProfile();renderDashboard();
