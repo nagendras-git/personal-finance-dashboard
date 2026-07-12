@@ -1376,29 +1376,6 @@ function yearsUntil(bYear,ageTarget){return Math.max(0,(bYear+ageTarget)-year())
 function sipNeeded(target,current,years,annualReturn){const rate=annualReturn||0.12;const r=rate/12;const n=years*12;if(n<=0)return Math.max(0,target-current);const fv=current*Math.pow(1+r,n);const needed=target-fv;return needed<=0?0:needed*r/(Math.pow(1+r,n)-1)}
 function inflAdj(todayVal,years,inflRate){return todayVal*Math.pow(1+(inflRate||0.07),years||0)}
 function linkedAssetTotal(ids){if(!ids||!ids.length)return 0;return (ids).reduce((s,id)=>{const a=data.assets.find(x=>x.id===id);return s+Number(a?.currentValue||0)},0)}
-// ── Double-count guard: one asset should power only one goal ──
-function _linkOwners(exceptKey){
-  const map={};
-  const add=(key,name,ids)=>{if(key===exceptKey)return;(ids||[]).forEach(id=>{(map[id]=map[id]||[]).push(name)})};
-  data.goals.forEach(g=>add('goal:'+g.type,g.name||g.type,g.linkedAssetIds));
-  (data.customGoals||[]).forEach(cg=>add('cg:'+cg.id,cg.name||'Custom Goal',cg.linkedAssetIds));
-  (data.kids||[]).forEach(k=>{
-    (k.phases||[]).forEach(p=>add('phase:'+k.id+':'+p.phaseId,(k.name||'Child')+' – '+((KID_PHASES.find(x=>x.id===p.phaseId)||{}).label||p.phaseId),p.linkedAssetIds));
-    (k.customPhases||[]).forEach(cp=>add('cphase:'+k.id+':'+cp.id,(k.name||'Child')+' – '+(cp.label||'Phase'),cp.linkedAssetIds));
-  });
-  return map;
-}
-function linkConflicts(ids,exceptKey){
-  const owners=_linkOwners(exceptKey);const out=[];
-  (ids||[]).forEach(id=>{(owners[id]||[]).forEach(n=>{const a=data.assets.find(x=>x.id===id);out.push('"'+(a?a.name:'Asset')+'" is already linked to '+n)})});
-  return [...new Set(out)];
-}
-function guardedSave(ids,exceptKey,commit){
-  const conflicts=linkConflicts(ids,exceptKey);
-  if(conflicts.length){
-    showConfirm('Same asset in two goals?',conflicts.join('. ')+'. Linking one asset to two goals counts the same money twice and shows fake progress. Link anyway?',commit);
-  }else{commit()}
-}
 function getAsset(v){return ASSET_CATS.find(c=>c.v===v)||ASSET_CATS[ASSET_CATS.length-1]}
 function getLiab(v){return LIAB_CATS.find(c=>c.v===v)||LIAB_CATS[LIAB_CATS.length-1]}
 /** Escape user strings before inserting into innerHTML to prevent XSS */
@@ -1563,6 +1540,13 @@ function load(){
     save();
   }
   if(!data.customGoals)data.customGoals=[];
+  // Migration: asset-linking removed — freeze linked totals into manual 'Saved' values
+  const _unlink=(o)=>{if(o&&o.linkedAssetIds&&o.linkedAssetIds.length){o.current=linkedAssetTotal(o.linkedAssetIds);delete o.linkedAssetIds;return true}if(o&&o.linkedAssetIds)delete o.linkedAssetIds;return false};
+  let _changed=false;
+  data.goals.forEach(g=>{if(_unlink(g))_changed=true});
+  (data.customGoals||[]).forEach(cg=>{if(_unlink(cg))_changed=true});
+  (data.kids||[]).forEach(k=>{(k.phases||[]).forEach(p=>{if(_unlink(p))_changed=true});(k.customPhases||[]).forEach(cp=>{if(_unlink(cp))_changed=true})});
+  if(_changed)save();
   if(!data.insurance)data.insurance=[];
   // Migration: split old single 'emergency' goal into L1/L2/L3 layers
   const oldEf=data.goals.find(g=>g.type==='emergency');
@@ -1721,7 +1705,7 @@ function renderSafetyCheck(){
       </div>
       <button onclick="dismissSafetyBanner()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;line-height:1;padding:2px 4px;flex-shrink:0;opacity:0.6" title="Dismiss">✕</button>
     </div>
-    ${gaps.map((g,i)=>`<div onclick=${g.onclick} style="display:flex;align-items:center;gap:10px;padding:9px 13px;${i<gaps.length-1?'border-bottom:1px solid '+tone.border+';':''}cursor:pointer" ontouchstart="this.style.background='var(--surface2)'" ontouchend="this.style.background=''">
+    ${gaps.map((g,i)=>`<div onclick="${g.onclick}" style="display:flex;align-items:center;gap:10px;padding:9px 13px;${i<gaps.length-1?'border-bottom:1px solid '+tone.border+';':''}cursor:pointer" ontouchstart="this.style.background='var(--surface2)'" ontouchend="this.style.background=''">
       <span style="font-size:0.95rem;flex-shrink:0">${g.icon}</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:0.78rem;font-weight:700;color:var(--text1);display:flex;align-items:center;gap:6px">${g.title}<span style="font-size:0.65rem;font-weight:700;color:${g.badgeClr};background:${g.badgeClr==='var(--red)'?'var(--red-bg)':'var(--amber-bg)'};padding:1px 6px;border-radius:99px">${g.badge}</span></div>
@@ -2113,7 +2097,7 @@ function renderGoals(){
       return`<div class="goal-row" onclick="openSheet('insurance',null);document.getElementById('f-ins-type').value='${typeKey}'" style="opacity:0.6">
         ${goalIconBox(pr)}
         <div class="goal-body">
-          <div class="goal-top"><span class="goal-name">${pr.name}</span><span class="pill pill-muted">Not Set</span></div>
+          <div class="goal-top"><span class="goal-name">${pr.name}</span></div>
           <div style="font-size:0.75rem;color:var(--text3);margin-top:4px">Tap to add policy</div>
         </div>
         ${chevronSvg}
@@ -2160,107 +2144,9 @@ function renderGoals(){
     }).join('');
   }
 
-  function savingsRow(pr){
-    const g=data.goals.find(x=>x.type===pr.id)||{};
-    const target=Number(g.target||0);
-    const todayTarget=Number(g.todayTarget||g.target||0);
-    const linkedIds=g.linkedAssetIds||[];
-    const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(g.current||0);
-    const p=pct(current,target);
-    const cardId='goal-card-'+pr.id;
-    const isOpen=localStorage.getItem('goal_open_'+pr.id)==='1';
-
-    let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
-
-    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
-    const inflTag=(target>todayTarget&&todayTarget>0)?`<span style="font-size:0.72rem;color:var(--text3)"> (${fmt(todayTarget)} today)</span>`:'';
-    const retNote=g.expectedReturn&&g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:6px">📈 ${g.timePeriod}y at ${g.expectedReturn||12}% p.a. — need ${fmt(Math.max(0,(target-current)/g.timePeriod/12))} SIP est.</div>`:'';
-    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
-    const timeNote=g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${g.timePeriod} year${Number(g.timePeriod)!==1?'s':''} timeline</div>`:'';
-
-    return`<div class="goal-card${isOpen?' open':''}" id="${cardId}">
-      <div class="goal-card-hdr" onclick="toggleGoalCard('${pr.id}')">
-        <div class="goal-card-icon" style="background:${pr.light||'var(--surface2)'};border:1px solid ${pr.light||'var(--border)'}">${pr.icon.replace('stroke="currentColor"','stroke="'+pr.color+'"')}</div>
-        <div class="goal-card-name">${pr.name}</div>
-        <div class="goal-card-meta">
-          <span class="pill ${pCls}">${pTxt}</span>
-          ${target>0?`<span class="goal-card-pct">${p}%</span>`:''}
-          <div class="goal-card-caret"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-      </div>
-      <div class="goal-card-body">
-        ${target>0?`
-        <div class="goal-card-progress">
-          <div class="goal-card-bar-row">
-            <span class="goal-card-saved">${fmt(current)}${autoTag}</span>
-            <span class="goal-card-target">of ${fmt(target)}${inflTag}</span>
-          </div>
-          <div class="prog-track"><div class="prog-fill" style="background:${pr.color||'#3B82F6'};width:${p}%"></div></div>
-        </div>
-        ${timeNote}${linkedNote}${retNote}
-        `:`<div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet. Tap Edit to set your goal.</div>`}
-        <div class="goal-card-actions">
-          <button class="btn btn-primary btn-sm" style="flex:1;background:${pr.color||'#3B82F6'}" onclick="openSheet('goal','${pr.id}')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Edit Goal
-          </button>
-        </div>
-      </div>
-    </div>`;
-  }
 
   const plusIco = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:0.45"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
 
-  function customRow(cg){
-    const target=Number(cg.target||0);
-    const linkedIds=cg.linkedAssetIds||[];
-    const current=linkedIds.length>0 ? linkedAssetTotal(linkedIds) : Number(cg.current||0);
-    const p=pct(current,target);
-    const cardId='goal-card-cg-'+cg.id;
-    const isOpen=localStorage.getItem('goal_open_cg_'+cg.id)==='1';
-    let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
-    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
-    const timeNote=cg.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${cg.timePeriod} year${Number(cg.timePeriod)!==1?'s':''} timeline</div>`:'';
-    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
-
-    return`<div class="goal-card${isOpen?' open':''}" id="${cardId}" style="border-left:3px solid rgba(167,139,250,0.5)">
-      <div class="goal-card-hdr" onclick="toggleGoalCardCg('${cg.id}')">
-        <div class="goal-card-icon" style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.2)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div class="goal-card-name">${esc(cg.name)}</div>
-        <div class="goal-card-meta">
-          <span class="pill ${pCls}">${pTxt}</span>
-          ${target>0?`<span class="goal-card-pct">${p}%</span>`:''}
-          <div class="goal-card-caret"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
-        </div>
-      </div>
-      <div class="goal-card-body">
-        ${target>0?`
-        <div class="goal-card-progress">
-          <div class="goal-card-bar-row">
-            <span class="goal-card-saved">${fmt(current)}${autoTag}</span>
-            <span class="goal-card-target">of ${fmt(target)}</span>
-          </div>
-          <div class="prog-track"><div class="prog-fill" style="background:#a78bfa;width:${p}%"></div></div>
-        </div>
-        ${timeNote}${linkedNote}
-        `:`<div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet. Tap Edit to set your goal.</div>`}
-        <div class="goal-card-actions">
-          <button class="btn btn-primary btn-sm" style="flex:1;background:#a78bfa" onclick="openSheet('customGoal','${cg.id}')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Edit Goal
-          </button>
-          <button class="btn btn-danger btn-sm" onclick="delCustomGoal('${cg.id}')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>`;
-  }
 
   const customGoals = data.customGoals||[];
   const insCount = data.insurance.length;
@@ -2270,133 +2156,49 @@ function renderGoals(){
   const protBadge=document.getElementById('protection-sec-count');
   if(protBadge) protBadge.textContent=insCount>0?insCount+' polic'+(insCount===1?'y':'ies'):'0';
 
-  // Build individual collapsible sections for each savings goal
+  // Simple goal row: tap anywhere to open the edit form
   function goalSection(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
     const target=Number(g.target||0);
-    const linkedIds=g.linkedAssetIds||[];
-    const current=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
+    const current=Number(g.current||0);
     const p=pct(current,target);
-    const secId='sec-goal-'+pr.id;
-    const isOpen=localStorage.getItem('goal_sec_open_'+pr.id)==='1';
-
-    let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
-
-    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:'';
-
-    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
-    const todayTarget=Number(g.todayTarget||g.target||0);
-    const inflTag=(target>todayTarget&&todayTarget>0)?`<span style="font-size:0.72rem;color:var(--text3)"> (${fmt(todayTarget)} today)</span>`:'';
-    const retNote=g.expectedReturn&&g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:6px">📈 ${g.timePeriod}y at ${g.expectedReturn||12}% p.a. — need ${fmt(Math.max(0,(target-current)/g.timePeriod/12))} SIP est.</div>`:'';
-    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
-    const timeNote=g.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${g.timePeriod} year${Number(g.timePeriod)!==1?'s':''} timeline</div>`:'';
-
-    const bodyContent=target>0?`
-      <div style="padding:12px 14px 4px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:0.88rem;font-weight:700;color:var(--text1)">${fmt(current)}${autoTag}</span>
-          <span style="font-size:0.68rem;color:var(--text3)">of ${fmt(target)}${inflTag}</span>
-        </div>
-        <div class="prog-track"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>
-        ${timeNote}${linkedNote}${retNote}
-      </div>
-      <div style="padding:8px 14px 12px;border-top:1px solid var(--border2);margin-top:8px">
-        <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="openSheet('goal','${pr.id}')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Edit Goal
-        </button>
-      </div>
-    `:`<div style="padding:12px 14px">
-      <div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet. Tap to set your goal.</div>
-      <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="openSheet('goal','${pr.id}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        Set Goal
-      </button>
-    </div>`;
-
-    return`<div style="margin-bottom:8px">
-      <div class="sec-hdr-card" onclick="toggleGoalSec('${pr.id}')">
-        <div class="sec-hdr-left">
-          <span class="sec-hdr-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>
-            ${pr.name}${pr.sub?`<span style="font-size:0.66rem;color:var(--text3);font-weight:500;margin-left:4px">· ${pr.sub}</span>`:''}
-          </span>
-          <span class="pill ${pCls}" style="margin-left:6px">${pTxt}</span>
-        </div>
-        <div class="sec-hdr-right">
+    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:`<span style="font-size:0.78rem;color:var(--text3)">—</span>`;
+    const amounts=target>0?`<div style="font-size:0.68rem;color:var(--text3);margin-top:3px">${fmt(current)} of ${fmt(target)}</div>`:'';
+    const bar=target>0?`<div class="prog-track" style="margin-top:6px"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>`:'';
+    return`<div class="sec-hdr-card" style="margin-bottom:8px;display:block" onclick="openSheet('goal','${pr.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span class="sec-hdr-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>
+          ${pr.name}${pr.sub?`<span style="font-size:0.66rem;color:var(--text3);font-weight:500;margin-left:4px">· ${pr.sub}</span>`:''}
+        </span>
+        <span style="display:flex;align-items:center;gap:6px;flex-shrink:0">
           ${pctBadge}
-          <span class="sec-caret${isOpen?' open':''}" id="caret-goal-sec-${pr.id}"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
+          <span class="sec-caret" style="transform:rotate(-90deg)"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </span>
       </div>
-      <div class="sec-body${isOpen?'':' closed'}" id="${secId}">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:4px">
-          ${bodyContent}
-        </div>
-      </div>
+      ${amounts}${bar}
     </div>`;
   }
 
   function customGoalSection(cg){
     const target=Number(cg.target||0);
-    const linkedIds=cg.linkedAssetIds||[];
-    const current=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
+    const current=Number(cg.current||0);
     const p=pct(current,target);
-    const secId='sec-goal-cg-'+cg.id;
-    const isOpen=localStorage.getItem('goal_sec_open_cg_'+cg.id)==='1';
-    let pCls='pill-muted',pTxt='Not Set';
-    if(target>0){pCls=p>=100?'pill-blue':p>=50?'pill-green':'pill-amber';pTxt=p>=100?'Complete':p>=50?'On Track':'Behind'}
-    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:'';
-    const autoTag=linkedIds.length>0?`<span style="font-size:0.72rem;color:var(--text3);margin-left:3px">· auto</span>`:'';
-    const timeNote=cg.timePeriod?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">⏱ ${cg.timePeriod} year${Number(cg.timePeriod)!==1?'s':''} timeline</div>`:'';
-    const linkedNote=linkedIds.length>0?`<div style="font-size:0.72rem;color:var(--text3);margin-top:4px">🔗 Linked to ${linkedIds.length} asset${linkedIds.length>1?'s':''}</div>`:'';
-
-    const bodyContent=target>0?`
-      <div style="padding:12px 14px 4px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:0.88rem;font-weight:700;color:var(--text1)">${fmt(current)}${autoTag}</span>
-          <span style="font-size:0.68rem;color:var(--text3)">of ${fmt(target)}</span>
-        </div>
-        <div class="prog-track"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>
-        ${timeNote}${linkedNote}
-      </div>
-      <div style="padding:8px 14px 12px;border-top:1px solid var(--border2);margin-top:8px;display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="openSheet('customGoal','${cg.id}')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Edit
-        </button>
-        <button class="btn btn-danger btn-sm" style="justify-content:center" onclick="delCustomGoal('${cg.id}')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-          Delete
-        </button>
-      </div>
-    `:`<div style="padding:12px 14px">
-      <div style="font-size:0.82rem;color:var(--text3);margin-bottom:10px">No target set yet.</div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="openSheet('customGoal','${cg.id}')">Set Goal</button>
-        <button class="btn btn-danger btn-sm" style="justify-content:center" onclick="delCustomGoal('${cg.id}')">Delete</button>
-      </div>
-    </div>`;
-
-    return`<div style="margin-bottom:8px">
-      <div class="sec-hdr-card" onclick="toggleGoalSecCg('${cg.id}')">
-        <div class="sec-hdr-left">
-          <span class="sec-hdr-title">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            ${esc(cg.name)}
-          </span>
-          <span class="pill ${pCls}" style="margin-left:6px">${pTxt}</span>
-        </div>
-        <div class="sec-hdr-right">
+    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:`<span style="font-size:0.78rem;color:var(--text3)">—</span>`;
+    const amounts=target>0?`<div style="font-size:0.68rem;color:var(--text3);margin-top:3px">${fmt(current)} of ${fmt(target)}</div>`:'';
+    const bar=target>0?`<div class="prog-track" style="margin-top:6px"><div class="prog-fill" style="background:var(--blue);width:${p}%"></div></div>`:'';
+    return`<div class="sec-hdr-card" style="margin-bottom:8px;display:block" onclick="openSheet('customGoal','${cg.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span class="sec-hdr-title">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+          ${esc(cg.name)}
+        </span>
+        <span style="display:flex;align-items:center;gap:6px;flex-shrink:0">
           ${pctBadge}
-          <span class="sec-caret${isOpen?' open':''}" id="caret-goal-sec-cg-${cg.id}"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
+          <span class="sec-caret" style="transform:rotate(-90deg)"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </span>
       </div>
-      <div class="sec-body${isOpen?'':' closed'}" id="${secId}">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:4px">
-          ${bodyContent}
-        </div>
-      </div>
+      ${amounts}${bar}
     </div>`;
   }
 
@@ -2406,24 +2208,30 @@ function renderGoals(){
   const nonEmergencyGoals = savingsGoals.filter(pr=>!LAYER_IDS.includes(pr.id));
 
   if(emergencyEl && layerPresets.length) {
-    // Fortress summary: L1+L2 combined progress
-    const sumLayer=(ids)=>ids.reduce((s,id)=>{const g=data.goals.find(x=>x.type===id)||{};const li=g.linkedAssetIds||[];return s+(li.length>0?linkedAssetTotal(li):Number(g.current||0))},0);
+    // One clubbed "Emergency Fund" card containing L1/L2/L3
+    const sumLayer=(ids)=>ids.reduce((s,id)=>{const g=data.goals.find(x=>x.type===id)||{};return s+Number(g.current||0)},0);
     const tgtLayer=(ids)=>ids.reduce((s,id)=>{const g=data.goals.find(x=>x.type===id)||{};return s+Number(g.target||0)},0);
     const fCur=sumLayer(['l1','l2']), fTgt=tgtLayer(['l1','l2']);
     const fP=pct(fCur,fTgt);
-    const fortressBar = fTgt>0?`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:0.82rem;font-weight:700">🛡️ 12-Month Safety Net (L1+L2)</span>
-        <span style="font-size:0.82rem;font-weight:700;color:${fP>=100?'var(--green)':'var(--blue)'}">${fP}%</span>
+    emergencyEl.innerHTML = `<div style="margin-bottom:8px">
+      <div class="sec-hdr-card" onclick="toggleSec('sec-emergency')">
+        <div class="sec-hdr-left"><span class="sec-hdr-title">🛡️ Emergency Fund</span></div>
+        <div class="sec-hdr-right">
+          <span style="font-size:0.84rem;font-weight:700;color:${fP>=100?'var(--green)':'var(--blue)'}">${fP}%</span>
+          <span class="sec-caret open" id="caret-sec-emergency"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
       </div>
-      <div class="prog-track"><div class="prog-fill" style="background:${fP>=100?'var(--green)':'var(--blue)'};width:${fP}%"></div></div>
-      <div style="font-size:0.72rem;color:var(--text3);margin-top:6px">${fmt(fCur)} of ${fmt(fTgt)} · ${fP>=100?'Safety net complete — you can restart core SIPs':'Restart core SIPs the day this reaches 100%'}</div>
-    </div>`:'';
-    emergencyEl.innerHTML = fortressBar + layerPresets.map(goalSection).join('');
+      <div class="sec-body" id="sec-emergency">
+        <div style="padding:2px 2px 0">
+          <div style="font-size:0.72rem;color:var(--text3);margin:4px 2px 10px">12-month safety net (L1+L2): ${fmt(fCur)} of ${fmt(fTgt)} · ${fP>=100?'Complete — restart core SIPs':'Restart core SIPs at 100%'}</div>
+          ${layerPresets.map(goalSection).join('')}
+        </div>
+      </div>
+    </div>`;
   }
 
   el.innerHTML =
-    nonEmergencyGoals.map(goalSection).join('') +
+    nonEmergencyGoals.filter(pr=>{const g=data.goals.find(x=>x.type===pr.id)||{};return Number(g.target||0)>0}).map(goalSection).join('') +
     (customGoals.length ? customGoals.map(customGoalSection).join('') : '') +
     `<button class="add-row" style="margin-top:2px;width:100%;text-align:center" onclick="openSheet('customGoal',null)">+ Add Custom Goal</button>`;
 
@@ -3060,102 +2868,25 @@ function sheetGoal(pid){
   const g=data.goals.find(x=>x.type===pr.id)||{};
   const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
   const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.filter(p=>!p.isIns).map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
-
-  const linkedIds=g.linkedAssetIds||[];
-  const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
-  const todayTarget=Number(g.todayTarget||g.target||0);
-  const infl=g.inflationRate!=null?g.inflationRate:7;
-  const ret=g.expectedReturn!=null?g.expectedReturn:12;
-  const yrs=Number(g.timePeriod||0);
-  const adjTarget=yrs>0?Math.round(inflAdj(todayTarget,yrs,infl/100)):todayTarget;
-  const sip=adjTarget&&yrs?sipNeeded(adjTarget,autoCurrent,yrs,ret/100):0;
-
-  const savedCol=linkedIds.length>0
-    ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-       <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
-         <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoCurrent)}</span>
-         <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${linkedIds.length} linked</span>
-       </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${g.current>0?fmt(g.current):''}" data-raw="${g.current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>`;
-
+  const target=Number(g.target||0);
+  const current=Number(g.current||0);
   return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
-      <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
+      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
+      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
     </div>
     ${(()=>{const mult={l1:4,l2:8,l3:24}[pr.id];const exp=Number(data.profile.monthlyExpenses||0);if(!mult||!exp)return'';const sug=mult*exp;return`<div style="display:flex;align-items:center;gap:8px;margin:-6px 0 10px;padding:8px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
       <div style="flex:1;font-size:0.72rem;color:var(--text3)">Suggested: <b style="color:var(--text1)">${fmt(sug)}</b> (${mult} × ${fmt(exp)} monthly expenses)</div>
-      <button class="btn btn-ghost btn-sm" style="padding:4px 10px;font-size:0.72rem" onclick="const el=document.getElementById('f-gtarget');el.dataset.raw=${sug};el.value=fmt(${sug});updateGoalSIP()">Use</button>
+      <button class="btn btn-ghost btn-sm" style="padding:4px 10px;font-size:0.72rem" onclick="const el=document.getElementById('f-gtarget');el.dataset.raw=${sug};el.value=fmt(${sug})">Use</button>
     </div>`})()}
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
-      <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-ginfl" type="number" step="0.5" placeholder="7" value="${infl}" oninput="updateGoalSIP()"/></div>
-    </div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Expected Return (% p.a.)</label><input class="fi" id="f-gret" type="number" step="0.5" placeholder="12" value="${ret}" oninput="updateGoalSIP()"/></div>
-      ${savedCol}
-    </div>
-    <div style="font-size:0.68rem;color:var(--text3);margin:-6px 0 10px" id="goal-adj-note">${yrs>0&&adjTarget>todayTarget&&todayTarget>0?fmt(todayTarget)+' today → '+fmt(adjTarget)+' in '+yrs+'y at '+infl+'%':''}</div>
-    <div id="goal-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
-      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7" id="goal-sip-rate">@ ${ret}% p.a.</span></div>
-      <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="goal-sip-val">${sip>0?fmt(sip):'—'}</div>
-    </div>
-    <div class="form-sec">Link Assets</div>
-    <div id="goal-asset-link-list">${(()=>{const linked=g.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="gal-${a.id}" onclick="toggleGoalAssetLink('${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions">${g.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delGoal(\''+pr.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveGoal()">${g.id?'Update':'Save'}</button></div>
   </div>`}
 
-function toggleGoalAssetLink(assetId){
-  const el=document.getElementById('gal-'+assetId);if(!el)return;
-  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':"";
-  // Recompute auto-total from currently checked items
-  const checkedIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('gal-',''));
-  const autoTotal=linkedAssetTotal(checkedIds);
-  // If there's a manual input, hide it and show auto display; otherwise update display
-  const manualEl=document.getElementById('f-gcurrent');
-  if(manualEl){
-    // Replace manual input with auto display in-place
-    const wrap=manualEl.closest('.fg');
-    if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default;overflow:hidden">
-          <span id="goal-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green);white-space:nowrap">${fmt(autoTotal)}</span>
-          <span style="font-size:0.68rem;color:var(--text3);white-space:nowrap">${checkedIds.length} linked</span>
-        </div>`;
-    }
-  } else {
-    // Already in auto mode — update value
-    const autoValEl=document.getElementById('goal-auto-val');
-    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
-  }
-  updateGoalSIP();
-}
 function switchGoalType(){
   const sel=document.getElementById('f-gtype');if(!sel)return;
   closeSheet();openSheet('goal',sel.value);
-}
-function updateGoalSIP(){
-  const todayT=rawVal('f-gtarget');
-  const y=Number(document.getElementById('f-gtime')?.value||0);
-  const infl=Number(document.getElementById('f-ginfl')?.value||7);
-  const ret=Number(document.getElementById('f-gret')?.value||12);
-  const adjT=y>0?Math.round(inflAdj(todayT,y,infl/100)):todayT;
-  // Update inline Future Cost field
-  const adjVal=document.getElementById('goal-adj-val');
-  const adjNote=document.getElementById('goal-adj-note');
-  if(adjVal)adjVal.textContent=adjT>0?fmt(adjT):'—';
-  if(adjNote)adjNote.textContent=(y>0&&adjT>todayT&&todayT>0)?fmt(todayT)+' today → '+fmt(adjT)+' in '+y+'y at '+infl+'%':'';
-  // Update SIP rate display
-  const rateEl=document.getElementById('goal-sip-rate');
-  if(rateEl)rateEl.textContent='@ '+ret+'% p.a.';
-  const checkedIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('gal-',''));
-  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):rawVal('f-gcurrent');
-  const box=document.getElementById('goal-sip-box');
-  const valEl=document.getElementById('goal-sip-val');
-  if(adjT>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,y,ret/100));}
-  else{if(box)box.style.display='none';}
 }
 function delGoal(typeId){
   const g=data.goals.find(x=>x.type===typeId);
@@ -3168,24 +2899,10 @@ function delGoal(typeId){
 function saveGoal(){
   const type=document.getElementById('f-gtype')?.value;
   const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
-  const todayTarget=rawVal('f-gtarget');
-  const yrs=Number(document.getElementById('f-gtime')?.value||0);
-  const infl=Number(document.getElementById('f-ginfl')?.value||7);
-  const ret=Number(document.getElementById('f-gret')?.value||12);
-  const adjTarget=yrs>0?Math.round(inflAdj(todayTarget,yrs,infl/100)):todayTarget;
-  let obj={type,name:pr.name};
-  obj.todayTarget=todayTarget;
-  obj.target=adjTarget;
-  obj.timePeriod=document.getElementById('f-gtime')?.value||'';
-  obj.inflationRate=infl;
-  obj.expectedReturn=ret;
-  obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
-  if(!obj.linkedAssetIds.length) obj.current=rawVal('f-gcurrent');
-  guardedSave(obj.linkedAssetIds,'goal:'+type,()=>{
-    const ex=data.goals.find(g=>g.type===type);
-    if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
-    save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
-  });
+  const obj={type,name:pr.name,target:rawVal('f-gtarget'),current:rawVal('f-gcurrent')};
+  const ex=data.goals.find(g=>g.type===type);
+  if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
+  save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
 }
 
 /* ── INSURANCE (multi-policy) ── */
@@ -3243,7 +2960,7 @@ function sheetCustomGoal(id){
   const cg = id ? (data.customGoals||[]).find(x=>x.id===id)||{} : {};
   const isEdit = !!cg.id;
   const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-  const linkedIds=cg.linkedAssetIds||[];
+  const linkedIds=[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
   const sip = cg.target&&cg.timePeriod ? sipNeeded(Number(cg.target),autoCurrent,Number(cg.timePeriod)) : 0;
   const savedField=linkedIds.length>0
@@ -3265,35 +2982,12 @@ function sheetCustomGoal(id){
       <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
       <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
-    <div class="form-sec">Link Assets</div>
-    <div id="cg-asset-link-list">${(()=>{const linked=cg.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="cgal-${a.id}" onclick="toggleCGAssetLink('${a.id}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions">
       ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delCustomGoal(\''+cg.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
       <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">${isEdit?'Update':'Add'}</button>
     </div>
   </div>`}
 
-function toggleCGAssetLink(assetId){
-  const el=document.getElementById('cgal-'+assetId);if(!el)return;
-  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':"";
-  const checkedIds=Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cgal-',''));
-  const autoTotal=linkedAssetTotal(checkedIds);
-  const manualEl=document.getElementById('f-cg-current');
-  if(manualEl){
-    const wrap=manualEl.closest('.fg');
-    if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
-          <span id="cg-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
-          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
-        </div>`;
-    }
-  } else {
-    const autoValEl=document.getElementById('cg-auto-val');
-    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
-  }
-  updateCustomSIP();
-}
 function updateCustomSIP(){
   const t=Number(document.getElementById('f-cg-target')?.value||0);
   const y=Number(document.getElementById('f-cg-time')?.value||0);
@@ -3309,14 +3003,10 @@ function saveCustomGoal(editId){
   const name=document.getElementById('f-cg-name')?.value?.trim();
   if(!name){toast('Enter a goal name');return}
   if(!data.customGoals)data.customGoals=[];
-  const linkedAssetIds=Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cgal-','')).filter(Boolean);
-  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||'',linkedAssetIds};
-  if(!linkedAssetIds.length) obj.current=Number(document.getElementById('f-cg-current')?.value||0);
-  guardedSave(linkedAssetIds,'cg:'+(editId||'new'),()=>{
-    if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
-    else{data.customGoals.push({id:uid(),...obj});}
-    save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
-  });
+  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||'',current:Number(document.getElementById('f-cg-current')?.value||0)};
+  if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
+  else{data.customGoals.push({id:uid(),...obj});}
+  save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
 }
 
 function delCustomGoal(id){
@@ -3476,8 +3166,6 @@ function sheetEditPhase(kidId,phaseId){
       <div class="sip-val" id="sip-val">${sip>0?fmt(sip):'—'}</div>
     </div>
     <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-phn" placeholder="e.g. IIT target, study abroad…" value="${ph.notes||''}"/></div>
-    <div class="form-sec">Link Assets</div>
-    <div id="phase-asset-link-list">${(()=>{const linked=ph.linkedAssetIds||[];return data.assets.length?data.assets.map(a=>{const on=linked.includes(a.id);const info=getAsset(a.category);return`<div class="inv-link-item ${on?'on':''}" id="pal-${a.id}" onclick="togglePhaseAssetLink('${a.id}','${kidId}','${phaseId}')"><div class="inv-link-check">${on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><div style="font-size:0.88rem;font-weight:600;flex:1">${a.name}</div><div style="font-size:0.86rem;font-weight:700;color:var(--text1)">${fmt(a.currentValue)}</div></div>`}).join(''):'<div style="padding:10px;background:var(--surface2);border-radius:var(--r);font-size:0.62rem;color:var(--text3)">Add assets first to link them here</div>';})()} </div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="savePhase('${kidId}','${phaseId}')">Update</button></div>
   </div>`}
 function sheetEditCustomPhase(kidId,cpId){
@@ -3524,8 +3212,6 @@ function sheetEditCustomPhase(kidId,cpId){
       <div class="sip-val" id="cph-sip-val">${sip>0?fmt(sip):'&#8212;'}</div>
     </div>
     <div class="fg" style="margin-top:0"><label class="fl">Notes</label><input class="fi" id="f-cph-notes" placeholder="Any notes&#8230;" value="${esc(cp.notes||'')}"/></div>
-    <div class="form-sec">Link Assets</div>
-    <div id="cph-asset-link-list">${assetLinks}</div>
     <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveCustomPhase('${kidId}','${cpId}')">Update</button></div>
   </div>`
 }
@@ -3552,27 +3238,6 @@ function updateCustomPhaseSIP(kidId,cpId){
   if(adjT>0&&yl>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(adjT,c,yl,ret/100));}
   else{if(box)box.style.display='none';}
 }
-function toggleCPHAssetLink(kidId,cpId,assetId){
-  const el=document.getElementById('cphal-'+assetId);if(!el)return;
-  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':"";
-  const checkedIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cphal-',''));
-  const autoTotal=linkedAssetTotal(checkedIds);
-  const manualEl=document.getElementById('f-cph-current');
-  if(manualEl){
-    const wrap=manualEl.closest('.fg');
-    if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (&#8377;) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">&#9679; linked</span></label>
-        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
-          <span id="cph-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
-          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
-        </div>`;
-    }
-  } else {
-    const autoValEl=document.getElementById('cph-auto-val');
-    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
-  }
-  updateCustomPhaseSIP(kidId,cpId);
-}
 function saveCustomPhase(kidId,cpId){
   const kid=data.kids.find(k=>k.id===kidId);if(!kid)return;
   const cp=(kid.customPhases||[]).find(p=>p.id===cpId);if(!cp)return;
@@ -3584,34 +3249,11 @@ function saveCustomPhase(kidId,cpId){
   cp.target=yl>0?Math.round(inflAdj(todayTarget,yl,infl/100)):todayTarget;
   cp.inflationRate=infl;
   cp.expectedReturn=ret;
-  cp.linkedAssetIds=Array.from(document.querySelectorAll('#cph-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cphal-','')).filter(Boolean);
-  if(!cp.linkedAssetIds.length) cp.current=rawVal('f-cph-current');
-  else delete cp.current;
+  cp.current=rawVal('f-cph-current');
   cp.notes=document.getElementById('f-cph-notes')?.value?.trim()||'';
   save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
 }
 function toggleInvLink(invId){const el=document.getElementById('il-'+invId);if(!el)return;const on=el.classList.toggle('on');el.querySelector('.inv-link-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':""}
-function togglePhaseAssetLink(assetId,kidId,phaseId){
-  const el=document.getElementById('pal-'+assetId);if(!el)return;
-  const on=el.classList.toggle('on');el.querySelector('.inv-link-check').innerHTML=on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':"";
-  const checkedIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('pal-',''));
-  const autoTotal=linkedAssetTotal(checkedIds);
-  const manualEl=document.getElementById('f-phc');
-  if(manualEl){
-    const wrap=manualEl.closest('.fg');
-    if(wrap&&checkedIds.length>0){
-      wrap.innerHTML=`<label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
-        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
-          <span id="phase-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoTotal)}</span>
-          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${checkedIds.length} asset${checkedIds.length>1?'s':''} linked</span>
-        </div>`;
-    }
-  } else {
-    const autoValEl=document.getElementById('phase-auto-val');
-    if(autoValEl)autoValEl.textContent=fmt(autoTotal);
-  }
-  if(kidId&&phaseId)updateSIPLive(kidId,phaseId);
-}
 function updateSIPLive(kidId,phaseId){
   const kid=data.kids.find(k=>k.id===kidId);const pd=KID_PHASES.find(p=>p.id===phaseId);if(!kid||!pd)return;
   const todayT=rawVal('f-pht');
@@ -3645,12 +3287,8 @@ function savePhase(kidId,phaseId){
   ph.inflationRate=infl;
   ph.expectedReturn=ret;
   ph.notes=document.getElementById('f-phn').value.trim();
-  ph.linkedAssetIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('pal-','')).filter(Boolean);
-  // Only save manual current if no assets linked
-  if(!ph.linkedAssetIds.length) ph.current=rawVal('f-phc');
-  guardedSave(ph.linkedAssetIds,'phase:'+kidId+':'+phaseId,()=>{
-    save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
-  });
+  ph.current=rawVal('f-phc');
+  save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
 }
 
 function sheetProfile(){
