@@ -817,22 +817,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 
 /* ── DEBT PAYOFF BADGE ── */
 .payoff-badge { display:inline-flex; align-items:center; gap:3px; font-size:0.66rem; font-weight:700; color:var(--amber); background:var(--amber-bg); border:1px solid rgba(251,191,36,0.2); border-radius:99px; padding:2px 8px; margin-top:4px }
-/* ── Bucket Strategy ── */
-.bkt-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border2) }
-.bkt-row:last-child { border-bottom:none }
-.bkt-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0 }
-.bkt-info { flex:1; min-width:0 }
-.bkt-name { font-size:0.78rem; font-weight:700; color:var(--text1) }
-.bkt-sub { font-size:0.66rem; color:var(--text3); margin-top:1px }
-.bkt-val { font-size:0.88rem; font-weight:800; color:var(--text1); text-align:right; flex-shrink:0 }
-.bkt-bar-wrap { height:8px; background:var(--surface3); border-radius:99px; overflow:hidden; display:flex; margin:10px 0 6px }
-.bkt-bar-seg { height:100%; transition:width 0.5s var(--ease) }
-.bkt-alert { padding:8px 12px 8px 24px; border-radius:var(--r); font-size:0.72rem; font-weight:500; line-height:1.5; margin-top:8px; color:var(--text2); background:var(--surface2); border:1px solid var(--border2); position:relative }
-.bkt-alert::before { content:''; position:absolute; left:10px; top:14px; width:5px; height:5px; border-radius:50%; background:var(--text3) }
-.bkt-fund { display:flex; align-items:center; gap:8px; padding:4px 0; font-size:0.72rem }
-.bkt-fund-name { flex:1; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-.bkt-fund-val { color:var(--text1); font-weight:700; flex-shrink:0 }
-
 /* ── SWIPE INDICATOR ON SHEET HANDLE ── */
 .sheet-handle, .qa-handle { cursor:grab }
 
@@ -970,55 +954,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
     </div>
   </div>
-  <!-- INCOME SNAPSHOT (collapsible) -->
-  <div class="container" style="padding-top:8px;padding-bottom:0;display:none" id="dash-income-wrap">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-income')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><span style="font-size:0.82rem;opacity:0.5;flex-shrink:0">₹</span> Income Snapshot</span><span class="sec-badge" id="dash-income-badge">₹0/mo</span></div>
-        <div class="sec-hdr-right">
-          <span class="sec-caret" id="caret-sec-income"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
-      </div>
-      <div class="sec-body closed" id="sec-income">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:8px">
-          <div style="padding:12px 16px 14px">
-            <!-- Savings Rate Bar -->
-            <div style="margin-bottom:12px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                <div style="font-size:0.78rem;font-weight:600;color:var(--text1)">Savings Rate</div>
-                <div style="font-size:0.84rem;font-weight:800;color:var(--green)" id="dash-savings-pct">0%</div>
-              </div>
-              <div style="height:6px;background:var(--surface3);border-radius:99px;overflow:hidden">
-                <div id="dash-savings-bar" style="height:100%;border-radius:99px;background:var(--green);width:0%;transition:width 0.5s cubic-bezier(0.16,1,0.3,1)"></div>
-              </div>
-              <div style="font-size:0.68rem;color:var(--text3);margin-top:4px" id="dash-savings-sub">SIP ₹0 of ₹0 income</div>
-            </div>
-            <!-- Breakdown row -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px" id="dash-sip-cell">
-                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Invested (SIP)</div>
-                <div id="dash-sip-vals" style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--green)" id="dash-inv-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-inv-amt"></div></div>
-                <div id="dash-snap-nosip" style="display:none;font-size:0.82rem;font-weight:700;color:var(--amber);letter-spacing:0">▲ No SIP set</div>
-              </div>
-              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px" id="dash-emi-cell">
-                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">EMI</div>
-                <div id="dash-emi-vals" style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--red)" id="dash-emi-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-emi-amt"></div></div>
-                <div id="dash-snap-debtfree" style="display:none;font-size:0.82rem;font-weight:700;color:var(--green);letter-spacing:0">✦ Debt-free!</div>
-              </div>
-              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
-                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Expenses</div>
-                <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--text2)" id="dash-exp-pct">—</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-exp-amt"></div></div>
-              </div>
-              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 11px">
-                <div style="font-size:0.56rem;font-weight:700;color:var(--text3);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:4px">Free Cash</div>
-                <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:0.92rem;font-weight:800;color:var(--text1)" id="dash-free-pct">0%</div><div style="font-size:0.68rem;color:var(--text3)" id="dash-free-amt"></div></div>
-              </div>
-            </div>
-            <!-- Nudge -->
-            <div id="dash-income-nudge" style="display:none;margin-top:10px;padding:8px 12px;border-radius:var(--r);font-size:0.72rem;font-weight:600;line-height:1.4"></div>
-          </div>
-        </div>
-      </div>
-  </div>
   <!-- PORTFOLIO BREAKDOWN (collapsible) -->
   <div class="container" style="padding-top:8px;padding-bottom:4px" id="dash-asset-breakdown-wrap">
       <div class="sec-hdr-card" onclick="toggleSec('sec-portfolio')">
@@ -1036,20 +971,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 
   <!-- FINANCIAL SAFETY BANNER -->
   <div class="container" style="padding-top:8px;padding-bottom:0" id="dash-safety-wrap"></div>
-  <!-- BUCKET STRATEGY (ISR) -->
-  <div class="container" style="padding-top:8px;padding-bottom:4px;display:none" id="dash-bucket-wrap">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-buckets')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Bucket Strategy</span><span class="sec-badge" id="dash-bucket-badge">—</span></div>
-        <div class="sec-hdr-right">
-          <span class="sec-caret" id="caret-sec-buckets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
-      </div>
-      <div class="sec-body closed" id="sec-buckets">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:8px">
-          <div id="dash-bucket-content" style="padding:12px 14px 10px"></div>
-        </div>
-      </div>
-  </div>
   <!-- INSURANCE EXPIRY ALERTS -->
   <div class="container" style="padding-top:0;padding-bottom:4px" id="dash-ins-alert-wrap"></div>
 
@@ -1312,9 +1233,9 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
       <div><div class="qa-action-label">Add Liability</div><div class="qa-action-sub">Loan, EMI, Credit card…</div></div>
     </div>
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:var(--border)">
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','l1')" style="border-color:var(--border)">
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <div><div class="qa-action-label">Update Preset Goal</div><div class="qa-action-sub">Emergency, Retirement…</div></div>
+      <div><div class="qa-action-label">Update Preset Goal</div><div class="qa-action-sub">L1/L2/L3, Retirement…</div></div>
     </div>
     <div class="qa-action" onclick="closeQuickAdd();openSheet('child',null)" style="border-color:var(--border)">
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="3"/><path d="M9 20l1-5h4l1 5"/><path d="M6 12c0-1.1.9-2 2-2h8a2 2 0 012 2v2H6v-2z"/></svg></div>
@@ -1364,6 +1285,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 const STORAGE_KEY = 'wp_v6';
 
 const ASSET_CATS = [
+  {v:'Savings', l:'Bank Savings', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/></svg>', color:'#5eead4', cat:'safe'},
   {v:'EPF',  l:'EPF / EPFO',   icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>', color:'#60a5fa', cat:'safe'},
   {v:'PPF',  l:'PPF',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>', color:'#818cf8', cat:'safe'},
   {v:'MutualFunds',l:'Mutual Funds',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>', color:'#34d399', cat:'growth'},
@@ -1383,9 +1305,15 @@ const LIAB_CATS = [
   {v:'Other',       l:'Other',         icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>', color:'#9ca3af'},
 ];
 const GOAL_PRESETS = [
-  {id:'emergency', name:'Emergency Fund',
+  {id:'l1', name:'L1 Instant Cash',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-   color:'#60a5fa', light:'rgba(96,165,250,0.1)', isIns:false},
+   color:'#60a5fa', light:'rgba(96,165,250,0.1)', isIns:false, sub:'4 months · Bank savings'},
+  {id:'l2', name:'L2 Quick Liquid',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>`,
+   color:'#2dd4bf', light:'rgba(45,212,191,0.1)', isIns:false, sub:'8 months · Arbitrage fund'},
+  {id:'l3', name:'L3 Deep Buffer',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M8 11h8M8 15h8"/></svg>`,
+   color:'#a78bfa', light:'rgba(167,139,250,0.1)', isIns:false, sub:'2+ years · BAF'},
   {id:'health_ins', name:'Health Insurance',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
    color:'#4ade80', light:'rgba(74,222,128,0.1)', isIns:true},
@@ -1411,15 +1339,15 @@ const KID_PHASES = [
   {id:'marriage',    label:'Marriage',       icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>', ageStart:25, ageEnd:30, color:'#f472b6'},
 ];
 const CHECKLIST_ITEMS = [
-  {label:'Emergency Fund (6 months)',    desc:'3–6 months of expenses saved in liquid form'},
+  {label:'L1 Instant Cash filled',     desc:'4 months of expenses in bank savings'},
+  {label:'L2 Quick Liquid filled',     desc:'8 months in arbitrage fund'},
+  {label:'L3 Deep Buffer building',    desc:'2+ years in balanced advantage fund (long-term)'},
+  {label:'Core SIPs running',            desc:'Restart the day L2 crosses target — mechanical rule'},
+  {label:'PPF ₹1.5L before March 31',    desc:'Deposit April 1st onwards for full-year interest'},
   {label:'Term Life Insurance',          desc:'Cover 10–15x annual income'},
-  {label:'Health Insurance',             desc:'₹10L+ family floater policy'},
-  {label:'Started Retirement SIP',       desc:'Investing consistently for retirement'},
+  {label:'Health Insurance',             desc:'Family floater + parents corporate top-up'},
   {label:'No high-interest debt',        desc:'Credit card / personal loans cleared'},
   {label:'Will / Nomination updated',    desc:'Nominees set on all accounts'},
-  {label:'Income Bucket funded',         desc:'24–36 months of expenses in liquid / arbitrage funds'},
-  {label:'Stability Bucket active',      desc:'BAF / hybrid fund for 3–7 year refill pipeline'},
-  {label:'Return Bucket growing',        desc:'Equity / index funds for long-term wealth (7y+)'},
 ];
 let data = {
   profile:{name:'', avatarColor:'#6366f1'},
@@ -1448,6 +1376,29 @@ function yearsUntil(bYear,ageTarget){return Math.max(0,(bYear+ageTarget)-year())
 function sipNeeded(target,current,years,annualReturn){const rate=annualReturn||0.12;const r=rate/12;const n=years*12;if(n<=0)return Math.max(0,target-current);const fv=current*Math.pow(1+r,n);const needed=target-fv;return needed<=0?0:needed*r/(Math.pow(1+r,n)-1)}
 function inflAdj(todayVal,years,inflRate){return todayVal*Math.pow(1+(inflRate||0.07),years||0)}
 function linkedAssetTotal(ids){if(!ids||!ids.length)return 0;return (ids).reduce((s,id)=>{const a=data.assets.find(x=>x.id===id);return s+Number(a?.currentValue||0)},0)}
+// ── Double-count guard: one asset should power only one goal ──
+function _linkOwners(exceptKey){
+  const map={};
+  const add=(key,name,ids)=>{if(key===exceptKey)return;(ids||[]).forEach(id=>{(map[id]=map[id]||[]).push(name)})};
+  data.goals.forEach(g=>add('goal:'+g.type,g.name||g.type,g.linkedAssetIds));
+  (data.customGoals||[]).forEach(cg=>add('cg:'+cg.id,cg.name||'Custom Goal',cg.linkedAssetIds));
+  (data.kids||[]).forEach(k=>{
+    (k.phases||[]).forEach(p=>add('phase:'+k.id+':'+p.phaseId,(k.name||'Child')+' – '+((KID_PHASES.find(x=>x.id===p.phaseId)||{}).label||p.phaseId),p.linkedAssetIds));
+    (k.customPhases||[]).forEach(cp=>add('cphase:'+k.id+':'+cp.id,(k.name||'Child')+' – '+(cp.label||'Phase'),cp.linkedAssetIds));
+  });
+  return map;
+}
+function linkConflicts(ids,exceptKey){
+  const owners=_linkOwners(exceptKey);const out=[];
+  (ids||[]).forEach(id=>{(owners[id]||[]).forEach(n=>{const a=data.assets.find(x=>x.id===id);out.push('"'+(a?a.name:'Asset')+'" is already linked to '+n)})});
+  return [...new Set(out)];
+}
+function guardedSave(ids,exceptKey,commit){
+  const conflicts=linkConflicts(ids,exceptKey);
+  if(conflicts.length){
+    showConfirm('Same asset in two goals?',conflicts.join('. ')+'. Linking one asset to two goals counts the same money twice and shows fake progress. Link anyway?',commit);
+  }else{commit()}
+}
 function getAsset(v){return ASSET_CATS.find(c=>c.v===v)||ASSET_CATS[ASSET_CATS.length-1]}
 function getLiab(v){return LIAB_CATS.find(c=>c.v===v)||LIAB_CATS[LIAB_CATS.length-1]}
 /** Escape user strings before inserting into innerHTML to prevent XSS */
@@ -1613,6 +1564,16 @@ function load(){
   }
   if(!data.customGoals)data.customGoals=[];
   if(!data.insurance)data.insurance=[];
+  // Migration: split old single 'emergency' goal into L1/L2/L3 layers
+  const oldEf=data.goals.find(g=>g.type==='emergency');
+  if(oldEf){
+    const saved=Number(oldEf.current||0);
+    data.goals=data.goals.filter(g=>g.type!=='emergency');
+    if(!data.goals.some(g=>g.type==='l1'))data.goals.push({id:uid(),type:'l1',name:'L1 Instant Cash',target:330000,current:Math.min(saved,330000),timePeriod:'1',linkedAssetIds:oldEf.linkedAssetIds||[]});
+    if(!data.goals.some(g=>g.type==='l2'))data.goals.push({id:uid(),type:'l2',name:'L2 Quick Liquid',target:660000,current:Math.max(0,saved-330000),timePeriod:'1'});
+    if(!data.goals.some(g=>g.type==='l3'))data.goals.push({id:uid(),type:'l3',name:'L3 Deep Buffer',target:2000000,current:0,timePeriod:'5'});
+    save();
+  }
   // Migration: move old single-entry insurance from goals[] to insurance[]
   if(data.insurance.length===0){
     const oldIns=data.goals.filter(g=>g.type==='health_ins'||g.type==='term_ins');
@@ -1710,17 +1671,16 @@ function _getSafetyGaps(){
   const gaps=[];
   const expenses=Number(data.profile.monthlyExpenses||0);
   if(expenses>0){
-    const efGoal=data.goals.find(g=>g.type==='emergency');
-    const efLinked=efGoal?.linkedAssetIds||[];
-    const efSaved=efLinked.length>0?linkedAssetTotal(efLinked):Number(efGoal?.current||0);
-    const efRequired=expenses*6;
+    const layerSaved=(t)=>{const g=data.goals.find(x=>x.type===t);const li=g?.linkedAssetIds||[];return li.length>0?linkedAssetTotal(li):Number(g?.current||0)};
+    const efSaved=layerSaved('l1')+layerSaved('l2');
+    const efRequired=expenses*12;
     if(efSaved<efRequired){
       const shortfall=efRequired-efSaved;
-      gaps.push({id:'ef',icon:'🛡️',title:'Emergency Fund',
-        detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (6 months)`:`Build ${fmt(efRequired)} (6× monthly expenses)`,
+      gaps.push({id:'ef',icon:'🛡️',title:'12-Month Safety Net (L1+L2)',
+        detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (12 months)`:`Build ${fmt(efRequired)} (12× monthly expenses)`,
         badge:efSaved>0?`${fmt(shortfall)} short`:'Not started',
         badgeClr:efSaved>0?'var(--amber)':'var(--red)',
-        action:'Set up →', onclick:`openSheet('goal','emergency')`});
+        action:'Set up →', onclick:`openSheet('goal','l1')`});
     }
   }
   const hasHealth=data.insurance.some(i=>i.type==='health');
@@ -2022,150 +1982,8 @@ function renderDashboard(){
   renderRetirementReadiness();
   renderInsuranceAlerts();
   renderSafetyCheck();
-  renderBucketStrategy();
 }
 
-function renderBucketStrategy(){
-  const wrap=document.getElementById('dash-bucket-wrap');
-  const content=document.getElementById('dash-bucket-content');
-  const badge=document.getElementById('dash-bucket-badge');
-  if(!wrap||!content)return;
-
-  const bucketAssets=data.assets.filter(a=>a.bucket);
-  if(!bucketAssets.length){wrap.style.display='none';return;}
-  wrap.style.display='';
-
-  const buckets={
-    income:{label:'Income',color:'#22c55e',horizon:'0–3y',assets:[],total:0},
-    stability:{label:'Stability',color:'var(--blue)',horizon:'3–7y',assets:[],total:0},
-    return:{label:'Return',color:'#f97316',horizon:'7y+',assets:[],total:0}
-  };
-
-  bucketAssets.forEach(a=>{
-    const v=Number(a.currentValue||0);
-    if(buckets[a.bucket]){buckets[a.bucket].assets.push(a);buckets[a.bucket].total+=v;}
-  });
-
-  const grandTotal=Object.values(buckets).reduce((s,b)=>s+b.total,0)||1;
-  const expenses=Number(data.profile.monthlyExpenses||0);
-  const incomeCoverage=expenses>0?Math.floor(buckets.income.total/expenses):0;
-  const iPct=Math.round((buckets.income.total/grandTotal)*100);
-  const sPct=Math.round((buckets.stability.total/grandTotal)*100);
-  const rPct=100-iPct-sPct;
-
-  // Badge — show most important metric
-  if(badge){
-    if(expenses>0&&incomeCoverage>0) badge.textContent=incomeCoverage+'mo coverage';
-    else badge.textContent=bucketAssets.length+' funds';
-  }
-
-  // ── COMPACT VIEW: bar + 3 bucket summary rows ──
-  let html=`<div class="bkt-bar-wrap">
-    <div class="bkt-bar-seg" style="width:${iPct}%;background:#22c55e"></div>
-    <div class="bkt-bar-seg" style="width:${sPct}%;background:var(--blue)"></div>
-    <div class="bkt-bar-seg" style="width:${rPct}%;background:#f97316"></div>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">
-    ${['income','stability','return'].map(key=>{
-      const b=buckets[key];
-      const p=Math.round((b.total/grandTotal)*100);
-      return`<div style="text-align:center;padding:6px 4px">
-        <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:3px"><div class="bkt-dot" style="background:${b.color}"></div><span style="font-size:0.68rem;font-weight:700;color:var(--text1)">${b.label}</span></div>
-        <div style="font-size:0.92rem;font-weight:800;color:var(--text1)">${fmt(b.total)}</div>
-        <div style="font-size:0.62rem;font-weight:600;color:${b.color}">${p}%</div>
-      </div>`;
-    }).join('')}
-  </div>`;
-
-  // One-line coverage summary
-  if(expenses>0){
-    const totalMo=Math.floor((buckets.income.total+buckets.stability.total+buckets.return.total)/expenses);
-    const fmtDur=(m)=>{if(m>=12){const y=Math.floor(m/12);const r=m%12;return r>0?y+'y '+r+'m':y+'y'}return m+'m'};
-    const safeClr=incomeCoverage>=24?'var(--green)':incomeCoverage>=12?'var(--amber)':'var(--red)';
-    // Plain language bucket health
-    const incomeHealth=incomeCoverage>=36?`Income bucket is strong. Survives ${fmtDur(incomeCoverage)} even if markets crash.`:incomeCoverage>=24?`Income bucket healthy at ${fmtDur(incomeCoverage)}. Safe through market downturns.`:incomeCoverage>=12?`Income bucket at ${fmtDur(incomeCoverage)}. Build to 24mo for crash safety.`:`Income bucket only ${fmtDur(incomeCoverage)}. Critically low, prioritize this.`;
-    html+=`<div style="padding:8px 0;border-top:1px solid var(--border2)">
-      <div style="font-size:0.72rem;font-weight:500;color:var(--text2);line-height:1.5">${incomeCoverage>=24?'🛡️':'ⓘ'} ${incomeHealth}</div>
-    </div>`;
-  }
-
-  // ── ANALYSIS: lifecycle-based guidance ──
-  let alerts=[];
-  const stabMonths=expenses>0?Math.floor(buckets.stability.total/expenses):0;
-  const fmtDur=(m)=>{if(m>=12){const y=Math.floor(m/12);const r=m%12;return r>0?y+'y '+r+'m':y+'y'}return m+'mo'};
-
-  if(expenses>0){
-    // Phase 1: Income bucket (the kitchen — must be stocked first)
-    if(incomeCoverage<12){
-      const needed=Math.max(0,24*expenses-buckets.income.total);
-      alerts.push({clr:'var(--red)',bg:'var(--red-bg)',msg:`Income covers only ${fmtDur(incomeCoverage)}. Build to 24mo with ${fmt(needed)} more in liquid/arbitrage funds.`});
-    } else if(incomeCoverage<24){
-      const needed=24*expenses-buckets.income.total;
-      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Income at ${fmtDur(incomeCoverage)}. Aim for 24mo (${fmt(needed)} more) for full crash protection.`});
-    }
-
-    // Phase 2: Stability bucket (the storehouse — refills the kitchen)
-    if(incomeCoverage>=24 && buckets.stability.total===0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Income is strong. Start a BAF/hybrid fund SIP to build your Stability bucket. This refills Income so you never touch equity in a downturn.`});
-    } else if(incomeCoverage>=24 && stabMonths>0 && stabMonths<36){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Stability can refill Income for ${fmtDur(stabMonths)}. Grow to 3-5 years for a stronger pipeline.`});
-    }
-
-    // Phase 3: Return bucket (the tree — let it grow, harvest only the excess)
-    if(incomeCoverage>=24 && buckets.stability.total>0 && buckets.return.total===0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Foundation is set. Start equity/index fund SIPs. Your Income and Stability give you patience to let equity compound.`});
-    }
-
-    // Harvest signal: Return bucket has grown very large relative to others
-    if(incomeCoverage>=24 && buckets.return.total>0 && rPct>60){
-      alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`Return bucket at ${rPct}% of portfolio. Harvest some profits into Stability to lock gains.`});
-    }
-
-    // Overstocked storehouse: Stability is very large but Return is small
-    if(incomeCoverage>=24 && sPct>50 && rPct<25 && buckets.return.total>0){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Stability is well-stocked. Direct future SIPs to Return bucket for long-term compounding.`});
-    }
-
-    // Building phase — show the roadmap
-    if(incomeCoverage<24 && !alerts.some(a=>a.clr==='var(--red)'||a.clr==='var(--amber)')){
-      alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`Build in order: Income (24mo) → Stability (BAF) → Return (equity). Each protects the next.`});
-    }
-  }
-
-  // All buckets healthy
-  if(expenses>0 && incomeCoverage>=24 && !alerts.length){
-    alerts.push({clr:'var(--green)',bg:'var(--green-bg)',msg:`All buckets healthy. Income survives crashes, Stability refills it, Return grows wealth. Stay the course.`});
-  }
-
-  // Goal proximity hints
-  data.goals.forEach(g=>{
-    const pr=GOAL_PRESETS.find(p=>p.id===g.type);
-    if(!pr||!g.timePeriod)return;
-    const yrs=Number(g.timePeriod);const linked=g.linkedAssetIds||[];
-    if(!linked.length)return;
-    const linkedInReturn=linked.filter(id=>{const a=data.assets.find(x=>x.id===id);return a?.bucket==='return'});
-    if(yrs<=3&&linkedInReturn.length>0) alerts.push({clr:'var(--amber)',bg:'var(--amber-bg)',msg:`${pr.name} (${yrs}y away). Move linked funds from Return to Income for safety.`});
-    else if(yrs<=7&&yrs>3&&linkedInReturn.length>0) alerts.push({clr:'var(--blue)',bg:'rgba(37,99,235,0.06)',msg:`${pr.name} (${yrs}y away). Gradually shift linked funds from Return to Stability.`});
-  });
-
-  // Show analysis toggle
-  if(alerts.length){
-    html+=`<div style="text-align:center;padding:4px 0 2px">
-      <button onclick="const el=document.getElementById('bkt-analysis');el.classList.toggle('closed');const open=!el.classList.contains('closed');this.querySelector('span').textContent=open?'Hide Analysis':'View Analysis';this.querySelector('svg').style.transform=open?'rotate(180deg)':''" style="background:none;border:none;color:var(--blue);font-size:0.72rem;font-weight:700;cursor:pointer;padding:6px 12px;font-family:inherit;display:inline-flex;align-items:center;gap:4px"><span>View Analysis</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s ease"><polyline points="6 9 12 15 18 9"/></svg></button>
-    </div>
-    <div id="bkt-analysis" class="sec-body closed" style="transition:max-height 0.3s var(--ease),opacity 0.2s ease">`;
-
-    html+=alerts.map(a=>`<div class="bkt-alert">${a.msg}</div>`).join('');
-
-    html+=`<div style="display:flex;align-items:flex-start;gap:5px;padding:8px 0 2px;margin-top:6px;border-top:1px solid var(--border2)">
-      <span style="font-size:0.7rem;flex-shrink:0;opacity:0.5">ⓘ</span>
-      <span style="font-size:0.62rem;color:var(--text3);line-height:1.5">Bull market: harvest some equity profits into Stability & Income. Bear market: don't touch equity, keep SIPs running & buy more units at cheaper prices.</span>
-    </div>`;
-    html+=`</div>`; // close bkt-analysis
-  }
-
-  content.innerHTML=html;
-}
 
 function renderGoalHealth(){
   const allGoals=GOAL_PRESETS.filter(p=>!p.isIns);
@@ -2220,7 +2038,7 @@ function renderAssets(){
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
-        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}${a.bucket?` · <span style="color:${a.bucket==='income'?'var(--green)':a.bucket==='stability'?'var(--blue)':'#f97316'};font-weight:600">${a.bucket==='income'?'Income':a.bucket==='stability'?'Stability':'Return'}</span>`:''}</div>
+        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
       </div>
       <div class="row-right">
         <div class="row-value">${fmt(a.currentValue)}</div>
@@ -2502,7 +2320,7 @@ function renderGoals(){
         <div class="sec-hdr-left">
           <span class="sec-hdr-title">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>
-            ${pr.name}
+            ${pr.name}${pr.sub?`<span style="font-size:0.66rem;color:var(--text3);font-weight:500;margin-left:4px">· ${pr.sub}</span>`:''}
           </span>
           <span class="pill ${pCls}" style="margin-left:6px">${pTxt}</span>
         </div>
@@ -2582,12 +2400,26 @@ function renderGoals(){
     </div>`;
   }
 
-  // Render emergency fund into its own dedicated slot (top of page)
-  const emergencyPreset = savingsGoals.find(pr=>pr.id==='emergency');
-  const nonEmergencyGoals = savingsGoals.filter(pr=>pr.id!=='emergency');
+  // Render L1/L2/L3 emergency layers into the dedicated slot (top of page)
+  const LAYER_IDS=['l1','l2','l3'];
+  const layerPresets = savingsGoals.filter(pr=>LAYER_IDS.includes(pr.id));
+  const nonEmergencyGoals = savingsGoals.filter(pr=>!LAYER_IDS.includes(pr.id));
 
-  if(emergencyEl && emergencyPreset) {
-    emergencyEl.innerHTML = goalSection(emergencyPreset);
+  if(emergencyEl && layerPresets.length) {
+    // Fortress summary: L1+L2 combined progress
+    const sumLayer=(ids)=>ids.reduce((s,id)=>{const g=data.goals.find(x=>x.type===id)||{};const li=g.linkedAssetIds||[];return s+(li.length>0?linkedAssetTotal(li):Number(g.current||0))},0);
+    const tgtLayer=(ids)=>ids.reduce((s,id)=>{const g=data.goals.find(x=>x.type===id)||{};return s+Number(g.target||0)},0);
+    const fCur=sumLayer(['l1','l2']), fTgt=tgtLayer(['l1','l2']);
+    const fP=pct(fCur,fTgt);
+    const fortressBar = fTgt>0?`<div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:0.82rem;font-weight:700">🛡️ 12-Month Safety Net (L1+L2)</span>
+        <span style="font-size:0.82rem;font-weight:700;color:${fP>=100?'var(--green)':'var(--blue)'}">${fP}%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" style="background:${fP>=100?'var(--green)':'var(--blue)'};width:${fP}%"></div></div>
+      <div style="font-size:0.72rem;color:var(--text3);margin-top:6px">${fmt(fCur)} of ${fmt(fTgt)} · ${fP>=100?'Safety net complete — you can restart core SIPs':'Restart core SIPs the day this reaches 100%'}</div>
+    </div>`:'';
+    emergencyEl.innerHTML = fortressBar + layerPresets.map(goalSection).join('');
   }
 
   el.innerHTML =
@@ -2756,6 +2588,11 @@ function getCheckItems(){
     }));
     save();
   }
+  // Migration: remove obsolete default items (old ISR buckets, old emergency item)
+  const defaultLabels=CHECKLIST_ITEMS.map(i=>i.label);
+  const before=data.checkItems.length;
+  data.checkItems=data.checkItems.filter(ci=>ci.custom||defaultLabels.includes(ci.label));
+  if(data.checkItems.length!==before)save();
   // Migration: add new default items that don't exist yet
   CHECKLIST_ITEMS.forEach((item,i)=>{
     const exists=data.checkItems.some(ci=>ci.label===item.label);
@@ -2763,6 +2600,11 @@ function getCheckItems(){
       data.checkItems.push({id:'ci_'+Date.now()+'_'+i, label:item.label, desc:item.desc, done:false, custom:false});
       save();
     }
+  });
+  // Keep checklist in canonical order (defaults first, customs after)
+  data.checkItems.sort((a,b)=>{
+    const ia=defaultLabels.indexOf(a.label), ib=defaultLabels.indexOf(b.label);
+    return (ia===-1?999:ia)-(ib===-1?999:ib);
   });
   return data.checkItems;
 }
@@ -2837,7 +2679,7 @@ function openSheet(type,arg,arg2){
   if(type==='asset')html=sheetAsset(arg||{});
   else if(type==='importMF')html=sheetImportMF();
   else if(type==='liability')html=sheetLiability(arg||{});
-  else if(type==='goal')html=sheetGoal(arg||'emergency');
+  else if(type==='goal')html=sheetGoal(arg||'l1');
   else if(type==='child')html=sheetChild(arg||null);
   else if(type==='managePhases')html=sheetManagePhases(arg);
   else if(type==='phase')html=sheetEditPhase(arg,arg2);
@@ -2859,17 +2701,6 @@ function onAssetCatChange(){}  // kept for safety, no redirect needed anymore
    IMPORT MF / ETF — from Excel export (Kite / XLSX)
    ══════════════════════════════════════════════════ */
 
-// Auto-assign ISR bucket based on fund name keywords
-function _guessBucket(name){
-  const n=(name||'').toLowerCase();
-  if(/liquid|overnight|money market/.test(n)) return 'income';
-  if(/arbitrage/.test(n)) return 'income';
-  if(/balanced advantage|baf|dynamic asset|hybrid|conservative/.test(n)) return 'stability';
-  if(/gold|silver|commodity/.test(n)) return 'stability';
-  if(/debt|bond|gilt|gsec|short dur|ultra short|low dur|credit risk|banking & psu|corporate bond/.test(n)) return 'stability';
-  if(/nifty next 50|niftynext/.test(n)) return 'stability';
-  return 'return'; // equity, index, sectoral, small, mid, flexi, elss
-}
 
 // Detect category: ETF vs MutualFunds
 function _guessCat(name){
@@ -2889,7 +2720,7 @@ function _cleanName(raw){
     .trim();
 }
 
-// Parse XLSX file from Kite export → array of {name, category, currentValue, invested, sip, bucket}
+// Parse XLSX file from Kite export → array of {name, category, currentValue, invested, sip}
 // Supports two formats:
 //  A) MF Holdings export (columns: Fund, Folio, Avg Cost, Last Price, Qty, …)
 //  B) ETF Holdings export (columns: Instrument, Qty, Avg Cost, Last Price, …)
@@ -2972,14 +2803,13 @@ function _doParseXLSX(arrayBuffer){
       if(seen.has(name.toLowerCase())) return; // skip duplicate from Combined sheet
       seen.add(name.toLowerCase());
 
-      // Use Instrument Type column for smarter category + bucket detection
+      // Use Instrument Type column for smarter category detection
       const typeRaw  = iType>=0 ? (row[iType]+'').toLowerCase() : '';
       const category = _guessCatFromType(rawName, typeRaw);
-      const bucket   = _guessBucketFromType(rawName, typeRaw);
       const invested = Math.round(qty*avgCost);
       const currentValue = lastNav>0 ? Math.round(qty*lastNav) : invested;
 
-      results.push({name,category,invested,currentValue,sip:0,bucket});
+      results.push({name,category,invested,currentValue,sip:0});
     }
   });
 
@@ -2991,22 +2821,9 @@ function _guessCatFromType(name, typeRaw){
   if(typeRaw==='etf'||/^goldbees|^mon100|bees$|-e$/.test(name.toLowerCase())) return 'ETF';
   return 'MutualFunds';
 }
-function _guessBucketFromType(name, typeRaw){
-  // typeRaw examples: "{debt - liquid true}", "{hybrid - arbitrage true}", "{equity - mid cap true}"
-  if(/debt.*liquid|overnight|money market/.test(typeRaw)) return 'income';
-  if(/hybrid.*arbitrage|arbitrage/.test(typeRaw)) return 'income';
-  if(/hybrid.*balanced advantage|hybrid.*dynamic asset|baf/.test(typeRaw)) return 'stability';
-  if(/debt(?!.*liquid)|bond|gilt|gsec|short dur|credit risk|banking.*psu|corporate bond/.test(typeRaw)) return 'stability';
-  if(/gold|silver|commodity/.test(typeRaw)||/gold|silver/.test(name.toLowerCase())) return 'stability';
-  if(/nifty next 50|next50/.test(name.toLowerCase())) return 'stability';
-  if(typeRaw==='etf'&&/gold|silver/.test(name.toLowerCase())) return 'stability';
-  // All equity, index funds, elss, small/mid/flexi cap → Return
-  return 'return';
-}
 
 // State for the import sheet
 let _importRows=[];    // parsed fund rows
-let _importBuckets={}; // overrides: {idx: bucket}
 
 function sheetImportMF(){
   return`<div class="sheet-hdr">
@@ -3060,7 +2877,6 @@ function _processImportFile(file){
     try{
       const rows=await _parseXLSXToFunds(e.target.result);
       _importRows=rows;
-      _importBuckets={};
       if(!rows.length){
         toast('No fund data found in file');
         if(uploadArea){uploadArea.style.display='';uploadArea.innerHTML=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3;margin:0 auto 8px;display:block"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><div style="font-size:0.82rem;font-weight:600;color:var(--text1);margin-bottom:3px">Tap to choose XLSX file</div><div style="font-size:0.68rem;color:var(--text3)">or drag & drop your Kite export here</div>`;}
@@ -3090,12 +2906,10 @@ function _renderImportPreview(){
   const existingNames=new Set(data.assets.filter(a=>a.category==='MutualFunds'||a.category==='ETF').map(a=>a.name.toLowerCase()));
 
   let replaceCount=0;
-  const BUCKET_LABELS={income:'🟢 Income',stability:'🔵 Stability',return:'🟠 Return','':'—'};
 
   list.innerHTML=_importRows.map((f,i)=>{
     const isExisting=existingNames.has(f.name.toLowerCase());
     if(isExisting) replaceCount++;
-    const bucket=_importBuckets[i]||f.bucket;
     const pnl=f.currentValue-f.invested;
     const pnlColor=pnl>=0?'var(--green)':'var(--red)';
     const pnlSign=pnl>=0?'+':'';
@@ -3111,14 +2925,6 @@ function _renderImportPreview(){
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:0.68rem;color:var(--text3)">${f.category} · ${fmt(f.currentValue)}</span>
           <span style="font-size:0.68rem;font-weight:600;color:${pnlColor}">${pnlSign}${fmt(pnl)}</span>
-        </div>
-        <div style="margin-top:5px">
-          <select style="font-size:0.65rem;font-weight:700;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:2px 5px;font-family:inherit;cursor:pointer;outline:none" onclick="event.stopPropagation()" onchange="_setImportBucket(${i},this.value)">
-            <option value="income" ${bucket==='income'?'selected':''}>🟢 Income</option>
-            <option value="stability" ${bucket==='stability'?'selected':''}>🔵 Stability</option>
-            <option value="return" ${bucket==='return'?'selected':''}>🟠 Return</option>
-            <option value="" ${!bucket?'selected':''}>— Unassigned</option>
-          </select>
         </div>
       </div>
     </div>`;
@@ -3172,7 +2978,6 @@ function _importSelectAll(on){
   });
   _updateImportBtn();
 }
-function _setImportBucket(i,val){_importBuckets[i]=val;}
 function _updateImportBtn(){
   const btn=document.getElementById('imp-confirm-btn');
   if(!btn)return;
@@ -3188,10 +2993,7 @@ function _doImport(){
 
   let added=0,updated=0;
   toImport.forEach((f,idx)=>{
-    // Find original index for bucket override
-    const origIdx=_importRows.indexOf(f);
-    const bucket=_importBuckets[origIdx]??f.bucket;
-    const obj={category:f.category,name:f.name,currentValue:f.currentValue,invested:f.invested,sip:f.sip,bucket};
+    const obj={category:f.category,name:f.name,currentValue:f.currentValue,invested:f.invested,sip:f.sip};
     // Upsert: match by name (case-insensitive) within MF/ETF categories
     const existing=data.assets.find(a=>(a.category==='MutualFunds'||a.category==='ETF')&&a.name.toLowerCase()===f.name.toLowerCase());
     if(existing){
@@ -3232,15 +3034,9 @@ function sheetAsset(a){
       <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
     </div>
     <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
-    <div class="fg"><label class="fl">Investment Bucket <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">ISR strategy</span></label><select class="fi fi-sel" id="f-bucket">
-      <option value="" ${!a.bucket?'selected':''}>Not Assigned</option>
-      <option value="income" ${a.bucket==='income'?'selected':''}>🟢 Income (0–3y): Liquid, Arbitrage</option>
-      <option value="stability" ${a.bucket==='stability'?'selected':''}>🔵 Stability (3–7y): BAF, Hybrid</option>
-      <option value="return" ${a.bucket==='return'?'selected':''}>🟠 Return (7y+): Equity, Index</option>
-    </select></div>
     <div class="form-actions">${a.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delAsset(\''+a.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">${a.id?'Update':'Add'}</button></div>
   </div>`}
-function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0),bucket:document.getElementById('f-bucket')?.value||''};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
+function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
@@ -3289,6 +3085,10 @@ function sheetGoal(pid){
       <div class="fg"><label class="fl">Current Cost (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${todayTarget>0?fmt(todayTarget):''}" data-raw="${todayTarget||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
       <div class="fg"><label class="fl">Future Cost</label><div class="fi" id="goal-adj-val" style="cursor:default;font-family:var(--mono);font-weight:500;color:var(--text1);display:flex;align-items:center">${adjTarget>0?fmt(adjTarget):'—'}</div></div>
     </div>
+    ${(()=>{const mult={l1:4,l2:8,l3:24}[pr.id];const exp=Number(data.profile.monthlyExpenses||0);if(!mult||!exp)return'';const sug=mult*exp;return`<div style="display:flex;align-items:center;gap:8px;margin:-6px 0 10px;padding:8px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
+      <div style="flex:1;font-size:0.72rem;color:var(--text3)">Suggested: <b style="color:var(--text1)">${fmt(sug)}</b> (${mult} × ${fmt(exp)} monthly expenses)</div>
+      <button class="btn btn-ghost btn-sm" style="padding:4px 10px;font-size:0.72rem" onclick="const el=document.getElementById('f-gtarget');el.dataset.raw=${sug};el.value=fmt(${sug});updateGoalSIP()">Use</button>
+    </div>`})()}
     <div class="form-row2">
       <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="5" value="${g.timePeriod||''}" oninput="updateGoalSIP()"/></div>
       <div class="fg"><label class="fl">Inflation (% p.a.)</label><input class="fi" id="f-ginfl" type="number" step="0.5" placeholder="7" value="${infl}" oninput="updateGoalSIP()"/></div>
@@ -3381,9 +3181,11 @@ function saveGoal(){
   obj.expectedReturn=ret;
   obj.linkedAssetIds=Array.from(document.querySelectorAll('#goal-asset-link-list .inv-link-item.on')).map(el=>{const m=(el.id||'').replace('gal-','');return m||null}).filter(Boolean);
   if(!obj.linkedAssetIds.length) obj.current=rawVal('f-gcurrent');
-  const ex=data.goals.find(g=>g.type===type);
-  if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
-  save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+  guardedSave(obj.linkedAssetIds,'goal:'+type,()=>{
+    const ex=data.goals.find(g=>g.type===type);
+    if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
+    save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+  });
 }
 
 /* ── INSURANCE (multi-policy) ── */
@@ -3510,9 +3312,11 @@ function saveCustomGoal(editId){
   const linkedAssetIds=Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('cgal-','')).filter(Boolean);
   const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||'',linkedAssetIds};
   if(!linkedAssetIds.length) obj.current=Number(document.getElementById('f-cg-current')?.value||0);
-  if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
-  else{data.customGoals.push({id:uid(),...obj});}
-  save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+  guardedSave(linkedAssetIds,'cg:'+(editId||'new'),()=>{
+    if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
+    else{data.customGoals.push({id:uid(),...obj});}
+    save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+  });
 }
 
 function delCustomGoal(id){
@@ -3844,7 +3648,9 @@ function savePhase(kidId,phaseId){
   ph.linkedAssetIds=Array.from(document.querySelectorAll('#phase-asset-link-list .inv-link-item.on')).map(el=>(el.id||'').replace('pal-','')).filter(Boolean);
   // Only save manual current if no assets linked
   if(!ph.linkedAssetIds.length) ph.current=rawVal('f-phc');
-  save();closeSheet();renderKids();renderDashboard();toast('Saved ✓')
+  guardedSave(ph.linkedAssetIds,'phase:'+kidId+':'+phaseId,()=>{
+    save();closeSheet();renderKids();renderDashboard();toast('Saved ✓');
+  });
 }
 
 function sheetProfile(){
@@ -3967,7 +3773,9 @@ function loadSampleData(){
     {id:uid(),category:'CreditCard',name:'HDFC Credit Card',outstanding:45000,  interestRate:36,  emi:45000},
   ];
   data.goals=[
-    {id:uid(),type:'emergency', name:'Emergency Fund',  target:300000,  current:180000,timePeriod:'1'},
+    {id:uid(),type:'l1', name:'L1 Instant Cash',  target:330000,  current:280000,timePeriod:'1'},
+    {id:uid(),type:'l2', name:'L2 Quick Liquid',  target:660000,  current:5000,  timePeriod:'1'},
+    {id:uid(),type:'l3', name:'L3 Deep Buffer',   target:2000000, current:150000,timePeriod:'5'},
     {id:uid(),type:'retirement',name:'Retirement',      target:30000000,current:1470000,timePeriod:'25'},
     {id:uid(),type:'vacation',  name:'Vacation',        target:200000,  current:85000, timePeriod:'2'},
   ];
@@ -4023,7 +3831,7 @@ function init(){
       {id:uid(),category:'MutualFunds',name:'Nifty 50 Index Fund',  currentValue:320000, invested:240000, sip:5000},
     ];
     data.liabilities=[{id:uid(),category:'HomeLoan',name:'SBI Home Loan',outstanding:3200000,interestRate:8.5,emi:28500}];
-    data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:300000,current:180000,timePeriod:'1'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
+    data.goals=[{id:uid(),type:'l1',name:'L1 Instant Cash',target:330000,current:0,timePeriod:'1'},{id:uid(),type:'l2',name:'L2 Quick Liquid',target:660000,current:0,timePeriod:'1'},{id:uid(),type:'l3',name:'L3 Deep Buffer',target:2000000,current:0,timePeriod:'5'},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:1470000,timePeriod:'25'}];
     data.profile.name='';save();
   }
   renderProfile();renderDashboard();
