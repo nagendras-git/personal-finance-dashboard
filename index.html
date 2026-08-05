@@ -1021,19 +1021,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     </div>
   </div>
   <div class="container">
-    <!-- PORTFOLIO SUMMARY -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:12px">
-      <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:14px 16px;border-right:1px solid var(--border2)">
-          <div class="lbl" style="margin-bottom:5px">Total Assets</div>
-          <div style="font-size:1.15rem;font-weight:800;color:var(--green);letter-spacing:-0.3px" id="invest-assets-total">₹0</div>
-        </div>
-        <div style="padding:14px 16px">
-          <div class="lbl" style="margin-bottom:5px">Total Invested</div>
-          <div style="font-size:1.15rem;font-weight:800;color:var(--text1);letter-spacing:-0.3px" id="invest-invested-total">₹0</div>
-        </div>
-      </div>
-    </div>
     <!-- ASSETS -->
     <div class="sec-hdr-card" onclick="toggleSec('sec-assets')">
       <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
@@ -2004,16 +1991,19 @@ function updateWealthCard(assets,liab){
 
 function renderAssets(){
   const total=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
-  const totalInvested=data.assets.reduce((s,a)=>s+Number(a.invested||0),0);
   const el1=document.getElementById('assets-sec-count');const el2=document.getElementById('assets-total-hdr');
   if(el1)el1.textContent=data.assets.length;if(el2)el2.textContent=fmt(total);
-  const itot=document.getElementById('invest-assets-total');if(itot)itot.textContent=fmt(total);
-  const iinv=document.getElementById('invest-invested-total');if(iinv)iinv.textContent=fmt(totalInvested);
   const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
   updateWealthCard(total,totalLiab);
   const el=document.getElementById('assets-list');if(!el)return;
   if(!data.assets.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg><div class="empty-text">No assets yet</div></div>';return}
-  el.innerHTML='<div class="row-list-wrap">'+data.assets.map(a=>{
+  const ASSET_GROUPS=[
+    {label:'Mutual Funds',              cats:['MutualFunds']},
+    {label:'ETFs & Stocks',             cats:['ETF','Stocks']},
+    {label:'Debt & Safe',               cats:['Savings','EPF','PPF','FD','NPS']},
+    {label:'Gold · Real Estate · Other',cats:['Gold','RealEstate','Other']},
+  ];
+  const assetRow=a=>{
     const info=getAsset(a.category);
     return`<div class="row-item" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))">
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
@@ -2026,7 +2016,29 @@ function renderAssets(){
       </div>
       <div class="goal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>`;
-  }).join('')+'</div>';
+  };
+  const grouped=new Set();
+  let html='';
+  ASSET_GROUPS.forEach(g=>{
+    const items=data.assets.filter(a=>g.cats.includes(a.category));
+    if(!items.length)return;
+    items.forEach(a=>grouped.add(a.id));
+    const sub=items.reduce((s,a)=>s+Number(a.currentValue||0),0);
+    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px">
+      <span style="font-size:0.68rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3)">${g.label}</span>
+      <span style="font-size:0.74rem;font-weight:700;color:var(--text2)">${fmt(sub)}</span>
+    </div><div class="row-list-wrap">${items.map(assetRow).join('')}</div>`;
+  });
+  // Safety net: any asset with an unknown category still shows up
+  const leftovers=data.assets.filter(a=>!grouped.has(a.id));
+  if(leftovers.length){
+    const sub=leftovers.reduce((s,a)=>s+Number(a.currentValue||0),0);
+    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px">
+      <span style="font-size:0.68rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3)">Uncategorized</span>
+      <span style="font-size:0.74rem;font-weight:700;color:var(--text2)">${fmt(sub)}</span>
+    </div><div class="row-list-wrap">${leftovers.map(assetRow).join('')}</div>`;
+  }
+  el.innerHTML=html;
 }
 function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`${a?.name||'This asset'} will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();closeSheet();renderAssets();renderDashboard();toast('Deleted')})}
 
