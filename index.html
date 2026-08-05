@@ -1024,9 +1024,9 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     <!-- ASSETS -->
     <div class="sec-hdr-card" onclick="toggleSec('sec-assets')">
       <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
     </div>
-    <div class="sec-body closed" id="sec-assets">
+    <div class="sec-body" id="sec-assets">
       <div id="assets-list"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;margin-bottom:2px">
         <div class="add-row" style="margin:0" onclick="openSheet('asset')">Add Asset</div>
@@ -2241,18 +2241,32 @@ function renderChecklist(){
   const el=document.getElementById('checklist-items');if(!el)return;
   const checkSVG='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
   const delSVG='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-  el.innerHTML='<div class="row-list-wrap" style="margin-bottom:8px">'+items.map((item)=>`
+  const editSVG='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  el.innerHTML='<div class="row-list-wrap" style="margin-bottom:8px">'+items.map((item)=>{
+    if(item.id===_editingCheckId){
+      return`<div class="check-item" style="flex-direction:column;align-items:stretch;gap:8px;cursor:default">
+        <input class="fi" id="ci-edit-label" placeholder="Item label" value="${esc(item.label)}" style="margin:0"/>
+        <input class="fi" id="ci-edit-desc" placeholder="Description (optional)" value="${esc(item.desc||'')}" style="margin:0"/>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" style="flex:1;padding:8px" onclick="cancelEditCheckItem()">Cancel</button>
+          <button class="btn btn-primary" style="flex:1;padding:8px" onclick="saveEditCheckItem('${item.id}')">Save</button>
+        </div>
+      </div>`;
+    }
+    return`
     <div class="check-item ${item.done?'done':''}" onclick="toggleCheckItem('${item.id}')">
       <div class="check-box">${item.done?checkSVG:''}</div>
       <div style="flex:1">
         <div style="display:flex;align-items:center;gap:8px">
-          <div class="check-label">${item.label}</div>
+          <div class="check-label">${esc(item.label)}</div>
           ${item.done?'<span style="font-size:0.6rem;font-weight:700;letter-spacing:0.3px;color:#3B82F6;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);border-radius:99px;padding:1px 7px">Done</span>':''}
         </div>
-        ${item.desc?`<div class="check-desc">${item.desc}</div>`:''}
+        ${item.desc?`<div class="check-desc">${esc(item.desc)}</div>`:''}
       </div>
+      <button class="btn-del" style="margin-left:6px;flex-shrink:0;color:#3B82F6;border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.08)" onclick="event.stopPropagation();editCheckItem('${item.id}')">${editSVG}</button>
       <button class="btn-del" style="margin-left:6px;flex-shrink:0" onclick="event.stopPropagation();delCheckItem('${item.id}')">${delSVG}</button>
-    </div>`).join('')+'</div>'+`
+    </div>`;
+  }).join('')+'</div>'+`
   <div style="margin-top:0" id="checklist-add-area">
     <div class="add-row" style="margin:0" onclick="showAddCheckItem()">Add item</div>
     <div id="checklist-add-form" style="display:none;margin-top:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;gap:8px;display:none;flex-direction:column">
@@ -2280,7 +2294,8 @@ function getCheckItems(){
   data.checkItems=data.checkItems.filter(ci=>ci.custom||defaultLabels.includes(ci.label));
   if(data.checkItems.length!==before)save();
   CHECKLIST_ITEMS.forEach((item,i)=>{
-    if(!data.checkItems.some(ci=>ci.label===item.label)){
+    const deleted=(data.deletedCheckDefaults||[]).includes(item.label);
+    if(!deleted && !data.checkItems.some(ci=>ci.label===item.label)){
       data.checkItems.push({id:'ci_'+Date.now()+'_'+i, label:item.label, desc:item.desc, done:false, custom:false});
       save();
     }
@@ -2292,7 +2307,29 @@ function getCheckItems(){
   return data.checkItems;
 }
 function toggleCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);if(item){item.done=!item.done;save();renderChecklist();renderDashboard();}}
-function delCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);showConfirm('Remove item?',`${item?.label||'This item'} will be removed.`,()=>{data.checkItems=items.filter(x=>x.id!==id);save();renderChecklist();renderDashboard();toast('Removed')});}
+function delCheckItem(id){const items=getCheckItems();const item=items.find(x=>x.id===id);showConfirm('Remove item?',`${item?.label||'This item'} will be removed.`,()=>{if(item&&!item.custom){data.deletedCheckDefaults=data.deletedCheckDefaults||[];if(!data.deletedCheckDefaults.includes(item.label))data.deletedCheckDefaults.push(item.label);}data.checkItems=items.filter(x=>x.id!==id);save();renderChecklist();renderDashboard();toast('Removed')});}
+let _editingCheckId=null;
+function editCheckItem(id){_editingCheckId=id;renderChecklist();setTimeout(()=>document.getElementById('ci-edit-label')?.focus(),50);}
+function cancelEditCheckItem(){_editingCheckId=null;renderChecklist();}
+function saveEditCheckItem(id){
+  const label=document.getElementById('ci-edit-label')?.value.trim();
+  if(!label){toast('Enter a label');return;}
+  const desc=document.getElementById('ci-edit-desc')?.value.trim()||'';
+  const items=getCheckItems();
+  const item=items.find(x=>x.id===id);
+  if(item){
+    // Renaming a default item: tombstone the old label so it doesn't resurrect,
+    // and treat the renamed item as custom from here on
+    if(!item.custom && label!==item.label){
+      data.deletedCheckDefaults=data.deletedCheckDefaults||[];
+      if(!data.deletedCheckDefaults.includes(item.label))data.deletedCheckDefaults.push(item.label);
+      item.custom=true;
+    }
+    item.label=label;item.desc=desc;
+  }
+  _editingCheckId=null;
+  save();renderChecklist();renderDashboard();toast('Updated ✓');
+}
 function showAddCheckItem(){
   const form=document.getElementById('checklist-add-form');
   const addRow=document.querySelector('#checklist-add-area .add-row');
@@ -2713,9 +2750,14 @@ function sheetGoal(pid){
       <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
       <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
     </div>
-    ${(()=>{const meta={l1:{fund:'IDFC First Bank',months:[4,6]},l2:{fund:'Kotak Arbitrage Fund',months:[6,8]}}[pr.id];const exp=Number(data.profile.monthlyExpenses||0);if(!meta||!exp)return'';const curTgt=Number(g.target||0);const chips=meta.months.map(m=>{const val=m*exp;const active=curTgt===val?' active':'';return`<button type="button" class="month-chip${active}" onclick="setGoalTarget(${val},this)">${m} mo · ${fmt(val)}</button>`}).join('');return`<div style="margin:-6px 0 12px;padding:9px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
+    ${(()=>{const meta={l1:{fund:'IDFC First Bank',months:[3,4,6]},l2:{fund:'Kotak Arbitrage Fund',months:[6,8,12]}}[pr.id];const exp=Number(data.profile.monthlyExpenses||0);if(!meta||!exp)return'';const curTgt=Number(g.target||0);const chips=meta.months.map(m=>{const val=m*exp;const active=curTgt===val?' active':'';return`<button type="button" class="month-chip${active}" onclick="setGoalTarget(${val},this)">${m} mo · ${fmt(val)}</button>`}).join('');const curMonths=(curTgt>0&&curTgt%exp===0&&!meta.months.includes(curTgt/exp))?curTgt/exp:'';return`<div style="margin:-6px 0 12px;padding:9px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
       <div style="font-size:0.7rem;color:var(--text3);margin-bottom:8px">${meta.fund} · pick months of expenses (${fmt(exp)}/mo)</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">${chips}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:9px">
+        <span style="font-size:0.74rem;font-weight:600;color:var(--text2)">Custom</span>
+        <input class="fi" id="f-gmonths" type="number" inputmode="decimal" min="1" max="60" step="0.5" placeholder="0" value="${curMonths}" style="width:64px;padding:7px 10px;font-size:0.82rem;text-align:center" oninput="setGoalMonths(this)"/>
+        <span style="font-size:0.72rem;color:var(--text3)">months × ${fmt(exp)}</span>
+      </div>
     </div>`})()}
     <div class="form-actions">${g.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delGoal(\''+pr.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveGoal()">${g.id?'Update':'Save'}</button></div>
   </div>`}
@@ -2728,6 +2770,18 @@ function setGoalTarget(val, btn){
   const el=document.getElementById('f-gtarget');
   if(el){el.dataset.raw=val;el.value=fmt(val);}
   if(btn && btn.parentElement){btn.parentElement.querySelectorAll('.month-chip').forEach(c=>c.classList.remove('active'));btn.classList.add('active');}
+  const mi=document.getElementById('f-gmonths');if(mi)mi.value='';
+}
+function setGoalMonths(inp){
+  const exp=Number(data.profile.monthlyExpenses||0);
+  const m=Number(inp.value||0);
+  if(!exp)return;
+  const box=inp.closest('div')?.parentElement;
+  if(box)box.querySelectorAll('.month-chip').forEach(c=>c.classList.remove('active'));
+  if(!m)return;
+  const val=Math.round(m*exp);
+  const el=document.getElementById('f-gtarget');
+  if(el){el.dataset.raw=val;el.value=fmt(val);}
 }
 function delGoal(typeId){
   const g=data.goals.find(x=>x.type===typeId);
@@ -3002,7 +3056,7 @@ function importData(ev){
     try{
       const d=JSON.parse(reader.result);
       if(!d||typeof d!=='object'||!d.profile){toast('Invalid backup file');return}
-      data={profile:d.profile||{name:'',avatarColor:'#6366f1'},assets:d.assets||[],liabilities:d.liabilities||[],goals:d.goals||[],customGoals:d.customGoals||[],insurance:d.insurance||[],checkItems:d.checkItems||[]};
+      data={profile:d.profile||{name:'',avatarColor:'#6366f1'},assets:d.assets||[],liabilities:d.liabilities||[],goals:d.goals||[],customGoals:d.customGoals||[],insurance:d.insurance||[],checkItems:d.checkItems||[],deletedCheckDefaults:d.deletedCheckDefaults||[]};
       save();load();renderDashboard();renderGoals();renderAssets();renderLiabilities();renderProfile();toast('Imported ✓');
     }catch(e){toast('Could not read file')}
   };
