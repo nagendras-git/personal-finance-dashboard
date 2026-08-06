@@ -1274,6 +1274,22 @@ const ASSET_CATS = [
   {v:'NPS',  l:'NPS',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>', color:'#38bdf8', cat:'safe'},
   {v:'Other',l:'Other',        icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="16 2 12 6 8 2"/></svg>', color:'#9ca3af', cat:'other'},
 ];
+// ── Mutual Fund sub-types (Active / Passive / Hybrid / ELSS) ──
+const MF_TYPES=[
+  {v:'active', l:'Active Funds'},
+  {v:'passive',l:'Passive · Index'},
+  {v:'hybrid', l:'Hybrid Funds'},
+  {v:'elss',   l:'ELSS · Tax Saver'},
+];
+// Infer sub-type from name for assets saved before this feature (or Excel imports)
+function inferFundType(name){
+  const n=(name||'').toLowerCase();
+  if(/elss|tax\s*saver|long term equity/.test(n)) return 'elss';
+  if(/index|nifty|sensex|midcap 150|smallcap 250|momentum|equal weight|quality|low vol|etf/.test(n)) return 'passive';
+  if(/balanced advantage|baf|hybrid|arbitrage|multi asset|equity savings|aggressive|conservative|dynamic asset/.test(n)) return 'hybrid';
+  return 'active';
+}
+function mfType(a){return a.fundType||inferFundType(a.name);}
 const LIAB_CATS = [
   {v:'HomeLoan',    l:'Home Loan',     icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', color:'#f87171'},
   {v:'PersonalLoan',l:'Personal Loan', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>', color:'#fb923c'},
@@ -2009,7 +2025,7 @@ function renderAssets(){
       <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
-        <div class="row-sub">${info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
+        <div class="row-sub">${a.category==='MutualFunds'?(MF_TYPES.find(t=>t.v===mfType(a))?.l||info.l):info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
       </div>
       <div class="row-right">
         <div class="row-value">${fmt(a.currentValue)}</div>
@@ -2027,7 +2043,22 @@ function renderAssets(){
     html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px">
       <span style="font-size:0.68rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3)">${g.label}</span>
       <span style="font-size:0.74rem;font-weight:700;color:var(--text2)">${fmt(sub)}</span>
-    </div><div class="row-list-wrap">${items.map(assetRow).join('')}</div>`;
+    </div>`;
+    if(g.label==='Mutual Funds'){
+      // Segregate into Active / Passive / Hybrid / ELSS.
+      // Empty sub-groups render nothing — ELSS disappears on its own once redeemed.
+      MF_TYPES.forEach(t=>{
+        const tItems=items.filter(a=>mfType(a)===t.v);
+        if(!tItems.length)return;
+        const tSub=tItems.reduce((s,a)=>s+Number(a.currentValue||0),0);
+        html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 4px 4px 12px">
+          <span style="font-size:0.63rem;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--text3);opacity:0.85">${t.l} · ${tItems.length}</span>
+          <span style="font-size:0.7rem;font-weight:600;color:var(--text3)">${fmt(tSub)}</span>
+        </div><div class="row-list-wrap">${tItems.map(assetRow).join('')}</div>`;
+      });
+    }else{
+      html+=`<div class="row-list-wrap">${items.map(assetRow).join('')}</div>`;
+    }
   });
   // Safety net: any asset with an unknown category still shows up
   const leftovers=data.assets.filter(a=>!grouped.has(a.id));
@@ -2708,8 +2739,9 @@ function sheetAsset(a){
   const cat=a.category||'EPF';
   return`<div class="sheet-hdr"><div class="sheet-title">${a.id?'Edit':'Add'} Asset</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="sheet-body">
-    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat">${ASSET_CATS.map(c=>`<option value="${c.v}" ${cat===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
-    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value="${a.name||''}"/></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi fi-sel" id="f-cat" onchange="toggleFundType()">${ASSET_CATS.map(c=>`<option value="${c.v}" ${cat===c.v?'selected':''}>${c.l}</option>`).join('')}</select></div>
+    <div class="fg" id="f-ftype-wrap" style="${cat==='MutualFunds'?'':'display:none'}"><label class="fl">Fund Type</label><select class="fi fi-sel" id="f-ftype">${MF_TYPES.map(t=>`<option value="${t.v}" ${(a.fundType||inferFundType(a.name))===t.v?'selected':''}>${t.l}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-name" placeholder="e.g. SBI Nifty 50 Fund" value="${a.name||''}" oninput="autoGuessFundType(this.value)"/></div>
     <div class="form-row2">
       <div class="fg"><label class="fl">Current Value (₹)</label><input class="fi" id="f-cur" type="number" placeholder="0" value="${a.currentValue||''}"/></div>
       <div class="fg"><label class="fl">Invested (₹)</label><input class="fi" id="f-inv" type="number" placeholder="0" value="${a.invested||''}"/></div>
@@ -2717,7 +2749,14 @@ function sheetAsset(a){
     <div class="fg"><label class="fl">Monthly SIP / Contribution (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional</span></label><input class="fi" id="f-sip" type="number" placeholder="0" value="${a.sip||''}"/></div>
     <div class="form-actions">${a.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delAsset(\''+a.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveAsset('${a.id||''}')">${a.id?'Update':'Add'}</button></div>
   </div>`}
-function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
+function toggleFundType(){const w=document.getElementById('f-ftype-wrap');if(w)w.style.display=document.getElementById('f-cat').value==='MutualFunds'?'':'none';}
+function autoGuessFundType(name){
+  // Only auto-set while adding (not editing an already-classified asset)
+  const sel=document.getElementById('f-ftype');
+  if(sel&&!sel.dataset.touched)sel.value=inferFundType(name);
+}
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='f-ftype')e.target.dataset.touched='1';});
+function saveAsset(editId){const name=document.getElementById('f-name').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-cat').value,name,currentValue:Number(document.getElementById('f-cur').value||0),invested:Number(document.getElementById('f-inv').value||0),sip:Number(document.getElementById('f-sip').value||0)};if(obj.category==='MutualFunds'){obj.fundType=document.getElementById('f-ftype')?.value||inferFundType(name);}if(editId){Object.assign(data.assets.find(x=>x.id===editId)||{},obj)}else data.assets.push({id:uid(),...obj});save();closeSheet();renderAssets();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetLiability(l){
   return`<div class="sheet-hdr"><div class="sheet-title">${l.id?'Edit':'Add'} Liability</div><button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
