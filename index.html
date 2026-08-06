@@ -2034,16 +2034,26 @@ function renderAssets(){
     </div>`;
   };
   const grouped=new Set();
+  // Collapsible group state (persisted; default open)
+  const GRP_KEY='wp_asset_grps';
+  const grpClosed=JSON.parse(localStorage.getItem(GRP_KEY)||'{}');
+  const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+  const caretSvg=open=>`<span class="sec-caret${open?' open':''}" style="margin-left:6px"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>`;
+  const grpHdr=(key,label,sub,isSub)=>{
+    const open=!grpClosed[key];
+    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:${isSub?'6px 4px 4px 12px':'10px 4px 6px'};cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="toggleAssetGrp('${key}')">
+      <span style="display:inline-flex;align-items:center;font-size:${isSub?'0.63rem':'0.68rem'};font-weight:${isSub?'600':'700'};letter-spacing:${isSub?'0.6px':'0.8px'};text-transform:uppercase;color:var(--blue)${isSub?';opacity:0.85':''}">${label}${caretSvg(open)}</span>
+      <span style="font-size:${isSub?'0.7rem':'0.74rem'};font-weight:${isSub?'600':'700'};color:var(--text2)">${sub}</span>
+    </div><div class="sec-body${open?'':' closed'}" id="agrp-${key}">`;
+  };
   let html='';
   ASSET_GROUPS.forEach(g=>{
     const items=data.assets.filter(a=>g.cats.includes(a.category));
     if(!items.length)return;
     items.forEach(a=>grouped.add(a.id));
     const sub=items.reduce((s,a)=>s+Number(a.currentValue||0),0);
-    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px">
-      <span style="font-size:0.68rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3)">${g.label}</span>
-      <span style="font-size:0.74rem;font-weight:700;color:var(--text2)">${fmt(sub)}</span>
-    </div>`;
+    const gKey=slug(g.label);
+    html+=grpHdr(gKey,g.label,fmt(sub),false);
     if(g.label==='Mutual Funds'){
       // Segregate into Active / Passive / Hybrid / ELSS.
       // Empty sub-groups render nothing — ELSS disappears on its own once redeemed.
@@ -2051,25 +2061,33 @@ function renderAssets(){
         const tItems=items.filter(a=>mfType(a)===t.v);
         if(!tItems.length)return;
         const tSub=tItems.reduce((s,a)=>s+Number(a.currentValue||0),0);
-        html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 4px 4px 12px">
-          <span style="font-size:0.63rem;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--text3);opacity:0.85">${t.l} · ${tItems.length}</span>
-          <span style="font-size:0.7rem;font-weight:600;color:var(--text3)">${fmt(tSub)}</span>
-        </div><div class="row-list-wrap">${tItems.map(assetRow).join('')}</div>`;
+        html+=grpHdr('mf-'+t.v,`${t.l} · ${tItems.length}`,fmt(tSub),true);
+        html+=`<div class="row-list-wrap">${tItems.map(assetRow).join('')}</div></div>`;
       });
+      html+='</div>';
     }else{
-      html+=`<div class="row-list-wrap">${items.map(assetRow).join('')}</div>`;
+      html+=`<div class="row-list-wrap">${items.map(assetRow).join('')}</div></div>`;
     }
   });
   // Safety net: any asset with an unknown category still shows up
   const leftovers=data.assets.filter(a=>!grouped.has(a.id));
   if(leftovers.length){
     const sub=leftovers.reduce((s,a)=>s+Number(a.currentValue||0),0);
-    html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 4px 6px">
-      <span style="font-size:0.68rem;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text3)">Uncategorized</span>
-      <span style="font-size:0.74rem;font-weight:700;color:var(--text2)">${fmt(sub)}</span>
-    </div><div class="row-list-wrap">${leftovers.map(assetRow).join('')}</div>`;
+    html+=grpHdr('uncategorized','Uncategorized',fmt(sub),false);
+    html+=`<div class="row-list-wrap">${leftovers.map(assetRow).join('')}</div></div>`;
   }
   el.innerHTML=html;
+}
+function toggleAssetGrp(key){
+  const GRP_KEY='wp_asset_grps';
+  const st=JSON.parse(localStorage.getItem(GRP_KEY)||'{}');
+  const body=document.getElementById('agrp-'+key);if(!body)return;
+  const nowClosed=!body.classList.contains('closed');
+  body.classList.toggle('closed',nowClosed);
+  const caret=body.previousElementSibling?.querySelector('.sec-caret');
+  if(caret)caret.classList.toggle('open',!nowClosed);
+  if(nowClosed)st[key]=1;else delete st[key];
+  localStorage.setItem(GRP_KEY,JSON.stringify(st));
 }
 function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`${a?.name||'This asset'} will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();closeSheet();renderAssets();renderDashboard();toast('Deleted')})}
 
