@@ -484,6 +484,7 @@ body.scroll-locked {
 .month-chip { background:var(--surface); color:var(--text2); border:1px solid var(--border2); border-radius:8px; padding:7px 11px; font-size:0.74rem; font-weight:600; cursor:pointer; transition:all 0.12s; white-space:nowrap }
 .month-chip:active { transform:scale(0.96) }
 .month-chip.active { background:rgba(59,130,246,0.12); border-color:var(--blue); color:var(--blue) }
+.fi.month-custom-active { border-color:var(--blue); color:var(--blue); background:rgba(59,130,246,0.08); font-weight:700 }
 .btn-circle {
   width:24px; height:24px; border-radius:50%; background:rgba(59,130,246,0.08);
   border:1px solid rgba(59,130,246,0.18); font-size:0.75rem; padding:0;
@@ -1213,9 +1214,9 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
       <div><div class="qa-action-label">Add Liability</div><div class="qa-action-sub">Loan, EMI, Credit card…</div></div>
     </div>
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','l1')" style="border-color:var(--border)">
+    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:var(--border)">
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <div><div class="qa-action-label">Update Preset Goal</div><div class="qa-action-sub">L1/L2, Retirement…</div></div>
+      <div><div class="qa-action-label">Update Preset Goal</div><div class="qa-action-sub">Emergency Fund, Retirement…</div></div>
     </div>
     </div>
   </div>
@@ -1298,12 +1299,9 @@ const LIAB_CATS = [
   {v:'Other',       l:'Other',         icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>', color:'#9ca3af'},
 ];
 const GOAL_PRESETS = [
-  {id:'l1', name:'L1 Instant Cash',
+  {id:'emergency', name:'Emergency Fund',
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-   color:'#60a5fa', light:'rgba(96,165,250,0.1)', isIns:false, sub:'IDFC First Bank'},
-  {id:'l2', name:'L2 Quick Liquid',
-   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>`,
-   color:'#2dd4bf', light:'rgba(45,212,191,0.1)', isIns:false, sub:'Kotak Arbitrage Fund'},
+   color:'#60a5fa', light:'rgba(96,165,250,0.1)', isIns:false, sub:'Bank Savings Account'},
   {id:'education', name:"Son's Education",
    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 12 15 2 8.5 12 2"/><path d="M7 11.5v5c0 2 2 3.5 5 3.5s5-1.5 5-3.5v-5"/></svg>`,
    color:'#34d399', light:'rgba(52,211,153,0.1)', isIns:false},
@@ -1324,9 +1322,8 @@ const GOAL_PRESETS = [
    color:'#fb923c', light:'rgba(251,146,60,0.1)', isIns:false},
 ];
 const CHECKLIST_ITEMS = [
-  {label:'L1 Instant Cash filled',     desc:'4 months of expenses in bank savings'},
-  {label:'L2 Quick Liquid filled',     desc:'8 months in arbitrage fund'},
-  {label:'Core SIPs running',            desc:'Restart the day L2 crosses target — mechanical rule'},
+  {label:'Emergency Fund filled',        desc:'12 months of expenses in bank savings account'},
+  {label:'Core SIPs running',            desc:'₹1L/month across 4 funds — never interrupt'},
   {label:'PPF ₹1.5L before March 31',    desc:'Deposit April 1st onwards for full-year interest'},
   {label:'Term Life Insurance',          desc:'Cover 10–15x annual income'},
   {label:'Health Insurance',             desc:'Family floater + parents corporate top-up'},
@@ -1544,19 +1541,36 @@ function load(){
   (data.customGoals||[]).forEach(cg=>{if(_unlink(cg))_changed=true});
   if(_changed)save();
   if(!data.insurance)data.insurance=[];
-  // Migration: split old single 'emergency' goal into L1/L2 layers
-  const oldEf=data.goals.find(g=>g.type==='emergency');
-  if(oldEf){
-    const saved=Number(oldEf.current||0);
-    data.goals=data.goals.filter(g=>g.type!=='emergency');
-    if(!data.goals.some(g=>g.type==='l1'))data.goals.push({id:uid(),type:'l1',name:'L1 Instant Cash',target:330000,current:Math.min(saved,330000),timePeriod:'1',linkedAssetIds:oldEf.linkedAssetIds||[]});
-    if(!data.goals.some(g=>g.type==='l2'))data.goals.push({id:uid(),type:'l2',name:'L2 Quick Liquid',target:660000,current:Math.max(0,saved-330000),timePeriod:'1'});
-    save();
-  }
-  // Migration: drop the retired L3 Deep Buffer layer — emergency fund is now L1+L2 (12 months)
+  // Migration: drop the retired L3 Deep Buffer layer
   if(data.goals.some(g=>g.type==='l3')){
     data.goals=data.goals.filter(g=>g.type!=='l3');
     save();
+  }
+  // Migration: merge retired L1/L2 layers into a single Emergency Fund goal (bank savings)
+  const oldL1=data.goals.find(g=>g.type==='l1'), oldL2=data.goals.find(g=>g.type==='l2');
+  if(oldL1||oldL2){
+    const mCur=Number(oldL1?.current||0)+Number(oldL2?.current||0);
+    const mTgt=Number(oldL1?.target||0)+Number(oldL2?.target||0);
+    data.goals=data.goals.filter(g=>g.type!=='l1'&&g.type!=='l2');
+    const exEf=data.goals.find(g=>g.type==='emergency');
+    if(exEf){exEf.current=Number(exEf.current||0)+mCur;if(!Number(exEf.target||0))exEf.target=mTgt;}
+    else data.goals.push({id:uid(),type:'emergency',name:'Emergency Fund',target:mTgt,current:mCur});
+    save();
+  }
+  // Migration: retire legacy L1/L2 checklist items → single Emergency Fund item
+  if(Array.isArray(data.checkItems)&&data.checkItems.length){
+    const oldC1=data.checkItems.find(c=>c.label==='L1 Instant Cash filled');
+    const oldC2=data.checkItems.find(c=>c.label==='L2 Quick Liquid filled');
+    if(oldC1||oldC2){
+      const bothDone=!!(oldC1&&oldC1.done)&&!!(oldC2&&oldC2.done);
+      data.checkItems=data.checkItems.filter(c=>c.label!=='L1 Instant Cash filled'&&c.label!=='L2 Quick Liquid filled');
+      const efItem=data.checkItems.find(c=>c.label==='Emergency Fund filled');
+      if(efItem)efItem.done=efItem.done||bothDone;
+      else data.checkItems.push({id:'ci_'+Date.now()+'_ef',label:'Emergency Fund filled',desc:'12 months of expenses in bank savings account',done:bothDone,custom:false});
+      save();
+    }
+    const sipItem=data.checkItems.find(c=>c.label==='Core SIPs running'&&/L2|arbitrage/i.test(c.desc||''));
+    if(sipItem){sipItem.desc='₹1L/month across 4 funds — never interrupt';save();}
   }
   // Migration: move old single-entry insurance from goals[] to insurance[]
   if(data.insurance.length===0){
@@ -1655,16 +1669,16 @@ function _getSafetyGaps(){
   const gaps=[];
   const expenses=Number(data.profile.monthlyExpenses||0);
   if(expenses>0){
-    const layerSaved=(t)=>{const g=data.goals.find(x=>x.type===t);const li=g?.linkedAssetIds||[];return li.length>0?linkedAssetTotal(li):Number(g?.current||0)};
-    const efSaved=layerSaved('l1')+layerSaved('l2');
+    const efGoal=data.goals.find(x=>x.type==='emergency');
+    const efSaved=Number(efGoal?.current||0);
     const efRequired=expenses*12;
     if(efSaved<efRequired){
       const shortfall=efRequired-efSaved;
-      gaps.push({id:'ef',icon:'🛡️',title:'12-Month Safety Net (L1+L2)',
+      gaps.push({id:'ef',icon:'🛡️',title:'12-Month Emergency Fund',
         detail:efSaved>0?`${fmt(efSaved)} saved · need ${fmt(efRequired)} (12 months)`:`Build ${fmt(efRequired)} (12× monthly expenses)`,
         badge:efSaved>0?`${fmt(shortfall)} short`:'Not started',
         badgeClr:efSaved>0?'var(--amber)':'var(--red)',
-        action:'Set up →', onclick:`openSheet('goal','l1')`});
+        action:'Set up →', onclick:`openSheet('goal','emergency')`});
     }
   }
   const hasHealth=data.insurance.some(i=>i.type==='health');
@@ -2240,27 +2254,13 @@ function renderGoals(){
     </div>`;
   }
 
-  // Render L1/L2 emergency layers into the dedicated slot (top of page)
-  const LAYER_IDS=['l1','l2'];
+  // Render the Emergency Fund goal into the dedicated slot (top of page) — single card, no wrapper
+  const LAYER_IDS=['emergency'];
   const layerPresets = savingsGoals.filter(pr=>LAYER_IDS.includes(pr.id));
   const nonEmergencyGoals = savingsGoals.filter(pr=>!LAYER_IDS.includes(pr.id));
 
   if(emergencyEl && layerPresets.length) {
-    // One clubbed "Emergency Fund" card containing L1/L2
-    const sumLayer=(ids)=>ids.reduce((s,id)=>{const g=data.goals.find(x=>x.type===id)||{};return s+Number(g.current||0)},0);
-    const tgtLayer=(ids)=>ids.reduce((s,id)=>{const g=data.goals.find(x=>x.type===id)||{};return s+Number(g.target||0)},0);
-    const fCur=sumLayer(['l1','l2']), fTgt=tgtLayer(['l1','l2']);
-    const fP=pct(fCur,fTgt);
-    emergencyEl.innerHTML = `<div style="margin-bottom:8px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-emergency')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Emergency Fund</span></div>
-        <div class="sec-hdr-right"><span style="font-size:0.84rem;font-weight:700;color:${fP>=100?'var(--green)':'var(--blue)'}">${fP}%</span><span class="sec-caret open" id="caret-sec-emergency"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
-      </div>
-      <div class="sec-body" id="sec-emergency">
-        <div style="font-size:0.7rem;color:var(--text3);margin:2px 4px 8px">12-month safety net (L1+L2): ${fmt(fCur)} of ${fmt(fTgt)} · ${fP>=100?'Complete — restart core SIPs':'Restart core SIPs at 100%'}</div>
-        ${layerPresets.map(goalSection).join('')}
-      </div>
-    </div>`;
+    emergencyEl.innerHTML = layerPresets.map(goalSection).join('');
   }
 
   el.innerHTML =
@@ -2413,7 +2413,7 @@ function openSheet(type,arg,arg2){
   if(type==='asset')html=sheetAsset(arg||{});
   else if(type==='importMF')html=sheetImportMF();
   else if(type==='liability')html=sheetLiability(arg||{});
-  else if(type==='goal')html=sheetGoal(arg||'l1');
+  else if(type==='goal')html=sheetGoal(arg||'emergency');
   else if(type==='customGoal')html=sheetCustomGoal(arg||null);
   else if(type==='insurance')html=sheetInsurance(arg||null);
   else if(type==='profile')html=sheetProfile();
@@ -2804,17 +2804,18 @@ function sheetGoal(pid){
   <div class="sheet-body">
     ${typeSelect}
     <div class="form-row2">
-      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
+      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this);updateGoalMonthsSummary()"/></div>
       <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
     </div>
-    ${(()=>{const meta={l1:{fund:'IDFC First Bank',months:[3,4,6]},l2:{fund:'Kotak Arbitrage Fund',months:[6,8,12]}}[pr.id];const exp=Number(data.profile.monthlyExpenses||0);if(!meta||!exp)return'';const curTgt=Number(g.target||0);const chips=meta.months.map(m=>{const val=m*exp;const active=curTgt===val?' active':'';return`<button type="button" class="month-chip${active}" onclick="setGoalTarget(${val},this)">${m} mo · ${fmt(val)}</button>`}).join('');const curMonths=(curTgt>0&&curTgt%exp===0&&!meta.months.includes(curTgt/exp))?curTgt/exp:'';return`<div style="margin:-6px 0 12px;padding:9px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
+    ${(()=>{const meta={emergency:{fund:'Bank Savings Account',months:[6,9,12]}}[pr.id];const exp=Number(data.profile.monthlyExpenses||0);if(!meta||!exp)return'';const curTgt=Number(g.target||0);const curM=curTgt>0?Math.round(curTgt/exp*10)/10:0;const isChip=meta.months.includes(curM);const chips=meta.months.map(m=>{const val=m*exp;const active=(isChip&&curM===m)?' active':'';return`<button type="button" class="month-chip${active}" data-months="${m}" onclick="setGoalTarget(${val},this)">${m} mo · ${fmt(val)}</button>`}).join('');const curMonths=(!isChip&&curTgt>0)?curM:'';return`<div id="f-gmonths-box" style="margin:-6px 0 12px;padding:9px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
       <div style="font-size:0.7rem;color:var(--text3);margin-bottom:8px">${meta.fund} · pick months of expenses (${fmt(exp)}/mo)</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">${chips}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:9px">
         <span style="font-size:0.74rem;font-weight:600;color:var(--text2)">Custom</span>
-        <input class="fi" id="f-gmonths" type="number" inputmode="decimal" min="1" max="60" step="0.5" placeholder="0" value="${curMonths}" style="width:64px;padding:7px 10px;font-size:0.82rem;text-align:center" oninput="setGoalMonths(this)"/>
+        <input class="fi${curMonths!==''?' month-custom-active':''}" id="f-gmonths" type="number" inputmode="decimal" min="1" max="60" step="0.5" placeholder="0" value="${curMonths}" style="width:64px;padding:7px 10px;font-size:0.82rem;text-align:center" oninput="setGoalMonths(this)"/>
         <span style="font-size:0.72rem;color:var(--text3)">months × ${fmt(exp)}</span>
       </div>
+      <div id="f-gmonths-summary" style="font-size:0.74rem;font-weight:600;color:var(--blue);margin-top:9px">${goalMonthsSummaryHTML(curTgt,exp)}</div>
     </div>`})()}
     <div class="form-actions">${g.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delGoal(\''+pr.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveGoal()">${g.id?'Update':'Save'}</button></div>
   </div>`}
@@ -2823,22 +2824,48 @@ function switchGoalType(){
   const sel=document.getElementById('f-gtype');if(!sel)return;
   closeSheet();openSheet('goal',sel.value);
 }
+function goalMonthsSummaryHTML(tgt,exp){
+  if(!tgt||!exp)return'<span style="color:var(--text3);font-weight:500">No target set yet — tap a chip or enter months</span>';
+  const m=Math.round(tgt/exp*10)/10;
+  const mDisp=m%1===0?m.toFixed(0):m.toFixed(1);
+  return'✓ Selected: '+mDisp+' months × '+fmt(exp)+' = '+fmt(tgt);
+}
+function updateGoalMonthsSummary(skipInputSync){
+  const sum=document.getElementById('f-gmonths-summary');if(!sum)return;
+  const exp=Number(data.profile.monthlyExpenses||0);if(!exp)return;
+  const tgt=rawVal('f-gtarget');
+  sum.innerHTML=goalMonthsSummaryHTML(tgt,exp);
+  if(skipInputSync)return;
+  // Sync chip / custom highlighting to whatever the target currently is
+  const m=tgt>0?Math.round(tgt/exp*10)/10:0;
+  const box=document.getElementById('f-gmonths-box');
+  let chipMatched=false;
+  if(box)box.querySelectorAll('.month-chip').forEach(c=>{const on=Number(c.dataset.months)===m&&m>0;c.classList.toggle('active',on);if(on)chipMatched=true;});
+  const mi=document.getElementById('f-gmonths');
+  if(mi){
+    if(chipMatched||!(tgt>0)){mi.value='';mi.classList.remove('month-custom-active');}
+    else{mi.value=m%1===0?m.toFixed(0):m.toFixed(1);mi.classList.add('month-custom-active');}
+  }
+}
 function setGoalTarget(val, btn){
   const el=document.getElementById('f-gtarget');
   if(el){el.dataset.raw=val;el.value=fmt(val);}
   if(btn && btn.parentElement){btn.parentElement.querySelectorAll('.month-chip').forEach(c=>c.classList.remove('active'));btn.classList.add('active');}
-  const mi=document.getElementById('f-gmonths');if(mi)mi.value='';
+  const mi=document.getElementById('f-gmonths');if(mi){mi.value='';mi.classList.remove('month-custom-active');}
+  updateGoalMonthsSummary(true);
 }
 function setGoalMonths(inp){
   const exp=Number(data.profile.monthlyExpenses||0);
   const m=Number(inp.value||0);
   if(!exp)return;
-  const box=inp.closest('div')?.parentElement;
+  const box=document.getElementById('f-gmonths-box');
   if(box)box.querySelectorAll('.month-chip').forEach(c=>c.classList.remove('active'));
-  if(!m)return;
+  inp.classList.toggle('month-custom-active', m>0);
+  if(!m){updateGoalMonthsSummary(true);return}
   const val=Math.round(m*exp);
   const el=document.getElementById('f-gtarget');
   if(el){el.dataset.raw=val;el.value=fmt(val);}
+  updateGoalMonthsSummary(true);
 }
 function delGoal(typeId){
   const g=data.goals.find(x=>x.type===typeId);
@@ -3079,21 +3106,18 @@ function loadSampleData(){
   data.profile.monthlyIncome=207166;
   data.profile.monthlyExpenses=85260;
   data.assets=[
-    {id:uid(),category:'Savings',   name:'IDFC First Bank (L1)',       currentValue:280000, invested:280000, sip:0},
-    {id:uid(),category:'MutualFunds',name:'Kotak Arbitrage Fund (L2)', currentValue:10000,  invested:10000,  sip:100000},
-    {id:uid(),category:'MutualFunds',name:'HDFC Balanced Advantage',currentValue:153000,invested:144000,sip:5000},
-    {id:uid(),category:'MutualFunds',name:'Parag Parikh Flexi Cap',    currentValue:200000, invested:200000, sip:0},
-    {id:uid(),category:'MutualFunds',name:'HDFC Mid Cap',              currentValue:200000, invested:190000, sip:0},
-    {id:uid(),category:'MutualFunds',name:'Bandhan Small Cap',         currentValue:200000, invested:175000, sip:0},
+    {id:uid(),category:'Savings',   name:'Emergency Fund — Bank Savings',                    currentValue:1240000,invested:1240000,sip:0},
+    {id:uid(),category:'MutualFunds',name:'ICICI Prudential Nifty 50 Index Fund',            currentValue:0,      invested:0,      sip:25000},
+    {id:uid(),category:'MutualFunds',name:'ICICI Prudential Nifty Next 50 Index Fund',       currentValue:0,      invested:0,      sip:25000},
+    {id:uid(),category:'MutualFunds',name:'Motilal Oswal Nifty Midcap 150 Index Fund',       currentValue:0,      invested:0,      sip:25000},
+    {id:uid(),category:'MutualFunds',name:'Bandhan Small Cap Fund',                          currentValue:200000, invested:175000, sip:25000},
     {id:uid(),category:'ETF',       name:'GOLDBEES',                   currentValue:120000, invested:122000, sip:0},
-    {id:uid(),category:'ETF',       name:'MON100',                     currentValue:29000,  invested:20000,  sip:5000},
     {id:uid(),category:'PPF',       name:'PPF Account',                currentValue:50000,  invested:50000,  sip:12500},
     {id:uid(),category:'EPF',       name:'EPF / EPFO',                 currentValue:0,      invested:0,      sip:21850},
   ];
   data.liabilities=[];
   data.goals=[
-    {id:uid(),type:'l1',       name:'L1 Instant Cash', target:341000,  current:280000},
-    {id:uid(),type:'l2',       name:'L2 Quick Liquid', target:682000,  current:10000},
+    {id:uid(),type:'emergency',name:'Emergency Fund',  target:1023120, current:1240000},
     {id:uid(),type:'education',name:"Son's Education", target:3000000, current:0},
     {id:uid(),type:'retirement',name:'Retirement',     target:30000000,current:0},
   ];
@@ -3156,7 +3180,7 @@ function init(){
       {id:uid(),category:'MutualFunds',name:'Nifty 50 Index Fund',  currentValue:320000, invested:240000, sip:5000},
     ];
     data.liabilities=[{id:uid(),category:'HomeLoan',name:'SBI Home Loan',outstanding:3200000,interestRate:8.5,emi:28500}];
-    data.goals=[{id:uid(),type:'l1',name:'L1 Instant Cash',target:341000,current:0},{id:uid(),type:'l2',name:'L2 Quick Liquid',target:682000,current:0},{id:uid(),type:'education',name:"Son's Education",target:3000000,current:0},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:0}];
+    data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:1023120,current:0},{id:uid(),type:'education',name:"Son's Education",target:3000000,current:0},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:0}];
     data.profile.name='';save();
   }
   renderProfile();renderDashboard();
