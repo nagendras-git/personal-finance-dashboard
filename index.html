@@ -214,6 +214,20 @@ body.scroll-locked {
   transition:background 120ms;
 }
 .sec-hdr-card:active { background:var(--surface3) }
+.goal-card {
+  padding:12px 14px; cursor:pointer; user-select:none;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:var(--r-lg); margin-bottom:8px;
+  transition:background 120ms;
+}
+.goal-card:active { background:var(--surface3) }
+.goal-card-top { display:flex; align-items:center; gap:9px; min-width:0 }
+.goal-card-name { flex:1; min-width:0; font-size:0.92rem; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:8px }
+.goal-card-pct { font-size:0.86rem; font-weight:700; flex-shrink:0 }
+.goal-card-bar { height:4px; background:var(--surface3); border-radius:99px; overflow:hidden; margin:9px 0 6px }
+.goal-card-fill { height:100%; border-radius:99px; background:var(--blue); transition:width .35s var(--ease) }
+.goal-card-amt { font-size:0.72rem; color:var(--text3); font-weight:500 }
+.goal-card-amt b { color:var(--text2); font-weight:600 }
 .sec-hdr-left { display:flex; align-items:center; gap:9px; min-width:0 }
 .sec-hdr-title { font-size:0.86rem; font-weight:600; color:var(--text1); display:inline-flex; align-items:center; gap:8px; letter-spacing:0 }
 .sec-hdr-title svg { opacity:0.45; flex-shrink:0 }
@@ -2228,17 +2242,22 @@ function renderGoals(){
   const protBadge=document.getElementById('protection-sec-count');
   if(protBadge) protBadge.textContent=insCount>0?insCount+' polic'+(insCount===1?'y':'ies'):'0';
 
-  // Simple goal row: single line, tap anywhere to open the edit form
+  // Goal card: single-line name + %, thin progress bar, amounts below — no wrapping on mobile
   function goalSection(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
     const target=Number(g.target||0);
     const current=Number(g.current||0);
     const p=pct(current,target);
-    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:`<span style="font-size:0.78rem;color:var(--text3)">—</span>`;
-    const amt=target>0?`<span class="sec-badge">${fmt(current)} / ${fmt(target)}</span>`:'';
-    return`<div class="sec-hdr-card" style="margin-bottom:8px" onclick="openSheet('goal','${pr.id}')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg> ${pr.name}</span>${amt}</div>
-      <div class="sec-hdr-right">${pctBadge}<span class="sec-caret right"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+    const pctClr=target>0?(p>=100?'var(--green)':'var(--blue)'):'var(--text3)';
+    const icon=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>`;
+    return`<div class="goal-card" onclick="openSheet('goal','${pr.id}')">
+      <div class="goal-card-top">
+        <span class="goal-card-name">${icon} ${pr.name}</span>
+        <span class="goal-card-pct" style="color:${pctClr}">${target>0?p+'%':'—'}</span>
+        <span class="sec-caret right" style="flex-shrink:0"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      ${target>0?`<div class="goal-card-bar"><div class="goal-card-fill" style="width:${p}%;${p>=100?'background:var(--green)':''}"></div></div>
+      <div class="goal-card-amt"><b>${fmt(current)}</b> of ${fmt(target)}${p>=100?' · Complete ✓':''}</div>`:''}
     </div>`;
   }
 
@@ -2246,11 +2265,16 @@ function renderGoals(){
     const target=Number(cg.target||0);
     const current=Number(cg.current||0);
     const p=pct(current,target);
-    const pctBadge=target>0?`<span style="font-size:0.84rem;font-weight:700;color:var(--blue)">${p}%</span>`:`<span style="font-size:0.78rem;color:var(--text3)">—</span>`;
-    const amt=target>0?`<span class="sec-badge">${fmt(current)} / ${fmt(target)}</span>`:'';
-    return`<div class="sec-hdr-card" style="margin-bottom:8px" onclick="openSheet('customGoal','${cg.id}')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg> ${esc(cg.name)}</span>${amt}</div>
-      <div class="sec-hdr-right">${pctBadge}<span class="sec-caret right"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+    const pctClr=target>0?(p>=100?'var(--green)':'var(--blue)'):'var(--text3)';
+    const icon=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>`;
+    return`<div class="goal-card" onclick="openSheet('customGoal','${cg.id}')">
+      <div class="goal-card-top">
+        <span class="goal-card-name">${icon} ${esc(cg.name)}</span>
+        <span class="goal-card-pct" style="color:${pctClr}">${target>0?p+'%':'—'}</span>
+        <span class="sec-caret right" style="flex-shrink:0"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </div>
+      ${target>0?`<div class="goal-card-bar"><div class="goal-card-fill" style="width:${p}%;${p>=100?'background:var(--green)':''}"></div></div>
+      <div class="goal-card-amt"><b>${fmt(current)}</b> of ${fmt(target)}${p>=100?' · Complete ✓':''}</div>`:''}
     </div>`;
   }
 
