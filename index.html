@@ -1317,12 +1317,14 @@ function inferFundType(name){
   return 'active';
 }
 function mfType(a){return a.fundType||inferFundType(a.name);}
-// ── Asset Allocation classifier: Equity / Debt / Gold / Other — maps directly to each asset's category ──
+// ── Asset Allocation classifier: Equity / Debt / Gold / Other — maps to each asset's category ──
 function classifyAlloc(a){
   const info=getAsset(a.category);
+  if(info.cat==='hedge') return 'gold';      // Gold / Hedge category
+  // Commodity ETFs are often filed under plain "ETF"/"Stocks" — catch gold/silver by name too
+  if((a.category==='ETF'||a.category==='Stocks')&&/gold|silver/i.test(a.name||'')) return 'gold';
   if(info.cat==='growth') return 'equity';   // Mutual Funds, ETF, Stocks
   if(info.cat==='safe')   return 'debt';     // Savings, EPF, PPF, FD, NPS
-  if(info.cat==='hedge')  return 'gold';     // Gold / Hedge only
   return 'other';                            // Real Estate, Other
 }
 function renderAllocation(){
