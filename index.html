@@ -1436,7 +1436,6 @@ function fmtDate(d){if(!d)return'';const p=d.split('-');if(p.length!==3)return d
 function year(){return new Date().getFullYear()}
 function age(bYear){return year()-bYear}
 function yearsUntil(bYear,ageTarget){return Math.max(0,(bYear+ageTarget)-year())}
-function sipNeeded(target,current,years,annualReturn){const rate=annualReturn||0.12;const r=rate/12;const n=years*12;if(n<=0)return Math.max(0,target-current);const fv=current*Math.pow(1+r,n);const needed=target-fv;return needed<=0?0:needed*r/(Math.pow(1+r,n)-1)}
 function inflAdj(todayVal,years,inflRate){return todayVal*Math.pow(1+(inflRate||0.07),years||0)}
 function linkedAssetTotal(ids){if(!ids||!ids.length)return 0;return (ids).reduce((s,id)=>{const a=data.assets.find(x=>x.id===id);return s+Number(a?.currentValue||0)},0)}
 function getAsset(v){return ASSET_CATS.find(c=>c.v===v)||ASSET_CATS[ASSET_CATS.length-1]}
@@ -2896,20 +2895,7 @@ function sheetGoal(pid){
   const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.filter(p=>!p.isIns).map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
   const target=Number(g.target||0);
   const current=Number(g.current||0);
-  const timePeriod=g.timePeriod||'';
-  const showSIP = ['education','house','retirement'].includes(pr.id);
-  const sip = showSIP && target && timePeriod ? sipNeeded(target,current,Number(timePeriod)) : 0;
-  const targetTimeRow = showSIP
-    ? `<div class="form-row2">
-        <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this);updateGoalMonthsSummary()" oninput="updateGoalSIP()"/></div>
-        <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-gtime" type="number" placeholder="3" value="${timePeriod}" oninput="updateGoalSIP()"/></div>
-      </div>
-      <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
-      <div id="g-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin:-6px 0 12px">
-        <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
-        <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="g-sip-val">${sip>0?fmtFull(sip):'—'}</div>
-      </div>`
-    : `<div class="form-row2">
+  const targetTimeRow = `<div class="form-row2">
         <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this);updateGoalMonthsSummary()"/></div>
         <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
       </div>`;
@@ -2929,15 +2915,6 @@ function sheetGoal(pid){
     </div>`})()}
     <div class="form-actions">${g.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delGoal(\''+pr.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveGoal()">${g.id?'Update':'Save'}</button></div>
   </div>`}
-function updateGoalSIP(){
-  const t=rawVal('f-gtarget');
-  const y=Number(document.getElementById('f-gtime')?.value||0);
-  const c=rawVal('f-gcurrent');
-  const box=document.getElementById('g-sip-box');
-  const valEl=document.getElementById('g-sip-val');
-  if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
-  else{if(box)box.style.display='none';}
-}
 
 function switchGoalType(){
   const sel=document.getElementById('f-gtype');if(!sel)return;
@@ -2998,8 +2975,6 @@ function saveGoal(){
   const type=document.getElementById('f-gtype')?.value;
   const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
   const obj={type,name:pr.name,target:rawVal('f-gtarget'),current:rawVal('f-gcurrent')};
-  const timeEl=document.getElementById('f-gtime');
-  if(timeEl)obj.timePeriod=timeEl.value||'';
   const ex=data.goals.find(g=>g.type===type);
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
   save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
@@ -3062,48 +3037,29 @@ function sheetCustomGoal(id){
   const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
   const linkedIds=[];
   const autoCurrent=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
-  const sip = cg.target&&cg.timePeriod ? sipNeeded(Number(cg.target),autoCurrent,Number(cg.timePeriod)) : 0;
   const savedField=linkedIds.length>0
     ?`<div class="fg"><label class="fl">Saved (₹) <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.86rem;color:var(--green)">● linked</span></label>
        <div class="fi" style="display:flex;align-items:center;gap:6px;background:var(--green-bg);border-color:rgba(74,222,128,0.2);cursor:default">
          <span id="cg-auto-val" style="font-family:var(--mono);font-weight:700;color:var(--green)">${fmt(autoCurrent)}</span>
          <span style="font-size:0.75rem;color:var(--text3);margin-left:2px">${linkedIds.length} asset${linkedIds.length>1?'s':''} linked</span>
        </div></div>`
-    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}" oninput="updateCustomSIP()"/></div>`;
+    :`<div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-cg-current" type="number" placeholder="0" value="${cg.current||''}"/></div>`;
   return`<div class="sheet-hdr"><div class="sheet-title">${isEdit?'Edit':'New'} Custom Goal</div>${closeX}</div>
   <div class="sheet-body">
     <div class="fg"><label class="fl">Goal Name</label><input class="fi" id="f-cg-name" placeholder="e.g. Car Purchase, Business Fund…" value="${cg.name||''}"/></div>
-    <div class="form-row2">
-      <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cg-target" type="number" placeholder="0" value="${cg.target||''}" oninput="updateCustomSIP()"/></div>
-      <div class="fg"><label class="fl">Time Period (years)</label><input class="fi" id="f-cg-time" type="number" placeholder="3" value="${cg.timePeriod||''}" oninput="updateCustomSIP()"/></div>
-    </div>
+    <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-cg-target" type="number" placeholder="0" value="${cg.target||''}"/></div>
     ${savedField}
-    <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
-      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
-      <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="cg-sip-val">${sip>0?fmtFull(sip):'—'}</div>
-    </div>
     <div class="form-actions">
       ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delCustomGoal(\''+cg.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
       <button class="btn btn-primary" onclick="saveCustomGoal('${cg.id||''}')">${isEdit?'Update':'Add'}</button>
     </div>
   </div>`}
 
-function updateCustomSIP(){
-  const t=Number(document.getElementById('f-cg-target')?.value||0);
-  const y=Number(document.getElementById('f-cg-time')?.value||0);
-  const checkedIds=Array.from(document.querySelectorAll('#cg-asset-link-list .inv-link-item.on')).map(e=>(e.id||'').replace('cgal-',''));
-  const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-cg-current')?.value||0);
-  const box=document.getElementById('cg-sip-box');
-  const valEl=document.getElementById('cg-sip-val');
-  if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmtFull(sipNeeded(t,c,y));}
-  else{if(box)box.style.display='none';}
-}
-
 function saveCustomGoal(editId){
   const name=document.getElementById('f-cg-name')?.value?.trim();
   if(!name){toast('Enter a goal name');return}
   if(!data.customGoals)data.customGoals=[];
-  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),timePeriod:document.getElementById('f-cg-time')?.value||'',current:Number(document.getElementById('f-cg-current')?.value||0)};
+  const obj={name,target:Number(document.getElementById('f-cg-target')?.value||0),current:Number(document.getElementById('f-cg-current')?.value||0)};
   if(editId){Object.assign(data.customGoals.find(x=>x.id===editId)||{},obj);}
   else{data.customGoals.push({id:uid(),...obj});}
   save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
