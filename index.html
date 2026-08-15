@@ -1427,7 +1427,8 @@ function unlockScroll(){_scrollLockCount=Math.max(0,_scrollLockCount-1);if(_scro
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function trunc(v,d){const m=Math.pow(10,d);return(Math.floor(v*m+1e-6)/m).toFixed(d)}
 function fmt(n){const v=Math.abs(Number(n)||0);let s='';if(v>=10000000)s=trunc(v/10000000,2)+'Cr';else if(v>=100000)s=trunc(v/100000,2)+'L';else if(v>=1000)s=trunc(v/1000,1)+'K';else s=v.toFixed(0);return(n<0?'-':'')+'\u20B9'+s}
-function fmtInputBlur(el){const typed=el.value.toString().replace(/[^\d.]/g,'');const raw=Number(typed||el.dataset.raw||0);if(!raw){el.dataset.raw='';return}el.dataset.raw=raw;el.value=fmt(raw)}
+function fmtFull(n){const v=Math.round(Math.abs(Number(n)||0));const str=v.toString();let lastThree=str.substring(str.length-3);let other=str.substring(0,str.length-3);if(other!=='')lastThree=','+lastThree;const formatted=other.replace(/\B(?=(\d{2})+(?!\d))/g,',')+lastThree;return(n<0?'-':'')+'\u20B9'+formatted}
+function fmtInputBlur(el){const typed=el.value.toString().replace(/[^\d.]/g,'');const raw=typed===''?0:Number(typed);if(!raw){el.dataset.raw='';el.value='';return}el.dataset.raw=raw;el.value=fmt(raw)}
 function fmtInputFocus(el){const raw=el.dataset.raw||(el.value||'').replace(/[^\d.]/g,'');el.value=raw==='0'?'':raw}
 function rawVal(id){const el=document.getElementById(id);if(!el)return 0;return Number((el.dataset.raw&&el.dataset.raw!=='0'?el.dataset.raw:el.value).toString().replace(/[^\d.]/g,'')||0)}
 function pct(cur,tar){if(!tar||tar<=0)return 0;return Math.min(100,Math.round((cur/tar)*100))}
@@ -2896,7 +2897,7 @@ function sheetGoal(pid){
   const target=Number(g.target||0);
   const current=Number(g.current||0);
   const timePeriod=g.timePeriod||'';
-  const showSIP = !pr.isIns && pr.id!=='emergency';
+  const showSIP = ['education','house','retirement'].includes(pr.id);
   const sip = showSIP && target && timePeriod ? sipNeeded(target,current,Number(timePeriod)) : 0;
   const targetTimeRow = showSIP
     ? `<div class="form-row2">
@@ -2906,7 +2907,7 @@ function sheetGoal(pid){
       <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)" oninput="updateGoalSIP()"/></div>
       <div id="g-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin:-6px 0 12px">
         <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
-        <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="g-sip-val">${sip>0?fmt(sip):'—'}</div>
+        <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="g-sip-val">${sip>0?fmtFull(sip):'—'}</div>
       </div>`
     : `<div class="form-row2">
         <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this);updateGoalMonthsSummary()"/></div>
@@ -3079,7 +3080,7 @@ function sheetCustomGoal(id){
     ${savedField}
     <div id="cg-sip-box" style="${sip>0?'':'display:none'};padding:9px 12px;background:var(--green-bg);border:1px solid rgba(74,222,128,0.2);border-radius:var(--r);margin-top:2px">
       <div style="font-size:0.62rem;font-weight:700;letter-spacing:0;color:var(--green);margin-bottom:2px">Monthly SIP Needed <span style="font-weight:500;text-transform:none;letter-spacing:0;opacity:0.7">@ 12% p.a.</span></div>
-      <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="cg-sip-val">${sip>0?fmt(sip):'—'}</div>
+      <div style="font-family:var(--mono);font-size:1.45rem;font-weight:700" id="cg-sip-val">${sip>0?fmtFull(sip):'—'}</div>
     </div>
     <div class="form-actions">
       ${isEdit?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delCustomGoal(\''+cg.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}
@@ -3094,7 +3095,7 @@ function updateCustomSIP(){
   const c=checkedIds.length>0?linkedAssetTotal(checkedIds):Number(document.getElementById('f-cg-current')?.value||0);
   const box=document.getElementById('cg-sip-box');
   const valEl=document.getElementById('cg-sip-val');
-  if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmt(sipNeeded(t,c,y));}
+  if(t>0&&y>0){if(box)box.style.display='';if(valEl)valEl.textContent=fmtFull(sipNeeded(t,c,y));}
   else{if(box)box.style.display='none';}
 }
 
