@@ -1296,6 +1296,7 @@ const ASSET_CATS = [
   {v:'MutualFunds',l:'Mutual Funds',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>', color:'#34d399', cat:'growth'},
   {v:'ETF',  l:'ETF',          icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>', color:'#4ade80', cat:'growth'},
   {v:'Stocks',l:'Stocks',      icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>', color:'#fb923c', cat:'growth'},
+  {v:'USEquity',l:'US / Global Equity',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>', color:'#c084fc', cat:'intl'},
   {v:'Gold', l:'Gold / Hedge', icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>', color:'#fbbf24', cat:'hedge'},
   {v:'RealEstate',l:'Real Estate',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="4" y1="7" x2="9" y2="7"/><line x1="4" y1="12" x2="9" y2="12"/><line x1="4" y1="17" x2="9" y2="17"/><line x1="14" y1="7" x2="20" y2="7"/><line x1="14" y1="12" x2="20" y2="12"/><line x1="14" y1="17" x2="20" y2="17"/></svg>', color:'#f87171', cat:'real'},
   {v:'FD',   l:'Fixed Deposit',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="11" rx="2"/><path d="M12 16v2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>', color:'#a78bfa', cat:'safe'},
@@ -1322,6 +1323,7 @@ function mfType(a){return a.fundType||inferFundType(a.name);}
 function classifyAlloc(a){
   const info=getAsset(a.category);
   if(info.cat==='hedge') return 'gold';      // Gold / Hedge category
+  if(info.cat==='intl') return 'intl';       // US / Global Equity category
   // Commodity ETFs are often filed under plain "ETF"/"Stocks" — catch gold/silver by name too
   if((a.category==='ETF'||a.category==='Stocks')&&/gold|silver/i.test(a.name||'')) return 'gold';
   if(info.cat==='growth') return 'equity';   // Mutual Funds, ETF, Stocks
@@ -1333,7 +1335,7 @@ function renderAllocation(){
   const totalVal=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
   if(!data.assets.length||totalVal<=0){wrap.style.display='none';return;}
   wrap.style.display='';
-  const buckets={equity:0,debt:0,gold:0,other:0};
+  const buckets={equity:0,debt:0,gold:0,intl:0,other:0};
   data.assets.forEach(a=>{
     const v=Number(a.currentValue||0);if(v<=0)return;
     buckets[classifyAlloc(a)]+=v;
@@ -1341,20 +1343,22 @@ function renderAllocation(){
   const total=Object.values(buckets).reduce((s,v)=>s+v,0)||1;
   const hdr=document.getElementById('alloc-total-hdr');if(hdr)hdr.textContent=fmt(total);
   // Monochrome design: single accent hue, differentiated by opacity (largest bucket = full strength)
-  const SHADES=[1,0.7,0.48,0.3];
+  const SHADES=[1,0.7,0.48,0.3,0.18];
   const ALLOC_ICONS={
     equity:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
     debt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>',
     gold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    intl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
     other:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="16 2 12 6 8 2"/></svg>',
   };
   const DEFS=[
     {k:'equity',l:'Equity'},
     {k:'debt',  l:'Debt'},
     {k:'gold',  l:'Gold'},
+    {k:'intl',  l:'US / Global Equity'},
     {k:'other', l:'Other'},
-  ].map(d=>({...d,val:buckets[d.k],pct:(buckets[d.k]/total)*100})).filter(d=>d.val>0.005*total)
-   .sort((a,b)=>b.val-a.val).map((d,i)=>({...d,op:SHADES[i]??0.2}));
+  ].map(d=>({...d,val:buckets[d.k],pct:(buckets[d.k]/total)*100})).filter(d=>d.val>0)
+   .sort((a,b)=>b.val-a.val).map((d,i)=>({...d,op:SHADES[i]??0.15}));
   const barEl=document.getElementById('alloc-bar');
   if(barEl)barEl.innerHTML=DEFS.map(d=>`<div style="width:${d.pct}%;background:var(--blue);opacity:${d.op};height:100%"></div>`).join('');
   const listEl=document.getElementById('alloc-list');
@@ -2116,6 +2120,7 @@ function renderAssets(){
   const ASSET_GROUPS=[
     {label:'Mutual Funds',              cats:['MutualFunds']},
     {label:'ETFs & Stocks',             cats:['ETF','Stocks']},
+    {label:'US / Global Equity',        cats:['USEquity']},
     {label:'Debt & Safe',               cats:['Savings','EPF','PPF','FD','NPS']},
     {label:'Gold · Real Estate · Other',cats:['Gold','RealEstate','Other']},
   ];
@@ -2642,10 +2647,15 @@ function _doParseXLSX(arrayBuffer){
   return results;
 }
 
-// Use Zerodha's Instrument Type field (e.g. "{Debt - Liquid true}", "ETF") for accurate classification
+// Use Zerodha's Instrument Type field (e.g. "{Debt - Liquid true}", "ETF") plus name patterns
+// to classify each holding into an ASSET_CATS category.
 function _guessCatFromType(name, typeRaw){
-  if(typeRaw==='etf'||/^goldbees|^mon100|bees$|-e$/.test(name.toLowerCase())) return 'ETF';
-  return 'MutualFunds';
+  const n=(name||'').toLowerCase();
+  const isETF = typeRaw==='etf' || /^goldbees|^mon100|bees$|-e$/.test(n);
+  if(!isETF) return 'MutualFunds';
+  if(/gold/.test(n)) return 'Gold';
+  if(/nasdaq|s&p|s and p|sp500|hang\s?seng|fang|nyse|dow\s?jones|global|international|us\s?equity|n100|top50/.test(n)) return 'USEquity';
+  return 'ETF';
 }
 
 // State for the import sheet
@@ -2749,7 +2759,7 @@ function _renderImportPreview(){
           ${isExisting?'<span style="font-size:0.6rem;font-weight:700;color:var(--amber);background:var(--amber-bg);border:1px solid rgba(251,191,36,0.25);padding:1px 5px;border-radius:99px;flex-shrink:0">UPDATE</span>':'<span style="font-size:0.6rem;font-weight:700;color:var(--blue);background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);padding:1px 5px;border-radius:99px;flex-shrink:0">NEW</span>'}
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:0.68rem;color:var(--text3)">${f.category} · ${fmt(f.currentValue)}</span>
+          <span style="font-size:0.68rem;color:var(--text3)">${getAsset(f.category).l} · ${fmt(f.currentValue)}</span>
           <span style="font-size:0.68rem;font-weight:600;color:${pnlColor}">${pnlSign}${fmt(pnl)}</span>
         </div>
       </div>
