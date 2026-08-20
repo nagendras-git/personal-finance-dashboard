@@ -953,7 +953,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <!-- 2x2 grid: Assets / Liabilities / SIP / EMI -->
       <div style="display:grid;grid-template-columns:1fr 1fr">
         <div id="dash-cell-assets" style="padding:13px 18px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2)">
-          <div class="lbl" style="margin-bottom:5px">Assets</div>
+          <div class="lbl" style="margin-bottom:5px">Emergency Fund</div>
           <div style="font-size:1.05rem;font-weight:800;color:var(--green);letter-spacing:-0.3px" id="dash-assets-val">₹0</div>
         </div>
         <div id="dash-cell-liab" style="padding:13px 18px;border-bottom:1px solid var(--border2)">
@@ -1868,7 +1868,8 @@ function renderDashboard(){
   const nwColor=netWorth<0?'var(--red)':'var(--green)';
   const set=(id,v,clr)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(clr)el.style.color=clr}};
   set('dash-networth',fmt(netWorth),nwColor);
-  set('dash-assets-val',fmt(totalAssets));
+  const efGoalDash=data.goals.find(g=>g.type==='emergency');
+  set('dash-assets-val',fmt(Number(efGoalDash?.current||0)));
   set('dash-liab-val',fmt(totalLiab));
   updateWealthCard(totalAssets,totalLiab);
 
