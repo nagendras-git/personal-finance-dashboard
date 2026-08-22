@@ -1372,7 +1372,7 @@ function renderAllocation(){
     listEl.innerHTML=DEFS.map(d=>{
       const pLabel=d.pct<1?'<1%':Math.round(d.pct)+'%';
       return`<div class="acat-row">
-        <div class="acat-icon" style="background:${d.clr};border-color:${d.clr};color:#fff">${ALLOC_ICONS[d.k]}</div>
+        <div class="acat-icon">${ALLOC_ICONS[d.k]}</div>
         <div class="acat-info">
           <div class="acat-name">${d.l}</div>
           <div class="acat-bar-wrap"><div class="acat-bar" style="background:var(--blue);opacity:${d.op};width:${Math.max(d.pct,1)}%"></div></div>
@@ -1951,7 +1951,7 @@ function renderDashboard(){
         const p=Math.round((c.total/grandTotal)*100);
         const pLabel=p===0&&c.total>0?'<1%':p+'%';
         return`<div class="acat-row">
-          <div class="acat-icon" style="background:${c.info.color};border-color:${c.info.color};color:#fff">${c.info.icon}</div>
+          <div class="acat-icon">${c.info.icon}</div>
           <div class="acat-info">
             <div class="acat-name">${c.info.l}</div>
             <div class="acat-bar-wrap"><div class="acat-bar" style="background:var(--blue);width:${Math.max(p,c.total>0?1:0)}%"></div></div>
@@ -2150,7 +2150,7 @@ function renderAssets(){
   const assetRow=a=>{
     const info=getAsset(a.category);
     return`<div class="row-item" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))">
-      <div class="row-icon" style="background:${info.color};border-color:${info.color};color:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
+      <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
         <div class="row-sub">${a.category==='MutualFunds'?(MF_TYPES.find(t=>t.v===mfType(a))?.l||info.l):info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
