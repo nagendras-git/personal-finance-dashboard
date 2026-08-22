@@ -85,6 +85,17 @@
   --ease: cubic-bezier(0.16,1,0.3,1);
   --spring: cubic-bezier(0.34,1.56,0.64,1);
 }
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;padding:2px 2px 10px}
+.chip{flex-shrink:0;padding:8px 16px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;-webkit-appearance:none;font-family:inherit;transition:all 150ms}
+.chip.on{background:var(--text1);border-color:var(--text1);color:var(--bg);font-weight:700}
+.ios-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:16px}
+.ios-row{display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border2)}
+.ios-group>.ios-row:last-child, .ios-group>.sec-body:last-child .ios-row{border-bottom:none}
+.ios-row-icon{width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+.ios-row-icon svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ios-row-title{flex:1;font-size:.9rem;font-weight:500;color:var(--text1)}
+.ios-row-value{font-size:.82rem;color:var(--text3);font-weight:600;margin-right:2px}
+.ios-chevron{width:15px;height:15px;stroke:var(--text3);fill:none;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 [data-theme="soft-dark"] {
   --bg:       #1a1a1f;
   --surface:  #222228;
@@ -652,7 +663,7 @@ body.scroll-locked {
 /* ── ADD ROW ── */
 .add-row {
   display:flex; align-items:center; justify-content:center; padding:13px;
-  border:1.5px solid rgba(59,130,246,0.35); border-radius:var(--r-lg);
+  border:1.5px dashed rgba(59,130,246,0.35); border-radius:var(--r-lg);
   cursor:pointer; color:#3B82F6; font-size:0.86rem; font-weight:600;
   gap:6px; transition:all 120ms; margin-top:6px; background:rgba(59,130,246,0.04);
 }
@@ -977,7 +988,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
   <!-- PORTFOLIO BREAKDOWN (collapsible) -->
   <div class="container" style="padding-top:8px;padding-bottom:4px" id="dash-asset-breakdown-wrap">
       <div class="sec-hdr-card" onclick="toggleSec('sec-portfolio')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 100 4h4v-4h-4z"/></svg> Portfolio Breakdown</span><span class="sec-badge" id="dash-cat-count">—</span></div>
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><div class="ios-row-icon" style="background:#3B82F6;width:26px;height:26px;border-radius:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 100 4h4v-4h-4z"/></svg></div> Portfolio Breakdown</span><span class="sec-badge" id="dash-cat-count">—</span></div>
         <div class="sec-hdr-right">
           <span class="sec-caret" id="caret-sec-portfolio"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
         </div>
@@ -989,39 +1000,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
   </div>
 
-  <!-- FINANCIAL SAFETY BANNER -->
-  <div class="container" style="padding-top:8px;padding-bottom:0" id="dash-safety-wrap"></div>
-  <!-- INSURANCE EXPIRY ALERTS -->
-  <div class="container" style="padding-top:0;padding-bottom:4px" id="dash-ins-alert-wrap"></div>
-
   <div style="text-align:center;padding:14px 0 4px;color:var(--text3);font-size:0.62rem;font-weight:600;letter-spacing:0">Data stored on your device only 🔒</div>
-</div>
-
-<!-- ══ GOALS ══ -->
-<div id="page-goals" class="page">
-  <div class="top-header">
-    <div class="hdr-inner">
-      <div class="hdr-left"><div><div class="hdr-greeting">Planning</div><div class="hdr-name">Goals</div></div></div>
-      <div class="hdr-right">
-        <button class="hdr-add-btn" id="fab-goals" onclick="toggleQuickAdd()" style="display:flex;background:var(--surface2);border:1.5px solid var(--border);box-shadow:none">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-  <div class="container">
-    <div id="emergency-goal-wrap"></div>
-
-    <div id="protection-wrap" style="margin-top:8px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-protection')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> Protection</span><span class="sec-badge" id="protection-sec-count">0</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-protection"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
-      </div>
-      <div class="sec-body closed" id="sec-protection"><div id="protection-list"></div></div>
-    </div>
-
-    <div id="individual-goals-wrap" style="margin-top:8px"></div>
-  </div>
 </div>
 
 <!-- ══ INVESTMENTS ══ -->
@@ -1040,8 +1019,8 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     <!-- ASSET ALLOCATION -->
     <div id="alloc-wrap" style="display:none;margin-bottom:8px">
       <div class="sec-hdr-card sticky-hdr" onclick="toggleSec('sec-alloc')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l7 4"/></svg> Asset Allocation</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" id="alloc-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-alloc"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><div class="ios-row-icon" style="background:#3B82F6;width:26px;height:26px;border-radius:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l7 4"/></svg></div> Asset Allocation</span></div>
+        <div class="sec-hdr-right"><span class="sec-total" id="alloc-total-hdr" style="color:var(--blue)">₹0</span><span class="sec-caret open" id="caret-sec-alloc"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body" id="sec-alloc">
         <div id="alloc-bar" style="display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--surface3);margin:10px 4px 6px"></div>
@@ -1051,23 +1030,23 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
 
     <!-- ASSETS -->
     <div class="sec-hdr-card sticky-hdr" onclick="toggleSec('sec-assets')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr">₹0</span><span class="sec-caret open" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      <div class="sec-hdr-left"><span class="sec-hdr-title"><div class="ios-row-icon" style="background:#3B82F6;width:26px;height:26px;border-radius:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg></div> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr" style="color:var(--blue)">₹0</span><span class="sec-caret open" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
     </div>
     <div class="sec-body" id="sec-assets">
       <div id="assets-list"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;margin-bottom:2px">
-        <div class="add-row" style="margin:0" onclick="openSheet('asset')">Add Asset</div>
-        <div class="add-row" style="margin:0;color:var(--blue);border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.05)" onclick="openSheet('importMF')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:middle"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Import MF / ETF
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;margin-bottom:2px">
+        <div class="add-row" style="margin:0" onclick="openSheet('importMF')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:middle"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Import from Zerodha (XLSX)
         </div>
+        <div class="add-row" style="margin:0" onclick="openSheet('asset')">+ Add Investment</div>
       </div>
     </div>
 
     <!-- LIABILITIES -->
     <div style="margin-top:8px" id="invest-liab-wrap">
       <div class="sec-hdr-card" onclick="toggleSec('sec-liab')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Liabilities</span><span class="sec-badge" id="liab-sec-count">0</span></div>
+        <div class="sec-hdr-left"><span class="sec-hdr-title"><div class="ios-row-icon" style="background:#EF4444;width:26px;height:26px;border-radius:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div> Liabilities</span><span class="sec-badge" id="liab-sec-count">0</span></div>
         <div class="sec-hdr-right"><span class="sec-total" style="color:var(--red)" id="liab-total-hdr">₹0</span><span class="sec-caret" id="caret-sec-liab"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
       </div>
       <div class="sec-body closed" id="sec-liab">
@@ -1093,19 +1072,18 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
   </div>
   <div class="container">
 
-    <!-- PROFILE -->
-    <div>
-      <div class="sec-hdr-card" onclick="openSheet('profile')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg> Profile</span></div>
-        <div class="sec-hdr-right"><button class="btn-circle" onclick="event.stopPropagation();openSheet('profile')" style="border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.08)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+    <!-- PROFILE + APPEARANCE -->
+    <div class="ios-group">
+      <div class="ios-row" onclick="openSheet('profile')">
+        <div class="ios-row-icon" style="background:#3B82F6"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg></div>
+        <div class="ios-row-title">Profile</div>
+        <svg class="ios-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
-    </div>
 
-    <!-- APPEARANCE -->
-    <div style="margin-top:8px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-appearance')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg> Appearance</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-appearance"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      <div class="ios-row" onclick="toggleSec('sec-appearance')">
+        <div class="ios-row-icon" style="background:#8B5CF6"><svg viewBox="0 0 24 24"><path d="M21 12.5A9 9 0 1111.5 3a7 7 0 009.5 9.5z"/></svg></div>
+        <div class="ios-row-title">Appearance</div>
+        <svg class="ios-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="sec-body closed" id="sec-appearance">
         <div class="row-list-wrap">
@@ -1190,29 +1168,60 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
     </div>
 
     <!-- CHECKLIST -->
-    <div style="margin-top:8px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-checklist')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Finance Checklist</span><span class="sec-badge" id="check-sec-count">0/6</span></div>
-        <div class="sec-hdr-right"><span class="sec-total" id="checklist-pct-text">0%</span><span class="sec-caret" id="caret-sec-checklist"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+    <div class="ios-group">
+      <div class="ios-row" onclick="toggleSec('sec-checklist')">
+        <div class="ios-row-icon" style="background:#22C55E"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <div class="ios-row-title">Finance Checklist</div>
+        <span class="ios-row-value" id="checklist-pct-text">0%</span>
+        <svg class="ios-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="sec-body closed" id="sec-checklist">
-        <div style="padding:6px 0 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:var(--blue);width:0%"></div></div></div>
+        <div style="padding:6px 14px 8px"><div class="prog-track" style="height:4px"><div class="prog-fill" id="checklist-bar" style="background:var(--blue);width:0%"></div></div></div>
         <div id="checklist-items"></div>
       </div>
     </div>
 
     <!-- DATA TOOLS -->
-    <div style="margin-top:8px;margin-bottom:4px">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-tools')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Data Tools</span></div>
-        <div class="sec-hdr-right"><span class="sec-caret" id="caret-sec-tools"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+    <div class="ios-group">
+      <div class="ios-row" onclick="toggleSec('sec-backup')">
+        <div class="ios-row-icon" style="background:#06B6D4"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a5 5 0 01-1-9.9 6 6 0 0111.8-.4A4.5 4.5 0 0117.5 19z"/></svg></div>
+        <div class="ios-row-title">Backup &amp; Sync</div>
+        <svg class="ios-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
-      <div class="sec-body closed" id="sec-tools">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
-          <div class="more-row" onclick="exportData()" style="margin-bottom:0"><div class="more-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div><div class="more-row-body"><div class="more-row-title">Export</div><div class="more-row-sub">Download JSON backup</div></div></div>
-          <div class="more-row" onclick="document.getElementById('import-file').click()" style="margin-bottom:0"><div class="more-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="more-row-body"><div class="more-row-title">Import</div><div class="more-row-sub">Restore from JSON</div></div></div>
-          <div class="more-row" onclick="loadSampleData()" style="margin-bottom:0"><div class="more-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><div class="more-row-body"><div class="more-row-title">Sample Data</div><div class="more-row-sub">Load demo data</div></div></div>
-          <div class="more-row" onclick="resetData()" style="margin-bottom:0"><div class="more-icon" style="color:var(--red)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></div><div class="more-row-body"><div class="more-row-title" style="color:var(--red)">Reset All</div><div class="more-row-sub">Clear everything</div></div></div>
+      <div class="sec-body closed" id="sec-backup">
+        <div class="card-body-inner" style="padding:0 14px 14px">
+          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;margin-bottom:10px">Data lives only on this device. Export a backup file to move it to another phone, or import one here.</div>
+          <div style="display:flex;gap:9px">
+            <button class="btn btn-ghost" style="flex:1" onclick="exportData()">Export Backup</button>
+            <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('import-file').click()">Import Backup</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ios-row" onclick="toggleSec('sec-demo')">
+        <div class="ios-row-icon" style="background:#F97316"><svg viewBox="0 0 24 24"><path d="M9 2v6l-5.5 9.5A2 2 0 005.2 21h13.6a2 2 0 001.7-3.5L15 8V2"/><line x1="8" y1="2" x2="16" y2="2"/></svg></div>
+        <div class="ios-row-title">Demo Data</div>
+        <svg class="ios-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="sec-body closed" id="sec-demo">
+        <div class="card-body-inner" style="padding:0 14px 14px">
+          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;margin-bottom:10px">Load realistic sample entries to explore the app.</div>
+          <button class="btn btn-ghost" style="width:100%" onclick="loadSampleData()">Load Sample Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DANGER ZONE -->
+    <div class="ios-group">
+      <div class="ios-row" onclick="toggleSec('sec-danger')">
+        <div class="ios-row-icon" style="background:#EF4444"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
+        <div class="ios-row-title" style="color:var(--red)">Danger Zone</div>
+        <svg class="ios-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="sec-body closed" id="sec-danger">
+        <div class="card-body-inner" style="padding:0 14px 14px">
+          <div style="font-size:.78rem;color:var(--text3);line-height:1.5;margin-bottom:10px">Permanently erase everything stored in this app on this device.</div>
+          <button class="btn btn-ghost" style="width:100%;color:var(--red)" onclick="resetData()">Reset All Data</button>
         </div>
       </div>
     </div>
@@ -1254,10 +1263,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
   <button class="tab-item active" onclick="navigate('dashboard',this)">
     <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
     <div class="tab-label">Home</div>
-  </button>
-  <button class="tab-item" onclick="navigate('goals',this)">
-    <div class="tab-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-    <div class="tab-label">Goals</div>
   </button>
   <button class="tab-item" onclick="navigate('investments',this)">
     <div class="tab-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
@@ -1351,6 +1356,7 @@ function renderAllocation(){
     intl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
     other:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="16 2 12 6 8 2"/></svg>',
   };
+  const ALLOC_COLORS={equity:'#34D399',debt:'#5EEAD4',gold:'#FBBF24',intl:'#C084FC',other:'#9CA3AF'};
   const DEFS=[
     {k:'equity',l:'Equity'},
     {k:'debt',  l:'Debt'},
@@ -1358,7 +1364,7 @@ function renderAllocation(){
     {k:'intl',  l:'US / Global Equity'},
     {k:'other', l:'Other'},
   ].map(d=>({...d,val:buckets[d.k],pct:(buckets[d.k]/total)*100})).filter(d=>d.val>0)
-   .sort((a,b)=>b.val-a.val).map((d,i)=>({...d,op:SHADES[i]??0.15}));
+   .sort((a,b)=>b.val-a.val).map((d,i)=>({...d,clr:ALLOC_COLORS[d.k],op:SHADES[i]??0.15}));
   const barEl=document.getElementById('alloc-bar');
   if(barEl)barEl.innerHTML=DEFS.map(d=>`<div style="width:${d.pct}%;background:var(--blue);opacity:${d.op};height:100%"></div>`).join('');
   const listEl=document.getElementById('alloc-list');
@@ -1366,13 +1372,13 @@ function renderAllocation(){
     listEl.innerHTML=DEFS.map(d=>{
       const pLabel=d.pct<1?'<1%':Math.round(d.pct)+'%';
       return`<div class="acat-row">
-        <div class="acat-icon">${ALLOC_ICONS[d.k]}</div>
+        <div class="acat-icon" style="background:${d.clr};border-color:${d.clr};color:#fff">${ALLOC_ICONS[d.k]}</div>
         <div class="acat-info">
           <div class="acat-name">${d.l}</div>
           <div class="acat-bar-wrap"><div class="acat-bar" style="background:var(--blue);opacity:${d.op};width:${Math.max(d.pct,1)}%"></div></div>
         </div>
-        <div class="acat-val">${fmt(d.val)}</div>
-        <div class="acat-pct">${pLabel}</div>
+        <div class="acat-val" style="color:var(--blue)">${fmt(d.val)}</div>
+        <div class="acat-pct" style="color:var(--blue)">${pLabel}</div>
       </div>`;
     }).join('');
   }
@@ -1731,7 +1737,7 @@ function renderInsuranceAlerts(){
       :diffDays===0?'Expires today!'
       :diffDays<=30?`Expires in ${diffDays}d`
       :`Expires in ${diffDays}d`;
-    return`<div onclick="navigate('goals',document.querySelectorAll('.tab-item')[1])" style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:${bg};border:1px solid ${border};border-radius:var(--r);margin-bottom:6px;cursor:pointer">
+    return`<div onclick="navigate('dashboard',document.querySelectorAll('.tab-item')[0])" style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:${bg};border:1px solid ${border};border-radius:var(--r);margin-bottom:6px;cursor:pointer">
       <span style="font-size:1rem;flex-shrink:0">${icon}</span>
       <div style="flex:1;min-width:0">
         <div style="font-size:0.78rem;font-weight:700;color:${clr}">${msg}</div>
@@ -1850,8 +1856,7 @@ function navigate(page,btn){
   renderPage(page);
 }
 function renderPage(p){
-  if(p==='dashboard')renderDashboard();
-  if(p==='goals'){renderGoals();renderGoalHealth();}
+  if(p==='dashboard'){renderDashboard();renderGoals();renderGoalHealth();}
   if(p==='investments'){renderAssets();renderLiabilities()}
   if(p==='more'){renderChecklist()}
 }
@@ -1946,13 +1951,13 @@ function renderDashboard(){
         const p=Math.round((c.total/grandTotal)*100);
         const pLabel=p===0&&c.total>0?'<1%':p+'%';
         return`<div class="acat-row">
-          <div class="acat-icon">${c.info.icon}</div>
+          <div class="acat-icon" style="background:${c.info.color};border-color:${c.info.color};color:#fff">${c.info.icon}</div>
           <div class="acat-info">
             <div class="acat-name">${c.info.l}</div>
             <div class="acat-bar-wrap"><div class="acat-bar" style="background:var(--blue);width:${Math.max(p,c.total>0?1:0)}%"></div></div>
           </div>
-          <div class="acat-val">${fmt(c.total)}</div>
-          <div class="acat-pct">${pLabel}</div>
+          <div class="acat-val" style="color:var(--blue)">${fmt(c.total)}</div>
+          <div class="acat-pct" style="color:var(--blue)">${pLabel}</div>
         </div>`;
       }).join('');
     }
@@ -2068,8 +2073,6 @@ function renderDashboard(){
     }
   }
   renderRetirementReadiness();
-  renderInsuranceAlerts();
-  renderSafetyCheck();
 }
 
 
@@ -2118,82 +2121,55 @@ function renderAssets(){
   renderAllocation();
   const el=document.getElementById('assets-list');if(!el)return;
   if(!data.assets.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg><div class="empty-text">No assets yet</div></div>';return}
-  const ASSET_GROUPS=[
-    {label:'Mutual Funds',              cats:['MutualFunds']},
-    {label:'ETFs & Stocks',             cats:['ETF','Stocks']},
-    {label:'US / Global Equity',        cats:['USEquity']},
-    {label:'Debt & Safe',               cats:['Savings','EPF','PPF','FD','NPS']},
-    {label:'Gold · Real Estate · Other',cats:['Gold','RealEstate','Other']},
+  // ── Filter chips: Index Funds / Small Cap Funds / Debt / Gold / International ──
+  const FILTER_DEFS=[
+    {key:'index',   label:'Index Funds',    match:a=>(a.category==='MutualFunds'&&mfType(a)==='passive')||((a.category==='ETF'||a.category==='Stocks')&&classifyAlloc(a)==='equity')},
+    {key:'smallcap',label:'Small Cap Funds',match:a=>a.category==='MutualFunds'&&mfType(a)==='active'},
+    {key:'debt',    label:'Debt',           match:a=>classifyAlloc(a)==='debt'},
+    {key:'gold',    label:'Gold',           match:a=>classifyAlloc(a)==='gold'},
+    {key:'intl',    label:'International',  match:a=>classifyAlloc(a)==='intl'},
   ];
+  const presentFilters=FILTER_DEFS.filter(f=>data.assets.some(f.match));
+  const filterOptions=['All',...presentFilters.map(f=>f.key)];
+  if(!filterOptions.includes(window.assetFilterCat))window.assetFilterCat='All';
+  const selectedFilter=window.assetFilterCat||'All';
+  let chipsHtml='';
+  if(presentFilters.length>1){
+    chipsHtml=`<div class="chip-row" onclick="event.stopPropagation()">
+      ${filterOptions.map(k=>{
+        const def=FILTER_DEFS.find(f=>f.key===k);
+        const label=k==='All'?'All':def.label;
+        const count=k==='All'?data.assets.length:data.assets.filter(def.match).length;
+        return `<button class="chip${k===selectedFilter?' on':''}" onclick="event.stopPropagation();setAssetFilter('${k}')">${label} <span style="opacity:.65;font-weight:600">${count}</span></button>`;
+      }).join('')}
+    </div>`;
+  }
+  const activeDef=FILTER_DEFS.find(f=>f.key===selectedFilter);
+  const filteredAssets=selectedFilter==='All'?data.assets:data.assets.filter(activeDef.match);
+  const filteredTotal=filteredAssets.reduce((s,a)=>s+Number(a.currentValue||0),0);
   const assetRow=a=>{
     const info=getAsset(a.category);
     return`<div class="row-item" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))">
-      <div class="row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
+      <div class="row-icon" style="background:${info.color};border-color:${info.color};color:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${info.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg></div>
       <div class="row-body">
         <div class="row-title">${a.name}</div>
         <div class="row-sub">${a.category==='MutualFunds'?(MF_TYPES.find(t=>t.v===mfType(a))?.l||info.l):info.l}${a.sip>0?' · SIP '+fmt(a.sip)+'/mo':''}</div>
       </div>
       <div class="row-right">
-        <div class="row-value">${fmt(a.currentValue)}</div>
+        <div class="row-value" style="color:var(--blue)">${fmt(a.currentValue)}</div>
       </div>
       <div class="goal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>`;
   };
-  const grouped=new Set();
-  // Collapsible group state (persisted; default open)
-  const GRP_KEY='wp_asset_grps';
-  const grpClosed=JSON.parse(localStorage.getItem(GRP_KEY)||'{}');
-  const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-');
-  const caretSvg=open=>`<span class="sec-caret${open?' open':''}" style="margin-left:6px"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>`;
-  const grpHdr=(key,label,sub,isSub)=>{
-    const open=!grpClosed[key];
-    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:${isSub?'6px 4px 4px 12px':'10px 4px 6px'};cursor:pointer;-webkit-tap-highlight-color:transparent" onclick="toggleAssetGrp('${key}')">
-      <span style="display:inline-flex;align-items:center;font-size:${isSub?'0.63rem':'0.68rem'};font-weight:${isSub?'600':'700'};letter-spacing:${isSub?'0.6px':'0.8px'};text-transform:uppercase;color:var(--blue)${isSub?';opacity:0.85':''}">${label}${caretSvg(open)}</span>
-      <span style="font-size:${isSub?'0.7rem':'0.74rem'};font-weight:${isSub?'600':'700'};color:var(--text2)">${sub}</span>
-    </div><div class="sec-body${open?'':' closed'}" id="agrp-${key}">`;
-  };
-  let html='';
-  ASSET_GROUPS.forEach(g=>{
-    const items=data.assets.filter(a=>g.cats.includes(a.category));
-    if(!items.length)return;
-    items.forEach(a=>grouped.add(a.id));
-    const sub=items.reduce((s,a)=>s+Number(a.currentValue||0),0);
-    const gKey=slug(g.label);
-    html+=grpHdr(gKey,g.label,fmt(sub),false);
-    if(g.label==='Mutual Funds'){
-      // Segregate into Active / Passive / Hybrid / ELSS.
-      // Empty sub-groups render nothing — ELSS disappears on its own once redeemed.
-      MF_TYPES.forEach(t=>{
-        const tItems=items.filter(a=>mfType(a)===t.v);
-        if(!tItems.length)return;
-        const tSub=tItems.reduce((s,a)=>s+Number(a.currentValue||0),0);
-        html+=grpHdr('mf-'+t.v,`${t.l} · ${tItems.length}`,fmt(tSub),true);
-        html+=`<div class="row-list-wrap">${tItems.map(assetRow).join('')}</div></div>`;
-      });
-      html+='</div>';
-    }else{
-      html+=`<div class="row-list-wrap">${items.map(assetRow).join('')}</div></div>`;
-    }
-  });
-  // Safety net: any asset with an unknown category still shows up
-  const leftovers=data.assets.filter(a=>!grouped.has(a.id));
-  if(leftovers.length){
-    const sub=leftovers.reduce((s,a)=>s+Number(a.currentValue||0),0);
-    html+=grpHdr('uncategorized','Uncategorized',fmt(sub),false);
-    html+=`<div class="row-list-wrap">${leftovers.map(assetRow).join('')}</div></div>`;
-  }
-  el.innerHTML=html;
+  const totalBoxHtml=`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px">
+    <span style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em">Total</span>
+    <span style="font-size:.86rem;font-weight:800;color:var(--blue)">${fmt(filteredTotal)}</span>
+  </div>`;
+  el.innerHTML=chipsHtml+totalBoxHtml+`<div class="row-list-wrap">${filteredAssets.map(assetRow).join('')}</div>`;
 }
-function toggleAssetGrp(key){
-  const GRP_KEY='wp_asset_grps';
-  const st=JSON.parse(localStorage.getItem(GRP_KEY)||'{}');
-  const body=document.getElementById('agrp-'+key);if(!body)return;
-  const nowClosed=!body.classList.contains('closed');
-  body.classList.toggle('closed',nowClosed);
-  const caret=body.previousElementSibling?.querySelector('.sec-caret');
-  if(caret)caret.classList.toggle('open',!nowClosed);
-  if(nowClosed)st[key]=1;else delete st[key];
-  localStorage.setItem(GRP_KEY,JSON.stringify(st));
+function setAssetFilter(k){
+  window.assetFilterCat=k;
+  renderAssets();
 }
 function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`${a?.name||'This asset'} will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();closeSheet();renderAssets();renderDashboard();toast('Deleted')})}
 
@@ -2232,8 +2208,7 @@ function renderLiabilities(){
 function delLiab(id){const l=data.liabilities.find(x=>x.id===id);showConfirm('Delete Liability?',`${l?.name||'This'} will be removed.`,()=>{data.liabilities=data.liabilities.filter(l=>l.id!==id);save();closeSheet();renderLiabilities();renderDashboard();toast('Deleted')})}
 
 function renderGoals(){
-  const el=document.getElementById('individual-goals-wrap');if(!el)return;
-  const emergencyEl=document.getElementById('emergency-goal-wrap');
+  const protElCheck=document.getElementById('protection-list');if(!protElCheck)return;
 
   // Group: Protection (insurance) vs Savings goals
   const savingsGoals = GOAL_PRESETS.filter(p=>!p.isIns);
@@ -2320,6 +2295,32 @@ function renderGoals(){
   const protBadge=document.getElementById('protection-sec-count');
   if(protBadge) protBadge.textContent=insCount>0?insCount+' polic'+(insCount===1?'y':'ies'):'0';
 
+  const EDUCATION_MILESTONES=[
+    {emoji:'📚',label:'11th–12th',    year:'2040',yrs:14,today:'₹6L', future:'₹23L'},
+    {emoji:'🎓',label:'Graduation',   year:'2041',yrs:15,today:'₹17L',future:'₹71L'},
+    {emoji:'🇺🇸',label:'Higher Education',year:'2045',yrs:19,today:'₹70L',future:'₹4.28Cr'},
+    {emoji:'💍',label:'Marriage',     year:'2050',yrs:24,today:'₹25L',future:'₹1.27Cr'},
+  ];
+  function educationBreakdownHtml(){
+    return `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)" onclick="event.stopPropagation()">
+      <div style="font-size:.66rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">🎯 Milestone Breakdown</div>
+      ${EDUCATION_MILESTONES.map(m=>`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border2)">
+          <div>
+            <div style="font-size:.8rem;color:var(--text1);font-weight:600">${m.emoji} ${m.label}</div>
+            <div style="font-size:.66rem;color:var(--text3);margin-top:2px">${m.year} (${m.yrs} yrs)</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:.7rem;color:var(--text3)">Today: ${m.today}</div>
+            <div style="font-size:.8rem;color:var(--text1);font-weight:700;margin-top:1px">→ ${m.future}</div>
+          </div>
+        </div>`).join('')}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:9px">
+        <span style="font-size:.8rem;font-weight:700;color:var(--text1)">Total Future Goal</span>
+        <span style="font-size:.92rem;font-weight:800;color:var(--green)">~₹6.5Cr</span>
+      </div>
+    </div>`;
+  }
   // Goal card: single-line name + %, thin progress bar, amounts below — no wrapping on mobile
   function goalSection(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
@@ -2336,6 +2337,7 @@ function renderGoals(){
       </div>
       ${target>0?`<div class="goal-card-bar"><div class="goal-card-fill" style="width:${p}%;${p>=100?'background:var(--green)':''}"></div></div>
       <div class="goal-card-amt"><b>${fmt(current)}</b> of ${fmt(target)}${p>=100?' · Complete ✓':''}</div>`:''}
+      ${pr.id==='education'?educationBreakdownHtml():''}
     </div>`;
   }
 
@@ -2345,6 +2347,7 @@ function renderGoals(){
     const p=pct(current,target);
     const pctClr=target>0?(p>=100?'var(--green)':'var(--blue)'):'var(--text3)';
     const icon=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>`;
+    const isEducation=/education/i.test(cg.name||'');
     return`<div class="goal-card" onclick="openSheet('customGoal','${cg.id}')">
       <div class="goal-card-top">
         <span class="goal-card-name">${icon} ${esc(cg.name)}</span>
@@ -2353,22 +2356,9 @@ function renderGoals(){
       </div>
       ${target>0?`<div class="goal-card-bar"><div class="goal-card-fill" style="width:${p}%;${p>=100?'background:var(--green)':''}"></div></div>
       <div class="goal-card-amt"><b>${fmt(current)}</b> of ${fmt(target)}${p>=100?' · Complete ✓':''}</div>`:''}
+      ${isEducation?educationBreakdownHtml():''}
     </div>`;
   }
-
-  // Render the Emergency Fund goal into the dedicated slot (top of page) — single card, no wrapper
-  const LAYER_IDS=['emergency'];
-  const layerPresets = savingsGoals.filter(pr=>LAYER_IDS.includes(pr.id));
-  const nonEmergencyGoals = savingsGoals.filter(pr=>!LAYER_IDS.includes(pr.id));
-
-  if(emergencyEl && layerPresets.length) {
-    emergencyEl.innerHTML = layerPresets.map(goalSection).join('');
-  }
-
-  el.innerHTML =
-    nonEmergencyGoals.filter(pr=>{const g=data.goals.find(x=>x.type===pr.id)||{};return Number(g.target||0)>0}).map(goalSection).join('') +
-    (customGoals.length ? customGoals.map(customGoalSection).join('') : '') +
-    `<button class="add-row" style="margin-top:2px;width:100%;text-align:center" onclick="openSheet('customGoal',null)">+ Add Custom Goal</button>`;
 
   // Render Protection list
   const protEl=document.getElementById('protection-list');
