@@ -1228,10 +1228,6 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
       <div><div class="qa-action-label">Add Liability</div><div class="qa-action-sub">Loan, EMI, Credit card…</div></div>
     </div>
-    <div class="qa-action" onclick="closeQuickAdd();openSheet('goal','emergency')" style="border-color:var(--border)">
-      <div class="qa-action-icon" style="background:var(--surface2);color:var(--text2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <div><div class="qa-action-label">Update Preset Goal</div><div class="qa-action-sub">Emergency Fund, Retirement…</div></div>
-    </div>
     </div>
   </div>
 </div>
@@ -3238,7 +3234,7 @@ function init(){
     data.goals=[{id:uid(),type:'emergency',name:'Emergency Fund',target:1023120,current:0},{id:uid(),type:'education',name:"Son's Education",target:3000000,current:0},{id:uid(),type:'retirement',name:'Retirement',target:30000000,current:0}];
     data.profile.name='';save();
   }
-  renderProfile();renderDashboard();
+  renderProfile();renderDashboard();renderAssets();renderLiabilities();
   // Greeting
   const greetEl=document.querySelector('.hdr-greeting');
   if(greetEl)greetEl.textContent=greeting();
