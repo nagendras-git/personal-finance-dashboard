@@ -256,6 +256,21 @@ body.scroll-locked {
 .sec-body { overflow:hidden; max-height:5000px; transition:max-height 0.32s var(--ease),opacity 0.2s ease; opacity:1 }
 .sec-body.closed { max-height:0; opacity:0; pointer-events:none }
 .sec-hdr-card.sticky-hdr { position:sticky; top:var(--topbar-h,64px); z-index:15; box-shadow:0 6px 14px -8px rgba(0,0,0,.5) }
+/* ── Asset category accordion: one shared card, header rows split it into sections ── */
+.cat-hdr-row {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 14px; background:var(--surface2);
+  border-bottom:1px solid var(--border2);
+  cursor:pointer; user-select:none; transition:background 120ms;
+}
+.cat-hdr-row:active { background:var(--surface3) }
+.cat-hdr-icon { width:24px; height:24px; border-radius:7px; background:var(--surface3); border:1px solid var(--border); color:var(--text2); display:flex; align-items:center; justify-content:center; flex-shrink:0 }
+.cat-hdr-icon svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round }
+.cat-hdr-label { flex:1; min-width:0; display:flex; align-items:center; gap:8px; font-size:0.86rem; font-weight:700; color:var(--text1) }
+.cat-hdr-right { display:flex; align-items:center; gap:8px; flex-shrink:0 }
+.cat-hdr-total { font-size:0.84rem; font-weight:700; color:var(--blue) }
+.cat-hdr-pct { font-size:0.72rem; font-weight:700; color:var(--blue); min-width:30px; text-align:right }
+.sec-body + .cat-hdr-row { border-top:1px solid var(--border2) }
 
 /* ── ROWS ── */
 .row-list-wrap {
@@ -990,28 +1005,13 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
     </div>
   </div>
-  <!-- PORTFOLIO BREAKDOWN (collapsible) — single unified allocation view, no separate "Asset Allocation" duplicate -->
-  <div class="container" style="padding-top:8px;padding-bottom:4px" id="dash-asset-breakdown-wrap">
-      <div class="sec-hdr-card" onclick="toggleSec('sec-portfolio')">
-        <div class="sec-hdr-left"><span class="sec-hdr-title"><div class="ios-row-icon" style="background:#3B82F6;width:26px;height:26px;border-radius:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 100 4h4v-4h-4z"/></svg></div> Portfolio Breakdown</span><span class="sec-badge" id="dash-cat-count">—</span></div>
-        <div class="sec-hdr-right">
-          <span class="sec-caret" id="caret-sec-portfolio"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
-        </div>
-      </div>
-      <div class="sec-body closed" id="sec-portfolio">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:8px">
-          <div id="dash-asset-cats" style="padding:4px 14px 8px"></div>
-        </div>
-      </div>
-  </div>
-
   <div class="container" style="padding-top:0">
     <!-- ASSETS -->
-    <div class="sec-hdr-card sticky-hdr" onclick="toggleSec('sec-assets')">
-      <div class="sec-hdr-left"><span class="sec-hdr-title"><div class="ios-row-icon" style="background:#3B82F6;width:26px;height:26px;border-radius:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg></div> Assets</span><span class="sec-badge" id="assets-sec-count">0</span></div>
-      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr" style="color:var(--blue)">₹0</span><span class="sec-caret open" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+    <div class="sec-hdr-card" onclick="toggleSec('sec-assets')">
+      <div class="sec-hdr-left"><span class="sec-hdr-title"><div class="ios-row-icon" style="background:#3B82F6;width:26px;height:26px;border-radius:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg></div> Assets</span></div>
+      <div class="sec-hdr-right"><span class="sec-total" id="assets-total-hdr" style="color:var(--blue)">₹0</span><span class="sec-caret" id="caret-sec-assets"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
     </div>
-    <div class="sec-body" id="sec-assets">
+    <div class="sec-body closed" id="sec-assets">
       <div id="assets-list"></div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;margin-bottom:2px">
         <div class="add-row" style="margin:0" onclick="openSheet('importMF')">
@@ -1899,39 +1899,6 @@ function renderDashboard(){
   const nwPill = document.getElementById('dash-nw-pill');
   if(nwPill) nwPill.style.display = '';
 
-  // Asset Category Breakdown
-  const catEl=document.getElementById('dash-asset-cats');
-  const catCntEl=document.getElementById('dash-cat-count');
-  if(catEl){
-    if(!data.assets.length){
-      catEl.innerHTML='<div style="padding:10px 4px 6px;font-size:0.86rem;color:var(--text3);text-align:center">Add assets to see breakdown</div>';
-      if(catCntEl)catCntEl.textContent='No assets';
-    } else {
-      const catMap={};
-      data.assets.forEach(a=>{
-        const info=getAsset(a.category);const v=Number(a.currentValue||0);
-        if(!catMap[a.category])catMap[a.category]={info,total:0,count:0};
-        catMap[a.category].total+=v;catMap[a.category].count++;
-      });
-      const cats=Object.values(catMap).filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
-      const grandTotal=cats.reduce((s,c)=>s+c.total,0)||1;
-      if(catCntEl)catCntEl.textContent=cats.length+' categor'+(cats.length===1?'y':'ies');
-      catEl.innerHTML=cats.map(c=>{
-        const p=Math.round((c.total/grandTotal)*100);
-        const pLabel=p===0&&c.total>0?'<1%':p+'%';
-        return`<div class="acat-row">
-          <div class="acat-icon">${c.info.icon}</div>
-          <div class="acat-info">
-            <div class="acat-name">${c.info.l}</div>
-            <div class="acat-bar-wrap"><div class="acat-bar" style="background:var(--blue);width:${Math.max(p,c.total>0?1:0)}%"></div></div>
-          </div>
-          <div class="acat-val" style="color:var(--blue)">${fmt(c.total)}</div>
-          <div class="acat-pct" style="color:var(--blue)">${pLabel}</div>
-        </div>`;
-      }).join('');
-    }
-  }
-
   // Income Snapshot
   const income = Number(data.profile.monthlyIncome||0);
   const expenses = Number(data.profile.monthlyExpenses||0);
@@ -2081,41 +2048,24 @@ function updateWealthCard(assets,liab){
   set('wealth-display',fmt(w));set('wealth-assets',fmt(assets));set('wealth-liab',fmt(liab));
 }
 
+// ── Category sections shown on the Assets list: each is its own collapsible block with its own total ──
+const ASSET_GROUP_DEFS=[
+  {key:'equity',label:'Mutual Funds',        icon:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'},
+  {key:'gold',  label:'Gold',                icon:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'},
+  {key:'intl',  label:'US / Global Equity',  icon:'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>'},
+  {key:'debt',  label:'Debt',                icon:'<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/>'},
+  {key:'other', label:'Other',               icon:'<rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="16 2 12 6 8 2"/>'},
+];
 function renderAssets(){
   const total=data.assets.reduce((s,a)=>s+Number(a.currentValue||0),0);
-  const el1=document.getElementById('assets-sec-count');const el2=document.getElementById('assets-total-hdr');
-  if(el1)el1.textContent=data.assets.length;if(el2)el2.textContent=fmt(total);
+  const el2=document.getElementById('assets-total-hdr');
+  if(el2)el2.textContent=fmt(total);
   const totalLiab=data.liabilities.reduce((s,l)=>s+Number(l.outstanding||0),0);
   updateWealthCard(total,totalLiab);
   renderAllocation();
   const el=document.getElementById('assets-list');if(!el)return;
   if(!data.assets.length){el.innerHTML='<div class="empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.2;margin:0 auto 8px"><rect x="3" y="18" width="18" height="3" rx="1"/><path d="M3 10h18M12 3L3 10h18L12 3z"/><line x1="7" y1="10" x2="7" y2="18"/><line x1="12" y1="10" x2="12" y2="18"/><line x1="17" y1="10" x2="17" y2="18"/></svg><div class="empty-text">No assets yet</div></div>';return}
-  // ── Filter chips: Index Funds / Small Cap Funds / Debt / Gold / International ──
-  const FILTER_DEFS=[
-    {key:'index',   label:'Index Funds',    match:a=>(a.category==='MutualFunds'&&mfType(a)==='passive')||((a.category==='ETF'||a.category==='Stocks')&&classifyAlloc(a)==='equity')},
-    {key:'smallcap',label:'Small Cap Funds',match:a=>a.category==='MutualFunds'&&mfType(a)==='active'},
-    {key:'debt',    label:'Debt',           match:a=>classifyAlloc(a)==='debt'},
-    {key:'gold',    label:'Gold',           match:a=>classifyAlloc(a)==='gold'},
-    {key:'intl',    label:'International',  match:a=>classifyAlloc(a)==='intl'},
-  ];
-  const presentFilters=FILTER_DEFS.filter(f=>data.assets.some(f.match));
-  const filterOptions=['All',...presentFilters.map(f=>f.key)];
-  if(!filterOptions.includes(window.assetFilterCat))window.assetFilterCat='All';
-  const selectedFilter=window.assetFilterCat||'All';
-  let chipsHtml='';
-  if(presentFilters.length>1){
-    chipsHtml=`<div class="chip-row" onclick="event.stopPropagation()">
-      ${filterOptions.map(k=>{
-        const def=FILTER_DEFS.find(f=>f.key===k);
-        const label=k==='All'?'All':def.label;
-        const count=k==='All'?data.assets.length:data.assets.filter(def.match).length;
-        return `<button class="chip${k===selectedFilter?' on':''}" onclick="event.stopPropagation();setAssetFilter('${k}')">${label} <span style="opacity:.65;font-weight:600">${count}</span></button>`;
-      }).join('')}
-    </div>`;
-  }
-  const activeDef=FILTER_DEFS.find(f=>f.key===selectedFilter);
-  const filteredAssets=selectedFilter==='All'?data.assets:data.assets.filter(activeDef.match);
-  const filteredTotal=filteredAssets.reduce((s,a)=>s+Number(a.currentValue||0),0);
+  window.assetCatOpen=window.assetCatOpen||{};
   const assetRow=a=>{
     const info=getAsset(a.category);
     return`<div class="row-item" onclick="openSheet('asset',data.assets.find(x=>x.id==='${a.id}'))">
@@ -2130,15 +2080,30 @@ function renderAssets(){
       <div class="goal-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>`;
   };
-  const totalBoxHtml=`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:8px">
-    <span style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em">Total</span>
-    <span style="font-size:.86rem;font-weight:800;color:var(--blue)">${fmt(filteredTotal)}</span>
-  </div>`;
-  el.innerHTML=chipsHtml+totalBoxHtml+`<div class="row-list-wrap">${filteredAssets.map(assetRow).join('')}</div>`;
+  const groupsHtml=ASSET_GROUP_DEFS.map(g=>{
+    const items=data.assets.filter(a=>classifyAlloc(a)===g.key);
+    if(!items.length)return '';
+    const gTotal=items.reduce((s,a)=>s+Number(a.currentValue||0),0);
+    const p=total>0?Math.round((gTotal/total)*100):0;
+    const pLabel=p===0&&gTotal>0?'<1%':p+'%';
+    if(!(g.key in window.assetCatOpen))window.assetCatOpen[g.key]=false; // sections start collapsed
+    const open=window.assetCatOpen[g.key];
+    return`<div class="cat-hdr-row" onclick="toggleAssetCat('${g.key}')">
+        <div class="cat-hdr-icon"><svg viewBox="0 0 24 24">${g.icon}</svg></div>
+        <div class="cat-hdr-label">${g.label}<span class="sec-badge">${items.length}</span></div>
+        <div class="cat-hdr-right"><span class="cat-hdr-total">${fmt(gTotal)}</span><span class="cat-hdr-pct">${pLabel}</span><span class="sec-caret${open?' open':''}" id="caret-asset-cat-${g.key}"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span></div>
+      </div>
+      <div class="sec-body${open?'':' closed'}" id="asset-cat-body-${g.key}">${items.map(assetRow).join('')}</div>`;
+  }).join('');
+  el.innerHTML=`<div class="row-list-wrap">${groupsHtml}</div>`;
 }
-function setAssetFilter(k){
-  window.assetFilterCat=k;
-  renderAssets();
+function toggleAssetCat(key){
+  window.assetCatOpen=window.assetCatOpen||{};
+  const nowOpen=!window.assetCatOpen[key];
+  window.assetCatOpen[key]=nowOpen;
+  const body=document.getElementById('asset-cat-body-'+key);if(!body)return;
+  body.classList.toggle('closed',!nowOpen);
+  const caret=document.getElementById('caret-asset-cat-'+key);if(caret)caret.classList.toggle('open',nowOpen);
 }
 function delAsset(id){const a=data.assets.find(x=>x.id===id);showConfirm('Delete Asset?',`${a?.name||'This asset'} will be removed.`,()=>{data.assets=data.assets.filter(a=>a.id!==id);save();closeSheet();renderAssets();renderDashboard();toast('Deleted')})}
 
