@@ -983,7 +983,7 @@ input[type=range].custom-range::-moz-range-track{background:transparent;height:4
       </div>
       <!-- 2x2 grid: Assets / Liabilities / SIP / EMI -->
       <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div id="dash-cell-assets" style="padding:13px 18px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2)">
+        <div id="dash-cell-assets" onclick="openSheet('goal','emergency')" style="padding:13px 18px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2);cursor:pointer">
           <div class="lbl" style="margin-bottom:5px">Emergency Fund</div>
           <div style="font-size:1.05rem;font-weight:800;color:var(--green);letter-spacing:-0.3px" id="dash-assets-val">₹0</div>
         </div>
@@ -1419,6 +1419,8 @@ function age(bYear){return year()-bYear}
 function yearsUntil(bYear,ageTarget){return Math.max(0,(bYear+ageTarget)-year())}
 function inflAdj(todayVal,years,inflRate){return todayVal*Math.pow(1+(inflRate||0.07),years||0)}
 function linkedAssetTotal(ids){if(!ids||!ids.length)return 0;return (ids).reduce((s,id)=>{const a=data.assets.find(x=>x.id===id);return s+Number(a?.currentValue||0)},0)}
+/** Current saved amount for a preset goal — auto-sums linked assets if any are linked, else uses the manually-entered value */
+function goalCurrent(g){const ids=g?.linkedAssetIds||[];return ids.length>0?linkedAssetTotal(ids):Number(g?.current||0);}
 function getAsset(v){return ASSET_CATS.find(c=>c.v===v)||ASSET_CATS[ASSET_CATS.length-1]}
 function getLiab(v){return LIAB_CATS.find(c=>c.v===v)||LIAB_CATS[LIAB_CATS.length-1]}
 /** Escape user strings before inserting into innerHTML to prevent XSS */
@@ -1655,8 +1657,7 @@ function renderRetirementReadiness(){
   if(!retGoal||!retGoal.target){card.style.display='none';return;}
   card.style.display='';
   const target=Number(retGoal.target);
-  const linkedIds=retGoal.linkedAssetIds||[];
-  const current=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(retGoal.current||0);
+  const current=goalCurrent(retGoal);
   const years=Number(retGoal.timePeriod||25);
   // Project current corpus at 12% for remaining years
   const projected=current*Math.pow(1.12,years);
@@ -1732,7 +1733,7 @@ function _getSafetyGaps(){
   const expenses=Number(data.profile.monthlyExpenses||0);
   if(expenses>0){
     const efGoal=data.goals.find(x=>x.type==='emergency');
-    const efSaved=Number(efGoal?.current||0);
+    const efSaved=goalCurrent(efGoal);
     const efRequired=expenses*12;
     if(efSaved<efRequired){
       const shortfall=efRequired-efSaved;
@@ -1843,7 +1844,7 @@ function renderDashboard(){
   const set=(id,v,clr)=>{const el=document.getElementById(id);if(el){el.textContent=v;if(clr)el.style.color=clr}};
   set('dash-networth',fmt(netWorth),nwColor);
   const efGoalDash=data.goals.find(g=>g.type==='emergency');
-  set('dash-assets-val',fmt(Number(efGoalDash?.current||0)));
+  set('dash-assets-val',fmt(goalCurrent(efGoalDash)));
   set('dash-liab-val',fmt(totalLiab));
   updateWealthCard(totalAssets,totalLiab);
 
@@ -2020,14 +2021,12 @@ function renderGoalHealth(){
     const g=data.goals.find(x=>x.type===pr.id)||{};
     const target=Number(g.target||0);if(!target)return;
     setCount++;totalTarget+=target;
-    const linkedIds=g.linkedAssetIds||[];
-    totalSaved+=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(g.current||0);
+    totalSaved+=goalCurrent(g);
   });
   customGoals.forEach(cg=>{
     const target=Number(cg.target||0);if(!target)return;
     setCount++;totalTarget+=target;
-    const linkedIds=cg.linkedAssetIds||[];
-    totalSaved+=linkedIds.length>0?linkedAssetTotal(linkedIds):Number(cg.current||0);
+    totalSaved+=goalCurrent(cg);
   });
   const p=totalTarget>0?Math.min(100,Math.round((totalSaved/totalTarget)*100)):0;
   const fillEl=document.getElementById('gh-fill');
@@ -2259,7 +2258,7 @@ function renderGoals(){
   function goalSection(pr){
     const g=data.goals.find(x=>x.type===pr.id)||{};
     const target=Number(g.target||0);
-    const current=Number(g.current||0);
+    const current=goalCurrent(g);
     const p=pct(current,target);
     const pctClr=target>0?(p>=100?'var(--green)':'var(--blue)'):'var(--text3)';
     const icon=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.55;flex-shrink:0">${pr.icon.replace(/<svg[^>]*>/,'').replace('</svg>','')}</svg>`;
@@ -2825,22 +2824,36 @@ function sheetLiability(l){
 function saveLiab(editId){const name=document.getElementById('f-lname').value.trim();if(!name){toast('Enter a name');return}const obj={category:document.getElementById('f-lcat').value,name,outstanding:Number(document.getElementById('f-outstanding').value),interestRate:Number(document.getElementById('f-rate').value),emi:Number(document.getElementById('f-emi').value),endDate:document.getElementById('f-ins-lend')?.value||''};if(editId){Object.assign(data.liabilities.find(x=>x.id===editId)||{},obj)}else data.liabilities.push({id:uid(),...obj});save();closeSheet();renderLiabilities();renderDashboard();toast(editId?'Updated ✓':'Added ✓')}
 
 function sheetGoal(pid){
-  const pr=GOAL_PRESETS.find(p=>p.id===pid)||GOAL_PRESETS[0];
-  const g=data.goals.find(x=>x.type===pr.id)||{};
+  // Only the Emergency Fund goal has a working UI in this app build — route straight to its dedicated sheet
+  return sheetEmergencyFund();
+}
+function sheetEmergencyFund(){
+  const g=data.goals.find(x=>x.type==='emergency')||{};
   const closeX=`<button class="sheet-close" onclick="closeSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-  const typeSelect=`<div class="fg"><label class="fl">Goal Type</label><select class="fi fi-sel" id="f-gtype" onchange="switchGoalType()">${GOAL_PRESETS.filter(p=>!p.isIns).map(p=>`<option value="${p.id}" ${p.id===pr.id?'selected':''}>${p.name}</option>`).join('')}</select></div>`;
   const target=Number(g.target||0);
-  const current=Number(g.current||0);
+  const linkedIds=g.linkedAssetIds||[];
+  const current=goalCurrent(g);
+  const savedLinked=linkedIds.length>0;
+  const assetLinkBox = data.assets.length ? `<div class="fg">
+    <label class="fl">Link to Asset(s) <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);font-size:0.86rem">optional — auto-fills Saved from real balance</span></label>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);max-height:190px;overflow-y:auto">
+      ${data.assets.map(a=>`<label style="display:flex;align-items:center;gap:9px;padding:9px 11px;border-bottom:1px solid var(--border2);cursor:pointer">
+        <input type="checkbox" class="goal-asset-chk" data-id="${a.id}" ${linkedIds.includes(a.id)?'checked':''} onchange="onGoalAssetLinkChange()" style="width:16px;height:16px;accent-color:var(--blue);flex-shrink:0"/>
+        <span style="flex:1;font-size:0.8rem;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.name)}</span>
+        <span style="font-size:0.68rem;color:var(--text3);flex-shrink:0">${fmt(a.currentValue)}</span>
+      </label>`).join('')}
+    </div>
+  </div>` : '';
   const targetTimeRow = `<div class="form-row2">
         <div class="fg"><label class="fl">Target (₹)</label><input class="fi" id="f-gtarget" type="text" inputmode="decimal" placeholder="0" value="${target>0?fmt(target):''}" data-raw="${target||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this);updateGoalMonthsSummary()"/></div>
-        <div class="fg"><label class="fl">Saved (₹)</label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
+        <div class="fg"><label class="fl">Saved (₹) <span id="f-gcurrent-hint" style="display:${savedLinked?'':'none'};font-weight:400;text-transform:none;letter-spacing:0;color:var(--green);font-size:0.86rem">● linked</span></label><input class="fi" id="f-gcurrent" type="text" inputmode="decimal" placeholder="0" value="${current>0?fmt(current):''}" data-raw="${current||''}" ${savedLinked?'readonly style="opacity:0.7;cursor:not-allowed"':''} onfocus="fmtInputFocus(this)" onblur="fmtInputBlur(this)"/></div>
       </div>`;
-  return`<div class="sheet-hdr"><div class="sheet-title">${pr.name}</div>${closeX}</div>
+  return`<div class="sheet-hdr"><div class="sheet-title">Emergency Fund</div>${closeX}</div>
   <div class="sheet-body">
-    ${typeSelect}
     ${targetTimeRow}
-    ${(()=>{const meta={emergency:{fund:'Bank Savings Account',months:[6,9,12]}}[pr.id];const exp=Number(data.profile.monthlyExpenses||0);if(!meta||!exp)return'';const curTgt=Number(g.target||0);const curM=curTgt>0?Math.round(curTgt/exp*10)/10:0;const isChip=meta.months.includes(curM);const chips=meta.months.map(m=>{const val=m*exp;const active=(isChip&&curM===m)?' active':'';return`<button type="button" class="month-chip${active}" data-months="${m}" onclick="setGoalTarget(${val},this)">${m} mo · ${fmt(val)}</button>`}).join('');const curMonths=(!isChip&&curTgt>0)?curM:'';return`<div id="f-gmonths-box" style="margin:-6px 0 12px;padding:9px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
-      <div style="font-size:0.7rem;color:var(--text3);margin-bottom:8px">${meta.fund} · pick months of expenses (${fmt(exp)}/mo)</div>
+    ${assetLinkBox}
+    ${(()=>{const exp=Number(data.profile.monthlyExpenses||0);const months=[6,9,12];if(!exp)return'';const curTgt=Number(g.target||0);const curM=curTgt>0?Math.round(curTgt/exp*10)/10:0;const isChip=months.includes(curM);const chips=months.map(m=>{const val=m*exp;const active=(isChip&&curM===m)?' active':'';return`<button type="button" class="month-chip${active}" data-months="${m}" onclick="setGoalTarget(${val},this)">${m} mo · ${fmt(val)}</button>`}).join('');const curMonths=(!isChip&&curTgt>0)?curM:'';return`<div id="f-gmonths-box" style="margin:-6px 0 12px;padding:9px 11px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r)">
+      <div style="font-size:0.7rem;color:var(--text3);margin-bottom:8px">Bank Savings Account · pick months of expenses (${fmt(exp)}/mo)</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">${chips}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:9px">
         <span style="font-size:0.74rem;font-weight:600;color:var(--text2)">Custom</span>
@@ -2849,7 +2862,7 @@ function sheetGoal(pid){
       </div>
       <div id="f-gmonths-summary" style="font-size:0.74rem;font-weight:600;color:var(--blue);margin-top:9px">${goalMonthsSummaryHTML(curTgt,exp)}</div>
     </div>`})()}
-    <div class="form-actions">${g.id?'<button class="btn btn-ghost" style="color:var(--red)" onclick="delGoal(\''+pr.id+'\')">Delete</button>':'<button class="btn btn-ghost" onclick="closeSheet()">Cancel</button>'}<button class="btn btn-primary" onclick="saveGoal()">${g.id?'Update':'Save'}</button></div>
+    <div class="form-actions"><button class="btn btn-ghost" onclick="closeSheet()">Cancel</button><button class="btn btn-primary" onclick="saveGoal()">Save</button></div>
   </div>`}
 
 function switchGoalType(){
@@ -2899,6 +2912,26 @@ function setGoalMonths(inp){
   if(el){el.dataset.raw=val;el.value=fmt(val);}
   updateGoalMonthsSummary(true);
 }
+function onGoalAssetLinkChange(){
+  const ids=[...document.querySelectorAll('.goal-asset-chk:checked')].map(c=>c.dataset.id);
+  const input=document.getElementById('f-gcurrent');
+  const hint=document.getElementById('f-gcurrent-hint');
+  if(!input)return;
+  if(ids.length>0){
+    const total=linkedAssetTotal(ids);
+    input.value=fmt(total);
+    input.dataset.raw=total;
+    input.readOnly=true;
+    input.style.opacity='0.7';
+    input.style.cursor='not-allowed';
+    if(hint)hint.style.display='';
+  } else {
+    input.readOnly=false;
+    input.style.opacity='1';
+    input.style.cursor='';
+    if(hint)hint.style.display='none';
+  }
+}
 function delGoal(typeId){
   const g=data.goals.find(x=>x.type===typeId);
   const pr=GOAL_PRESETS.find(p=>p.id===typeId);
@@ -2908,12 +2941,11 @@ function delGoal(typeId){
   });
 }
 function saveGoal(){
-  const type=document.getElementById('f-gtype')?.value;
-  const pr=GOAL_PRESETS.find(p=>p.id===type)||GOAL_PRESETS[0];
-  const obj={type,name:pr.name,target:rawVal('f-gtarget'),current:rawVal('f-gcurrent')};
-  const ex=data.goals.find(g=>g.type===type);
+  const linkedIds=[...document.querySelectorAll('.goal-asset-chk:checked')].map(c=>c.dataset.id);
+  const obj={type:'emergency',name:'Emergency Fund',target:rawVal('f-gtarget'),current:linkedIds.length>0?linkedAssetTotal(linkedIds):rawVal('f-gcurrent'),linkedAssetIds:linkedIds};
+  const ex=data.goals.find(g=>g.type==='emergency');
   if(ex)Object.assign(ex,obj);else data.goals.push({id:uid(),...obj});
-  save();closeSheet();renderGoals();renderDashboard();toast('Saved ✓');
+  save();closeSheet();renderDashboard();toast('Saved ✓');
 }
 
 /* ── INSURANCE (multi-policy) ── */
