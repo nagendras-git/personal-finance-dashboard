@@ -2556,7 +2556,7 @@ function _doParseXLSX(arrayBuffer){
       if(qty<=0) continue;
 
       const name     = _cleanName(rawName);
-      if(seen.has(name.toLowerCase())) return; // skip duplicate from Combined sheet
+      if(seen.has(name.toLowerCase())) continue; // skip duplicate from Combined sheet
       seen.add(name.toLowerCase());
 
       // Use Instrument Type column for smarter category detection
@@ -2664,7 +2664,7 @@ function _renderImportPreview(){
   preview.style.display='';
 
   // Check which existing assets would be replaced
-  const existingNames=new Set(data.assets.filter(a=>a.category==='MutualFunds'||a.category==='ETF').map(a=>a.name.toLowerCase()));
+  const existingNames=new Set(data.assets.filter(a=>a.category==='MutualFunds'||a.category==='ETF'||a.category==='Gold'||a.category==='USEquity').map(a=>a.name.toLowerCase()));
 
   let replaceCount=0;
 
@@ -2756,7 +2756,7 @@ function _doImport(){
   toImport.forEach((f,idx)=>{
     const obj={category:f.category,name:f.name,currentValue:f.currentValue,invested:f.invested,sip:f.sip};
     // Upsert: match by name (case-insensitive) within MF/ETF categories
-    const existing=data.assets.find(a=>(a.category==='MutualFunds'||a.category==='ETF')&&a.name.toLowerCase()===f.name.toLowerCase());
+    const existing=data.assets.find(a=>(a.category==='MutualFunds'||a.category==='ETF'||a.category==='Gold'||a.category==='USEquity')&&a.name.toLowerCase()===f.name.toLowerCase());
     if(existing){
       // Preserve SIP already set by user — XLSX has no SIP data
       obj.sip = existing.sip || f.sip;
